@@ -1,0 +1,40 @@
+/******************************* Dependencies ********************************/
+
+// Core styles.
+@import (less) './node_modules/stylific/less/stylific';
+
+// Styles used by highlight.js tags generated as a part of markdown compilation.
+@import (less) './node_modules/highlight.js/styles/ir_black.css';
+
+/********************************** Global ***********************************/
+
+// Global variables.
+@import (less) './variables';
+
+// Misc settings.
+@import (less) './misc';
+
+// Mixins.
+@import (less) './mixins';
+
+// Colour mixes.
+@import (less) './color-mixes';
+
+// Typographic settings.
+@import (less) './typography';
+
+/********************************* Overrides *********************************/
+
+@import (less) './overrides/sf-article';
+@import (less) './overrides/sf-footer';
+@import (less) './overrides/sf-jumbo';
+@import (less) './overrides/sf-icon';
+
+/******************************** Components *********************************/
+
+@import (less) './components/doc-banner';
+@import (less) './components/doc-features';
+@import (less) './components/doc-noscript';
+@import (less) './components/doc-sidenav';
+
+doc-index {display: block; width: 100%}

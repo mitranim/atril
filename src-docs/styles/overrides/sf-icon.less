@@ -1,0 +1,34 @@
+.sf-icon() {
+
+  &.inline {
+    vertical-align: middle;
+    position: relative;
+    top: -0.08em;
+    &:not(:first-child) {
+      margin-left: @sf-common-margin / 5;
+    }
+    &:not(:last-child) {
+      margin-right: @sf-common-margin / 5;
+    }
+  }
+
+  /**
+   * Non-background SVG.
+   */
+  > svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+  }
+
+  /**
+   * Register SVG icons.
+   */
+  .svg-colored(github);
+  .svg-colored(github-light);
+  .svg-colored(github-blue);
+  .svg-black(arrow-up);
+  .svg-colored(external-link);
+  .svg-colored(info-circle-blue);
+  .svg-colored(info-blue);
+}

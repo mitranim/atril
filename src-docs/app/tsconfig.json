@@ -1,0 +1,9 @@
+{
+    "version": "1.5.0",
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "noImplicitAny": false
+    },
+    "compileOnSave": false
+}

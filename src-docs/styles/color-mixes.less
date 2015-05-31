@@ -1,0 +1,43 @@
+// Default link styling.
+a, :link {
+  color: @sf-base-link-color;
+}
+
+// Special link decoration in paragraphs.
+p a, p :link {.sf-common-link-decorations()}
+
+// Versions of colour themes that only affect text colour.
+.text-brown      {.color-text(@color-brown)}
+.text-darkorange {.color-text(@color-darkorange)}
+.text-darkred    {.color-text(@color-darkred)}
+.text-info       {.color-text(@sf-color-info)}
+.text-orange     {.color-text(@color-orange)}
+.text-red        {.color-text(@color-red)}
+.text-success    {.color-text(@sf-color-success)}
+.text-warning    {.color-text(@sf-color-warning)}
+.text-yellow     {.color-text(@color-yellow)}
+
+// Defines text colour using the given colour, adjusted to be bright enough to
+// contrast the default background colour. Also affects SVG fill.
+.color-text(@color) {
+  @c: hsl(hue(@color), saturation(@color) / 2, 30%);
+  color: @c;
+  fill: @c;
+}
+
+// Extend the base color macro to support SVG fill.
+.sf-colormix-base(@color, @perc) {
+  & when not (@color = @sf-base-text-color) {
+    @c: hsl(hue(@color), saturation(@color), 75% - luma(contrast(@sf-base-text-color)) / 2);
+    .sf-shift-color(fill, @c, @perc);
+    // Disable background for svg-icons.
+    &[svg-icon] {background: none}
+  }
+}
+
+// Add user-defined colours to the global mix.
+.sf-colormix-all-classes(@prefix, @affix, @perc) {
+  &.orange@{prefix}@{affix} {.sf-colormix-base(@color-orange, @perc)}
+  &.yellow@{prefix}@{affix} {.sf-colormix-base(@color-yellow, @perc)}
+  // &.darkorange@{prefix}@{affix} {.sf-colormix-base(@color-darkorange, @perc)}
+}

@@ -1,0 +1,36 @@
+doc-features {
+  /**
+   * Layout.
+   */
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+
+  /**
+   * Child styling.
+   */
+  > * {
+    // Layout.
+    flex: 1;
+
+    // Inner layout.
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+    // Whitespace.
+    .space-out-children();
+
+    // Cosmetic.
+    text-align: center;
+
+    // Icon styling.
+    > sf-icon {
+      // Layout.
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 2em;
+    }
+  }
+}

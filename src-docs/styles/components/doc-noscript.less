@@ -1,0 +1,52 @@
+doc-noscript {
+  /**
+   * Variables.
+   */
+  // @bg-color: rgb(38, 34, 47);
+  // @text-color: @sf-base-background-color;
+  @bg-color: @sf-base-background-color;
+  @text-color: @sf-base-text-color;
+
+  /**
+   * Layout.
+   */
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10000;
+
+  /**
+   * Cosmetic.
+   */
+  font-size: 200%;
+  background-color: @bg-color;
+  color: @text-color;
+  text-align: center;
+
+  /**
+   * Inner layout.
+   */
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  /**
+   * Inner content styling.
+   */
+  > doc-noscript-content {
+    .narrow-inverse();
+    > * {
+      padding: @sf-common-padding / 2;
+    }
+  }
+
+  /**
+   * Code colours.
+   */
+  code {
+    background-color: lighten(@bg-color, 10%);
+    color: @text-color;
+  }
+}

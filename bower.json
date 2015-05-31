@@ -1,0 +1,23 @@
+{
+  "name": "atril",
+  "version": "0.0.0",
+  "private": true,
+  "authors": [
+    "Mitranim <me@mitranim.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mitranim/atril.git"
+  },
+  "ignore": [
+    "**/*"
+  ],
+  "overrides": {
+    "font-awesome-svg-png": {
+      "main": []
+    }
+  },
+  "devDependencies": {
+    "font-awesome-svg-png": "~1.1.2"
+  }
+}

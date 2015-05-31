@@ -1,0 +1,124 @@
+/**
+ * Produces a background-image rule with a data-encoded black svg with
+ * the given name for a class with the same name.
+ * @param   String
+ * @returns .<classname> {background-color}
+ */
+.svg-black(@name) {
+  &.@{name} {.bg-svg-black(@name)}
+}
+
+/**
+ * Produces a background-image rule with a data-encoded white svg with
+ * the given name for a class with the same name.
+ * @param   String
+ * @returns .<classname>-white {background-color}
+ */
+.svg-white(@name) {
+  &.@{name}-white {.bg-svg-white(@name)}
+}
+
+/**
+ * Produces a background-image rule with a data-encoded coloured svg with
+ * the given name for a class with the same name.
+ * @param   String
+ * @returns .<classname> {background-color}
+ */
+.svg-colored(@name) {
+  &.@{name} {.bg-svg-colored(@name)}
+}
+
+/**
+ * Produces a background-image rule with a data-encoded black svg with the
+ * given name.
+ * @param   String
+ * @returns {background-color}
+ */
+.bg-svg-black(@name) {
+  @path: ~'@{svg-black}@{name}.svg';
+  background-image: data-uri(@path)
+}
+
+/**
+ * Produces a background-image rule with a data-encoded white svg with the
+ * given name.
+ * @param   String
+ * @returns {background-color}
+ */
+.bg-svg-white(@name) {
+  @path: ~'@{svg-white}@{name}.svg';
+  background-image: data-uri(@path)
+}
+
+/**
+ * Produces a background-image rule with a data-encoded coloured svg with
+ * the given name.
+ * @param   String
+ * @returns {background-color}
+ */
+.bg-svg-colored(@name) {
+  @path: ~'@{svg-colored}@{name}.svg';
+  background-image: data-uri(@path);
+}
+
+// Wide on narrow displays and narrow on wide displays. Centered across.
+// Expects to be a block or a flex child in a vertical flex layout.
+.narrow-inverse() {
+  // Dimensions.
+  .sf-media-mix-inverse(width, 100%);
+  // Center as block.
+  margin-left: auto;
+  margin-right: auto;
+  // Center as flex child.
+  align-self: center;
+}
+
+.space-out-children() {
+  & > *:not(:last-child) {
+    margin-bottom: @sf-common-margin;
+  }
+}
+
+.space-out-children-05() {
+  & > *:not(:last-child) {
+    margin-bottom: @sf-common-margin / 2;
+  }
+}
+
+// Extend link decorators.
+.sf-common-link-decorations() {
+  .sf-link-color();
+
+  // Indicate _blank links.
+  &[target*=_blank]:not(.icon)::after {
+    content: '';
+    /**
+     * Layout.
+     */
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 0.8em;
+    min-height: 1em;
+    min-width: 1em;
+    margin-left: @sf-common-margin / 5;
+
+    /**
+     * Background icon.
+     */
+    .bg-svg-black(external-link);
+    background-position-x: 100%;
+    background-position-y: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    /**
+     * Cosmetic.
+     */
+    opacity: 0.3;
+  }
+
+  // Remove link decorations from icon links.
+  &.icon {
+    border: none;
+  }
+}

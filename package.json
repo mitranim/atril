@@ -1,0 +1,78 @@
+{
+  "name": "atril",
+  "version": "0.0.1",
+  "description": "Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.",
+  "main": "lib/index",
+  "author": "Mitranim",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Mitranim/atril.git"
+  },
+  "keywords": [
+    "framework",
+    "ui",
+    "components",
+    "angular",
+    "polymer",
+    "react",
+    "aurelia"
+  ],
+  "scripts": {
+    "start": "gulp",
+    "gulp": "gulp",
+    "prepublish": "gulp lib:build",
+    "bundle-sfx-prod": "jspm bundle-sfx app --minify",
+    "build-prod": "gulp build --prod && npm run bundle-sfx-prod",
+    "serve-prod": "npm run build-prod && gulp server",
+    "push": "npm run build-prod && (cd dist && git add -A . && git commit -a -m autocommit && git push origin gh-pages)"
+  },
+  "dependencies": {
+    "zone.js": "^0.5.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.7.6",
+    "gulp": "gulpjs/gulp#4.0",
+    "gulp-atril-html2js": "^0.0.2",
+    "gulp-autoprefixer": "^2.3.0",
+    "gulp-babel": "^5.1.0",
+    "gulp-filter": "^2.0.2",
+    "gulp-if": "^1.2.5",
+    "gulp-less": "^3.0.3",
+    "gulp-load-plugins": "^0.10.0",
+    "gulp-marked": "^1.0.0",
+    "gulp-minify-css": "^1.1.1",
+    "gulp-plumber": "^1.0.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.3",
+    "gulp-rimraf": "^0.1.1",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-statil": "0.0.2",
+    "gulp-typescript": "^2.7.5",
+    "gulp-watch": "^4.2.4",
+    "highlight.js": "^8.6.0",
+    "jspm": "^0.15.6",
+    "stylific": "0.0.11",
+    "typescript": "git://github.com/microsoft/TypeScript.git",
+    "yargs": "^3.10.0"
+  },
+  "jspm": {
+    "main": "index",
+    "format": "cjs",
+    "directories": {
+      "baseURL": "dist",
+      "lib": "lib"
+    },
+    "configFile": "system.config.js",
+    "dependencies": {
+      "zone": "github:angular/zone.js@^0.5.0"
+    },
+    "devDependencies": {
+      "highlightjs": "github:components/highlightjs@^8.5.0",
+      "marked": "npm:marked@^0.3.3",
+      "text": "github:systemjs/plugin-text@^0.0.2",
+      "traceur": "github:jmcriffey/bower-traceur@0.0.88",
+      "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.88"
+    }
+  }
+}

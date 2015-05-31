@@ -1,0 +1,51 @@
+doc-sidenav {
+  // Layout.
+  width: 14em;
+  order: -1;
+
+  // Inner layout.
+  display: flex;
+  flex-direction: column;
+
+  // Child styling.
+  > * {
+    padding: @sf-common-padding / 2 @sf-common-padding;
+  }
+
+  // Link styling.
+  a {
+    // Inner layout.
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    // Interactive colouring.
+    @color: @sf-base-link-color;
+    &:hover {background-color: fade(@color, 5%)}
+    &:focus, &:active {background-color: fade(@color, 10%)}
+
+    // Active styling.
+    &.active {
+      background-color: fade(@color, 15%);
+      &::after {
+        content: '';
+        // Layout.
+        display: inline-block;
+        vertical-align: middle;
+        height: 1em;
+        width: 1em;
+        margin-left: @sf-common-margin / 5;
+
+        // Icon.
+        .bg-svg-black(chevron-right);
+        background-position-x: 100%;
+        background-position-y: 50%;
+        background-size: contain;
+        background-repeat: no-repeat;
+
+        // Cosmetic.
+        opacity: 0.3;
+      }
+    }
+  }
+}

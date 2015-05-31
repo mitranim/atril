@@ -1,0 +1,61 @@
+doc-banner {
+  // Inheritance.
+  .sf-jumbo();
+
+  /**
+   * Layout.
+   */
+  height: 8em;
+  position: relative;
+
+  /**
+   * Inner layout.
+   */
+  justify-content: space-around;
+
+  /**
+   * Background.
+   * someone shoot me
+   */
+  background: rgba(82,144,199,1);
+  background: linear-gradient(to right, rgba(82,144,199,1) 0%, rgba(4,113,222,1) 100%);
+
+  /**
+   * Typography.
+   */
+  text-align: center;
+  .sf-media-mix(font-size, 1.6 * @sf-font-size-base);
+
+  /**
+   * Cosmetic.
+   */
+  .sf-shadow-minor();
+
+  /**
+   * Child styles.
+   */
+  .space-out-children();
+  > * {
+    // Kill child background inherited from jumbo.
+    background-color: transparent;
+
+    &.link-section {
+      // Layout.
+      position: absolute;
+      top: @sf-common-padding;
+      right: @sf-common-padding;
+      width: auto;
+
+      // Inner layout.
+      display: flex;
+      flex-direction: column;
+
+      // Whitespace.
+      margin: 0;
+      padding: 0;
+
+      // Cosmetic.
+      font-size: 2em;
+    }
+  }
+}
