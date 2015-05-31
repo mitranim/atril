@@ -1,0 +1,14 @@
+<div class="space-out-v">
+  <!-- Updates automatically -->
+  <h1>Hello, {{name}}!</h1>
+
+  <!-- Two-way databinding -->
+  <label>
+    <input twoway.value="name" placeholder="I'm two-way bound">
+  </label>
+
+  <!-- One-way databinding and manual update -->
+  <label>
+    <input bind.value="name" on.input="name = this.value" placeholder="I'm one-way bound">
+  </label>
+</div>

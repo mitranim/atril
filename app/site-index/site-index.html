@@ -1,0 +1,189 @@
+<doc-features>
+  <a href="#building-blocks" class="text-darkorange">
+    <div>Custom elements and attributes</div>
+    <sf-icon svg-icon.="cubes"></sf-icon>
+  </a>
+  <a href="#change-detection" class="text-brown">
+    <div>Automatic change detection</div>
+    <sf-icon svg-icon.="magic"></sf-icon>
+  </a>
+  <a href="#databinding" class="text-darkred">
+    <div>Two-way databinding</div>
+    <sf-icon svg-icon.="arrows-h"></sf-icon>
+  </a>
+</doc-features>
+<doc-features>
+  <a href="#virtual-dom" class="text-yellow">
+    <div>Fast rendering with the virtual DOM</div>
+    <sf-icon svg-icon.="bolt"></sf-icon>
+  </a>
+  <a href="#mpa" class="text-info">
+    <div>Multi-page application friendly</div>
+    <sf-icon svg-icon.="sitemap"></sf-icon>
+  </a>
+  <a href="#light" class="text-warning">
+    <div>Lightweight (30 KB)</div>
+    <sf-icon svg-icon.="paper-plane-o"></sf-icon>
+  </a>
+</doc-features>
+
+<section class="pad space-out-v">
+  <h1 id="building-blocks">
+    <sf-icon svg-icon.="cubes" class="inline"></sf-icon>
+    Custom Elements and Attributes
+  </h1>
+
+  <p class="info pad">
+    <strong>Note:</strong> this documentation showcases features from
+    EcmaScript 6/7, but they're <strong>not</strong> required for
+    using <code>atril</code>. You can use it with plain old ES5 and any module
+    system of your choosing.
+  </p>
+
+<template markdown.>
+## [Component](component/)
+
+A custom element (usually called _component_) is a combination of a _view model_
+(data and logic) with a _view_ (a template). `atril` renders the view and
+automatically updates it whenever the data changes. It also supports two-way
+databinding.
+
+Example custom element (see the [documentation](component/)).
+</template>
+
+<div class="code-pair">
+<pre highlight.typescript>
+// Viewmodel.
+
+import {Component} from 'atril';
+
+@Component({
+  tagName: 'hello-world'
+})
+class ViewModel {
+  constructor() {
+    this.name = 'world';
+  }
+  static templateUrl = 'hello-world/hello-world.html';
+}
+</pre>
+
+<pre highlight.html>
+<!-- Template. -->
+
+<div>
+  <!-- Updated automatically -->
+  <h1>Hello, {{name}}!</h1>
+
+  <!-- Synced both ways automatically -->
+  <input twoway.value="name" placeholder="write here">
+
+  <!-- Manual wiring -->
+  <input bind.value="name" on.input="name = this.value">
+</div>
+</pre>
+</div>
+
+<template markdown.>
+## [Attribute](attribute/)
+
+A custom attribute changes how the element behaves in the real DOM.
+
+Attributes are powerful. One- and two-way databinding in `atril` is implemented
+entirely with attributes, with no special treatment from the core engine.
+
+Example attribute. This is the entire implementation of the built-in custom
+`class.*` bindings. See the attribute [documentation](attribute/).
+</template>
+
+<div class="code-pair">
+<pre highlight.typescript>
+@Attribute({attributeName: 'class'})
+class Ctrl {
+  // Autoassigned by the framework.
+  // (Compile-time type information in TS.)
+  element: Element;
+  hint: string;
+  expression: Function;
+  scope: any;
+
+  phase() {
+    let result = this.expression(this.scope);
+    if (result) this.element.classList.add(this.hint);
+    else this.element.classList.remove(this.hint);
+  }
+}
+</pre>
+
+<pre highlight.html>
+<!-- Example usage. -->
+<div>
+  <!-- Receives `.info` when `checked` is true
+       and `.warning` otherwise. -->
+  <label class.info="checked" class.warning="!checked">
+
+    <input twoway.checked="checked" type="checkbox">
+
+    <span>I'm checked: {{checked}}</span>
+
+  </label>
+</div>
+</pre>
+</div>
+
+<template markdown.>
+## [Draft](draft/)
+
+You often want to do fiddly things with the DOM, like adding or removing nodes
+in response to the changing viewmodel. `atril` has you covered!
+
+[_Drafts_](draft/) give you direct access to the [virtual DOM](#virtual-dom). A
+draft is a `<template>` with some initial content that serves as a draft.
+When `atril` performs a reflow, you modify the template in response to the
+changing viewmodel. You can clone or completely remove the nodes, and later add
+them back. The framework takes care of syncing all that to the real DOM with
+minimal repaints, keeping the updates very fast.
+
+The built-in special attributes `if` and `for` are implemented as drafts. Here's
+an example of something custom (see this site's source for a more complete
+implementation).
+</template>
+
+<div class="code-pair">
+<pre highlight.typescript>
+import {Draft, templateCache} from 'atril';
+
+@Draft({
+  attributeName: 'svg-icon'
+})
+class Ctrl {
+  element: HTMLElement;
+  hint: string;
+
+  constructor() {
+    let iconName = this.element.getAttribute('svg-icon.' + this.hint);
+    let path = 'app/svg/' + iconName + '.svg';
+
+    let content = <DocumentFragment>(<any>this.element).content;
+
+    this.element.appendChild(content.firstChild);
+    (<HTMLElement>this.element.firstChild).innerHTML = templateCache[path] || '';
+  }
+}
+</pre>
+</div>
+
+</section>
+
+<sf-article class="pad space-out-v">
+  <h1 id="light">
+    <sf-icon svg-icon.="paper-plane-o" class="inline"></sf-icon>
+    Lightweight
+  </h1>
+<template markdown.>
+Despite its power, `atril` is simple at its core. The entire library is 32KB
+minified, including 16KB of `zone.js` with a `Promise` polyfill.
+
+It has no dependency on other ES6 technologies.
+</template>
+</sf-article>

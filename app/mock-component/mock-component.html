@@ -1,0 +1,32 @@
+<h1>Hello {{value}}!</h1>
+
+<p style="color: {{color}}">If you see 'Hello world' or some mumbo-jumbo, the values have been successfully interpolated!</p>
+
+<inner-component bind.val="fetched" class="pad-ch"></inner-component>
+
+<div class="pad-ch">
+  <button if.="true" on.click="value = randomString()" class="sf-btn info">click me</button>
+
+  <div class="pad-ch" bind.style.display="'inline-block'">
+    <span for.char="value" class="sf-btn success">{{char}}</span>
+  </div>
+</div>
+
+<div class="pad-ch">
+  <input bind.value="inputValue" on.input="inputValue = this.value"
+         class="sf-input" placeholder="write into me">
+  <span>{{inputValue}}</span>
+</div>
+
+<div class="pad-ch">
+  <textarea twoway.value="inputValue"
+            class="sf-input" placeholder="I'm two way bound"></textarea>
+  <span>{{inputValue}}</span>
+</div>
+
+<div class="pad-ch">
+  <label class="pad-ch" class.info="checked" class.warning="!checked">
+    <input twoway.checked="checked" type="checkbox">
+    <span>I'm checked: {{checked}}</span>
+  </label>
+</div>
