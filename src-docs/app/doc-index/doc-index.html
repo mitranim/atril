@@ -283,7 +283,8 @@ than just properties. See databinding for details.
   </h1>
 <template markdown.>
 The framework has one-way and two-way databinding. They're implemented as
-custom attributes, so you can add your own custom binding types.
+custom attributes. You can add your own custom binding types in a similar
+fashion.
 
 ## `bind.*`
 
@@ -399,23 +400,21 @@ Then you can bind that property from the outside:
   </h1>
 
 <template markdown.>
-All rendering in `atril` is done through a virtual DOM. It's maintained
-separately for each component. Updates to the viewmodel cause changes in
-the virtual DOM. The framework diffs it with the live DOM, and changes only
-what's necessary, avoiding costly repaints.
+`atril` maintains a virtual representation of each component's node tree.
+Updates to the viewmodel cause changes in the virtual tree. The framework
+diffs them with the live DOM and carefully updates the view.
 
-Through [Drafts](#draft), it also exposes parts of the virtual DOM for
-lower-level manipulation like cloning or removing nodes. The framework takes
-care of efficiently syncing them to the view.
+This is primarily an implementation detail, and is done for internal
+consistency. However, this architecture should enable optimisations for high
+rendering performance, similar to ReactJS.
 </template>
 
   <div class="pad space-out-v error">
     <p>
       <sf-icon svg-icon.="exclamation-triangle" class="text-warning inline"></sf-icon>
-      Note: this is very much a 0.0.1 release in terms of performance. Startup
-      and rendering are already extremely fast, thanks to the virtual DOM, but
-      some other areas need optimisations. In particular, change detection
-      reflows can be slow in big documents.
+      <strong>Note:</strong> this is very much a 0.0.1 release in terms of
+      performance. The current implementation of the DOM is naive and incurs a
+      penalty for continuous updates. Optimisations are underway.
     </p>
   </div>
 </sf-article>
@@ -459,7 +458,7 @@ With that in mind, what a modern UI framework actually needs:
 
 `atril` negates these problems and ticks all the checkboxes. It's extremely
 light and has unbeatably fast startup. Despite that, it boasts automatic change
-detection, fast rendering, and powerful features like two-way binding.
+detection and powerful features like two-way binding.
 </template>
 </sf-article>
 
