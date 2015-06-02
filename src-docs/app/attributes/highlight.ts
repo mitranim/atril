@@ -1,16 +1,16 @@
-import {Draft} from 'atril';
+import {Mold} from 'atril';
 import hjs from 'highlightjs';
 
-@Draft({
+@Mold({
   attributeName: 'highlight'
 })
 class Ctrl {
-  element: HTMLElement;
+  element: HTMLTemplateElement;
   // Language.
   hint: string;
 
   constructor() {
-    let content = <DocumentFragment>(<any>this.element).content;
+    let content = this.element.content;
 
     console.assert(content.firstChild instanceof HTMLPreElement,
                    `'highlight.*' expects to be used on a <pre> tag, got:`, content.firstChild);
@@ -20,7 +20,7 @@ class Ctrl {
     // Convert existing content into text.
     let result = this.hint ? hjs.highlight(this.hint, pre.innerHTML): hjs.highlightAuto(pre.innerHTML);
 
-    // Neuter interpolations. This is necessary because a draft's output is re-
+    // Neuter interpolations. This is necessary because a mold's output is re-
     // compiled, so interpolations would be evaluated.
     result.value = result.value.replace(/\{\{((?:[^}]|}(?=[^}]))*)\}\}/g, '{{<span>$1</span>}}');
 

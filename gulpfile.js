@@ -211,10 +211,13 @@ gulp.task('docs:html:compile', function() {
       pedantic:    false,
       // Code highlighter.
       highlight: function(code, lang) {
-        if (lang) return hjs.highlight(lang, code).value
-        return hjs.highlightAuto(code).value
+        if (lang) return hjs.highlight(lang, code).value;
+        return hjs.highlightAuto(code).value;
       }
     }))
+    // Add the hljs code class.
+    .pipe($.replace(/<pre><code class="(.*)">|<pre><code>/g,
+                    '<pre><code class="hljs $1">'))
     // Return the other files.
     .pipe(filterMd.restore())
     // Render all html.

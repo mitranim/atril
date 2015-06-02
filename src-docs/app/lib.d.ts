@@ -1,7 +1,7 @@
 declare module 'atril' {
   export function Component(config: {tagName: string}): any;
   export function Attribute(config: {attributeName: string}): any;
-  export function Draft(config: {attributeName: string}): any;
+  export function Mold(config: {attributeName: string}): any;
   export function bootstrap(): void;
   export function bindable(target: any, propertyName: string): void;
   export const templateCache: {
@@ -36,3 +36,7 @@ declare var Promise: {
   resolve(value?: any): Promise;
   reject(reason?: any): Promise;
 };
+
+interface HTMLTemplateElement extends HTMLElement {
+  content?: DocumentFragment;
+}

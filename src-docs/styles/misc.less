@@ -35,23 +35,6 @@ pre {padding: 0}
   color: @sf-base-background-color;
 }
 
-/**
- * A pair of code blocks side by side.
- */
-.code-pair {
-  display: flex;
-  > pre {
-    flex: 1;
-    &:first-child {
-      padding-left: 0;
-      padding-right: @sf-common-padding / 2;
-    }
-    &:last-child {
-      padding-left: @sf-common-padding / 2;
-      padding-right: 0;
-    }
-  }
-}
 
 .block {display: block}
 
@@ -70,4 +53,35 @@ body::before {
   right: 0;
   .sf-shadow-minor();
   z-index: @sf-z-index-navbar + 1;
+}
+
+/**
+ * Class-based components.
+ */
+
+// A pair of code blocks side by side.
+.code-pair {
+  display: flex;
+  > pre {
+    flex: 1;
+    &:first-child {
+      padding-left: 0;
+      padding-right: @sf-common-padding / 2;
+    }
+    &:last-child {
+      padding-left: @sf-common-padding / 2;
+      padding-right: 0;
+    }
+  }
+}
+
+// Demo panel.
+.doc-demo {
+  // Layout.
+  display: block;
+  // Whitespace.
+  padding: @sf-common-padding;
+  .space-out-children();
+  // Cosmetic.
+  .sf-color(@color-yellow, false, false);
 }

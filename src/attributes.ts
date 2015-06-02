@@ -1,6 +1,6 @@
 'use strict';
 
-import {Attribute, Draft, getOrAddState, scheduleReflow} from './atril';
+import {Attribute, Mold, getOrAddState, scheduleReflow} from './atril';
 import * as utils from './utils';
 
 @Attribute({attributeName: 'bind'})
@@ -207,7 +207,7 @@ class On {
   }
 }
 
-@Draft({attributeName: 'if'})
+@Mold({attributeName: 'if'})
 class If {
   // Autoassigned
   element: TemplateElement;
@@ -238,7 +238,7 @@ class If {
   }
 }
 
-@Draft({attributeName: 'for'})
+@Mold({attributeName: 'for'})
 class For {
   // Autoassigned
   element: TemplateElement;

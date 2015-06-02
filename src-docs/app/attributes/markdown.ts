@@ -1,4 +1,4 @@
-import {Draft} from 'atril';
+import {Mold} from 'atril';
 import marked from 'marked';
 import hjs from 'highlightjs';
 
@@ -15,14 +15,14 @@ marked.setOptions({
   }
 });
 
-@Draft({
+@Mold({
   attributeName: 'markdown'
 })
 class Ctrl {
-  element: HTMLElement;
+  element: HTMLTemplateElement;
 
   constructor() {
-    let content = <DocumentFragment>(<any>this.element).content;
+    let content = this.element.content;
 
     // Convert existing content into text.
     let buffer = document.createElement('div');
@@ -33,7 +33,7 @@ class Ctrl {
     // Render into markdown.
     let result = marked(buffer.innerHTML);
 
-    // Neuter interpolations. This is necessary because a draft's output is re-
+    // Neuter interpolations. This is necessary because a mold's output is re-
     // compiled, so interpolations would be evaluated.
     result = result.replace(/\{\{((?:[^}]|}(?=[^}]))*)\}\}/g, '{{<span>$1</span>}}');
 

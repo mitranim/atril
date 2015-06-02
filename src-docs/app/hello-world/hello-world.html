@@ -7,8 +7,14 @@
     <input twoway.value="name" placeholder="I'm two-way bound">
   </label>
 
-  <!-- One-way databinding and manual update -->
+  <!-- One-way databinding with manual feedback -->
   <label>
-    <input bind.value="name" on.input="name = this.value" placeholder="I'm one-way bound">
+    <input bind.value="name" on.input="name = this.value" placeholder="I'm manually wired">
+  </label>
+
+  <!-- One-way databinding with no feedback;
+       on.input is needed to detect user activity -->
+  <label>
+    <input bind.value="name" on.input placeholder="I'm one-way bound">
   </label>
 </div>

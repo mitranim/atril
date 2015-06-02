@@ -22,16 +22,16 @@ many phases (keeping an average index as an integer should be enough).
 
 # Transclusion semantics
 
-Components and drafts serve complementary roles.
+Components and molds serve complementary roles.
 
 A component creates a viewmodel isolated from the outer scope, and a template
 that defines how that viewmodel should be rendered. Rendering is managed
 automatically by atril, using the virtual DOM, and a component is not allowed
 to mess with it, for efficiency and safety reasons.
 
-A draft doesn't create a viewmodel. Because of that, it doesn't need to be
+A mold doesn't create a viewmodel. Because of that, it doesn't need to be
 isolated from the outer DOM, and is allowed to mess with it in arbitrary ways.
-For efficiency and stability, this is done through the virtual DOM, so a draft is
+For efficiency and stability, this is done through the virtual DOM, so a mold is
 not allowed to mess with the real DOM.
 
 No planned support for `<content selector="...">` because it can potentially
@@ -43,10 +43,10 @@ transcluded content will receive a reference to the parent of the custom element
 into which it was transcluded. When looking for a scope, we'll start from there.
 
 Also considering the possibility of enabling a template and `<content>` for
-drafts. If a template is provided, it's parsed using the same mechanics as
+molds. If a template is provided, it's parsed using the same mechanics as
 component templates, with the difference that elemends transcluded with
 `<content>` become a part of the local DOM and don't receive references to the
-original parents (because a draft doesn't create a new scope). A potential
+original parents (because a mold doesn't create a new scope). A potential
 concern is that the template might reference potentially unavailable
 identifiers, or make assumptions about available locals in the scope where it's
 used. It's the same problem as `ng-include`. Still thinking this over.
@@ -69,3 +69,13 @@ mechanism takes care of maintaining the link to the original viewmodel. It will
 check for a link to the original parent, and if it finds one, it will start
 scope search from there. This is also how we check if the element comes from the
 vanilla DOM (if no viewmodel is found all the way up to `<html>`).
+
+# Other ToDos
+
+Consider providing a 'global.atril' export for scenarios without a module
+environment.
+
+Consider ways of letting non-molds opt into attaching to the virtual element
+instead of the real one. Not keen on the idea of autoassigning both virtual and
+real. But it makes sense to provide virtual DOM access to _some_ of those
+attributes.

@@ -122,7 +122,7 @@ export const templateCache = {
 
   set(url: string, template: string): void {
     console.assert(typeof template === 'string',
-                   'a string must be a template, received:', template);
+                   'a template must be a string, received:', template);
     templateCache.templates[url] = template;
   },
 

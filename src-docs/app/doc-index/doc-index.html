@@ -27,7 +27,7 @@
   </a>
 </doc-features>
 
-<div class="pad space-out-v yellow">
+<div class="doc-demo">
   <p>
     <sf-icon svg-icon.="info-circle" class="inline"></sf-icon>
     <strong>Note:</strong> this documentation is very much a
@@ -45,7 +45,7 @@
 The framework has three types of building blocks.
 * [`Component`](#component): provides a viewmodel and a view.
 * [`Attribute`](#attribute): operates on the viewmodel and the real DOM.
-* [`Draft`](#draft): mutates a part of the virtual DOM in response to the viewmodel changes.
+* [`Mold`](#mold): mutates a part of the virtual DOM in response to the viewmodel changes.
 
 <p class="info pad">
   <strong>Note:</strong> this documentation shows features from
@@ -83,14 +83,18 @@ class ViewModel {
 <!-- Template. -->
 
 <div>
-  <!-- Updated automatically -->
+  <!-- Updates automatically -->
   <h1>Hello, {{name}}!</h1>
 
   <!-- Two-way databinding -->
   <input twoway.value="name">
 
-  <!-- One-way databinding and manual update -->
+  <!-- One-way databinding with manual feedback -->
   <input bind.value="name" on.input="name = this.value">
+
+  <!-- One-way databinding with no feedback;
+       on.input is needed to detect user activity -->
+  <input bind.value="name" on.input>
 </div>
 </pre>
 </div>
@@ -122,16 +126,20 @@ ViewModel.templateUrl = 'app/hello-world/hello-world.html';
   <h1>Hello, {{name}}!</h1>
 
   <!-- Two-way databinding -->
-  <input twoway.value="name" placeholder="write here">
+  <input twoway.value="name">
 
-  <!-- One-way databinding and manual update -->
+  <!-- One-way databinding with manual feedback -->
   <input bind.value="name" on.input="name = this.value">
+
+  <!-- One-way databinding with no feedback;
+       on.input is needed to detect user activity -->
+  <input bind.value="name" on.input>
 </div>
 </pre>
 </div>
 </sf-collapse>
 
-<div class="pad space-out-v yellow">
+<div class="doc-demo">
   <p>
     <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
     Demo
@@ -178,8 +186,8 @@ class Ctrl {
 <pre highlight.html>
 <!-- Example usage. -->
 <div>
-  <!-- Receives `.info` when `checked` is true
-       and `.error` otherwise. -->
+  <!-- Set class `info` when `checked` is true
+       and `error` otherwise. -->
   <label class.info="checked" class.error="!checked">
 
     <input twoway.checked="checked" type="checkbox">
@@ -191,7 +199,7 @@ class Ctrl {
 </pre>
 </div>
 
-<div class="pad space-out-v yellow">
+<div class="doc-demo">
   <p>
     <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
     Demo
@@ -205,28 +213,28 @@ class Ctrl {
 </div>
 
 <template markdown.>
-## Draft
+## Mold
 
 You often want to do fiddly things with the DOM, like adding or removing nodes
 in response to the changing viewmodel. `atril` has you covered!
 
-_Drafts_ give you direct access to the [virtual DOM](#virtual-dom). A draft is a
+_Molds_ give you direct access to the [virtual DOM](#virtual-dom). A mold is a
 `template` tag with some initial content that serves as a blueprint. When
-`atril` performs a reflow, the draft controller can modify it in response to the
+`atril` performs a reflow, the mold controller can modify it in response to the
 changes in the viewmodel. You can clone or completely remove the nodes, and
 later add them back. The framework takes care of syncing all that to the real
 DOM with minimal repaints.
 
-The built-in special attributes `if.` and `for.*` are implemented as drafts.
+The built-in special attributes `if.` and `for.*` are implemented as molds.
 Here's an example of something custom (see this site's source for a more
 complete implementation).
 </template>
 
 <div class="code-pair">
 <pre highlight.typescript>
-import {Draft, templateCache} from 'atril';
+import {Mold, templateCache} from 'atril';
 
-@Draft({
+@Mold({
   attributeName: 'svg-icon'
 })
 class Ctrl {
@@ -307,7 +315,7 @@ To sync the value in the other direction, use an event handler with the built-in
 ```
 </template>
 
-<div class="pad space-out-v yellow">
+<div class="doc-demo">
   <p>
     <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
     Demo
@@ -340,7 +348,7 @@ Example:
 ```
 </template>
 
-<div class="pad space-out-v yellow">
+<div class="doc-demo">
   <p>
     <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
     Demo

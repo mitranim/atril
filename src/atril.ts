@@ -17,7 +17,7 @@ let localZone = zone.fork({
 
 const registeredComponents: {[tagName: string]: ComponentClass} = Object.create(null);
 const registeredAttributes: {[attributeName: string]: Function} = Object.create(null);
-const registeredDrafts: {[attributeName: string]: boolean} = Object.create(null);
+const registeredMolds: {[attributeName: string]: boolean} = Object.create(null);
 
 const stateKey = typeof Symbol === 'function' ? Symbol('atrilState') : utils.randomString();
 const roots: Root[] = [];
@@ -31,6 +31,12 @@ export function bootstrap(): void {
   localZone.run(function bootstrap(element: Element = document.body): void {
     let VM = registeredComponents[element.tagName.toLowerCase()];
     if (VM) {
+      // Don't register components twice.
+      for (let i = 0, ii = roots.length; i < ii; ++i) {
+        let root = roots[i];
+        if (root.real === element) return;
+      }
+
       let root = new Root();
       root.virtual = document.createElement(element.tagName);
       root.real = element;
@@ -82,10 +88,10 @@ export function Attribute(config: AttributeConfig) {
   };
 }
 
-export function Draft(config: AttributeConfig) {
+export function Mold(config: AttributeConfig) {
   return function(VM: Function) {
     Attribute(config)(VM);
-    registeredDrafts[config.attributeName] = true;
+    registeredMolds[config.attributeName] = true;
   };
 }
 
@@ -362,12 +368,12 @@ function compileNode(node: Node): void {
         let childElem = <Element>child;
         let sibling = childElem.nextSibling;
 
-        childElem = unpackTemplatesFromDrafts(childElem);
+        childElem = unpackTemplatesFromMolds(childElem);
         if (childElem !== child) node.insertBefore(childElem, sibling);
 
         if (childElem.tagName === 'TEMPLATE') {
           utils.shimTemplateContent(childElem);
-          compileDraftsOnTemplate(childElem);
+          compileMoldsOnTemplate(childElem);
         } else {
           compileAttributeInterpolationsOnElement(childElem);
         }
@@ -377,7 +383,7 @@ function compileNode(node: Node): void {
   }
 }
 
-function unpackTemplatesFromDrafts(element: Element): Element {
+function unpackTemplatesFromMolds(element: Element): Element {
   let outerElem = element;
   let atCapacity: boolean = element.tagName !== 'TEMPLATE';
   let attributes: Attr[] = [].slice.call(element.attributes);
@@ -387,7 +393,7 @@ function unpackTemplatesFromDrafts(element: Element): Element {
     let attr = attributes[i];
     if (utils.looksLikeCustomAttribute(attr.name)) {
       let partialName = utils.customAttributeName(attr.name);
-      if (registeredDrafts[partialName]) {
+      if (registeredMolds[partialName]) {
         if (!atCapacity) {
           atCapacity = true;
           continue;
@@ -406,7 +412,7 @@ function unpackTemplatesFromDrafts(element: Element): Element {
   return outerElem;
 }
 
-function compileDraftsOnTemplate(template: Element): void {
+function compileMoldsOnTemplate(template: Element): void {
   if (hasState(template)) return;
   let state = getOrAddState(template);
 
@@ -416,17 +422,17 @@ function compileDraftsOnTemplate(template: Element): void {
     // A template is not allowed to have interpolated attributes.
     console.assert(!hasInterpolation(attr.value), `unexpected interpolation on template:`, template);
 
-    // A template is allowed to have only one draft and no custom attributes.
+    // A template is allowed to have only one mold and no custom attributes.
     if (utils.looksLikeCustomAttribute(attr.name)) {
       let partialName = utils.customAttributeName(attr.name);
 
       // Make sure it's registered.
       let VM = registeredAttributes[partialName];
       console.assert(!!VM, `no registered attribute found for '${attr.name}' on template:`, template);
-      console.assert(registeredDrafts[partialName], `unexpected non-draft '${attr.name}' on template:`, template);
+      console.assert(registeredMolds[partialName], `unexpected non-mold '${attr.name}' on template:`, template);
 
       // No more than one.
-      console.assert(!state.moldBinding, `unexpected second draft '${attr.name}' on template:`, template);
+      console.assert(!state.moldBinding, `unexpected second mold '${attr.name}' on template:`, template);
 
       // Register binding.
       state.moldBinding = new AttributeBinding(attr, VM);
@@ -445,10 +451,10 @@ function compileAttributeBindingsOnRealElement(virtual: Element, real: Element):
     if (utils.looksLikeCustomAttribute(attr.name)) {
       let partialName = utils.customAttributeName(attr.name);
 
-      // Make sure it's registered and not a draft.
+      // Make sure it's registered and not a mold.
       let VM = registeredAttributes[partialName];
       console.assert(!!VM, `no registered custom attribute found for '${attr.name}' on element:`, real);
-      console.assert(!registeredDrafts[partialName], `unexpected draft '${attr.name}' on element:`, real);
+      console.assert(!registeredMolds[partialName], `unexpected mold '${attr.name}' on element:`, real);
 
       // Register binding.
       state.attributeBindings.push(new AttributeBinding(attr, VM));
