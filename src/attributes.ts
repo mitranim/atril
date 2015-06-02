@@ -1,6 +1,6 @@
 'use strict';
 
-import {Attribute, Draft, vmKey, scopeKey, scheduleReflow} from './atril';
+import {Attribute, Draft, getOrAddState, scheduleReflow} from './atril';
 import * as utils from './utils';
 
 @Attribute({attributeName: 'bind'})
@@ -10,6 +10,7 @@ class Bind {
   hint: string;
   expression: Expression;
   scope: any;
+  component: any;
 
   // Custom
   propertyPath: string;
@@ -20,7 +21,7 @@ class Bind {
     this.pathfinder = new Pathfinder(this.propertyPath);
   }
 
-  phase(): void {
+  onPhase(): void {
     let result = this.expression(this.scope);
     // Sync the result to the element. Dirty checking avoids setter side effects.
     if (!utils.strictEqual(this.pathfinder.read(this.element), result)) {
@@ -28,7 +29,7 @@ class Bind {
     }
     // If the element has a VM that declares this property as bindable, sync
     // the result to it. Dirty checking avoids setter side effects.
-    let vm = this.element[vmKey];
+    let vm = this.component;
     if (vm && isBindable(vm, this.propertyPath) &&
         !utils.strictEqual(this.pathfinder.read(vm), result)) {
       this.pathfinder.assign(vm, result);
@@ -42,6 +43,7 @@ class TwoWay {
   element: Element;
   hint: string;
   scope: any;
+  component: any;
 
   // Custom
   targetPropertyPath: string;
@@ -86,7 +88,7 @@ class TwoWay {
     }
   }
 
-  phase(): void {
+  onPhase(): void {
     let firstPhase = !this.hasOwnProperty('lastOwnValue');
     let ownValue = this.ownPathfinder.read(this.scope);
 
@@ -127,7 +129,7 @@ class TwoWay {
 
     // If the element has a VM that declares this property as bindable, sync
     // the result to it. Dirty checking avoids setter side effects.
-    let vm = this.element[vmKey];
+    let vm = this.component;
     if (vm && isBindable(vm, this.targetPropertyPath)) {
       if (!utils.strictEqual(this.targetPathfinder.read(vm), newValue)) {
         this.targetPathfinder.assign(vm, newValue);
@@ -149,7 +151,7 @@ class TwoWay {
   }
 
   getTargetValue(): any {
-    let vm = this.element[vmKey];
+    let vm = this.component;
     if (vm && isBindable(vm, this.targetPropertyPath)) {
       return this.targetPathfinder.read(vm);
     }
@@ -157,7 +159,7 @@ class TwoWay {
   }
 }
 
-function isBindable(vm: ComponentInstance, propertyPath: string): boolean {
+function isBindable(vm: ComponentVM, propertyPath: string): boolean {
   let VM = <ComponentClass>vm.constructor;
   let bindable = VM.bindable;
   return bindable instanceof Array && !!~bindable.indexOf(propertyPath);
@@ -225,7 +227,7 @@ class If {
     }
   }
 
-  phase(): void {
+  onPhase(): void {
     let ok = !!this.expression(this.scope);
 
     if (ok) while (this.stash.length) {
@@ -270,7 +272,7 @@ class For {
     }
   }
 
-  phase(): void {
+  onPhase(): void {
     let value = this.expression(this.scope);
 
     let isIterable = value instanceof Array || typeof value === 'string' ||
@@ -302,13 +304,14 @@ class For {
             this.stash.splice(0, this.originals.length) :
             this.originals.map(utils.cloneDeep);
 
-    let scope = nodes[0][scopeKey] || Object.create(this.scope);
-    scope.$index = index;
-    scope[this.key] = value[index];
+    let state = getOrAddState(nodes[0]);
+    if (!state.scope) state.scope = Object.create(this.scope);
+    state.scope.$index = index;
+    state.scope[this.key] = value[index];
 
     while (nodes.length) {
       let node = nodes.shift();
-      node[scopeKey] = scope;
+      getOrAddState(node).scope = state.scope;
       this.element.appendChild(node);
     }
   }
@@ -322,7 +325,7 @@ class Class {
   expression: Function;
   scope: any;
 
-  phase() {
+  onPhase() {
     let result = this.expression(this.scope);
     if (result) this.element.classList.add(this.hint);
     else this.element.classList.remove(this.hint);

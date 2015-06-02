@@ -55,13 +55,6 @@ export function customAttributeName(attributeName: string): string {
   return attributeName.match(/^([a-z-]+)\./)[1];
 }
 
-export function indexOf(collection: {[index: number]: any; length: number}, value: any): number {
-  for (let i = 0, ii = collection.length; i < ii; ++i) {
-    if (collection[i] === value) return i;
-  }
-  return -1;
-}
-
 export function isArrayLike(value: any): boolean {
   if (!value) return false;
   return value instanceof Array || typeof value === 'string' ||

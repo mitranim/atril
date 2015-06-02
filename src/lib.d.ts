@@ -44,21 +44,22 @@ interface ComponentClass extends Function {
   bindable?: string[];
 }
 
-interface ComponentInstance {
+interface ComponentVM {
   element: Element;
-  phase?(): void;
+  onPhase?(): void;
 }
 
 interface AttributeConfig {
   attributeName: string;
 }
 
-interface AttributeInstance {
+interface AttributeCtrl {
   element: Element;
   hint: string;
   expression: Expression;
   scope: any;
-  phase?(): void;
+  component: any;
+  onPhase?(): void;
 }
 
 interface Expression {

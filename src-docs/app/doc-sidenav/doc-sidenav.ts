@@ -9,7 +9,7 @@ class VM {
            location.pathname === '/atril/' && link === '';
   }
 
-  phase() {
+  onPhase() {
     let anchors = this.element.querySelectorAll('a');
     for (let i = anchors.length - 1; i >= 0; --i) {
       let node = <HTMLAnchorElement>anchors[i];
@@ -17,7 +17,7 @@ class VM {
       else node.classList.remove('active');
     }
     // Expecting no pushstate transitions.
-    this.phase = null;
+    this.onPhase = null;
   }
 
   static templateUrl = 'app/doc-sidenav/doc-sidenav.html';

@@ -15,22 +15,40 @@ let localZone = zone.fork({
   }
 });
 
-export function bootstrap(): void {
-  localZone.run(() => {});
-}
-
-// Viewmodel of the given element.
-export const vmKey = typeof Symbol === 'function' ? Symbol('atrilVm') : utils.randomString();
-// Component container on the given element or text interpolation on the given node.
-const bindingKey = typeof Symbol === 'function' ? Symbol('atrilBinding') : utils.randomString();
-// Collection of an element's attribute bindings keyed by attribute names.
-const bindingStashKey = typeof Symbol === 'function' ? Symbol('atrilBindingStash') : utils.randomString();
-// Local scope inheriting from a viewmodel, forked at the given element.
-export const scopeKey = typeof Symbol === 'function' ? Symbol('atrilScope') : utils.randomString();
-
 const registeredComponents: {[tagName: string]: ComponentClass} = Object.create(null);
 const registeredAttributes: {[attributeName: string]: Function} = Object.create(null);
 const registeredDrafts: {[attributeName: string]: boolean} = Object.create(null);
+
+const stateKey = typeof Symbol === 'function' ? Symbol('atrilState') : utils.randomString();
+const roots: Root[] = [];
+
+class Root {
+  virtual: Element;
+  real: Element;
+}
+
+export function bootstrap(): void {
+  localZone.run(function bootstrap(element: Element = document.body): void {
+    let VM = registeredComponents[element.tagName.toLowerCase()];
+    if (VM) {
+      let root = new Root();
+      root.virtual = document.createElement(element.tagName);
+      root.real = element;
+      // This is where we'll need to pass additional descendants when
+      // implementing transclusion. Skipping that for now.
+      compileNode(root.virtual);
+      let state = getState(root.virtual);
+      state.container.phase(root.virtual, root.real);
+      roots.push(root);
+      return;
+    }
+
+    for (let i = 0, ii = element.childNodes.length; i < ii; ++i) {
+      let node = element.childNodes[i];
+      if (node instanceof Element) bootstrap(node);
+    }
+  });
+}
 
 export function Component(config: ComponentConfig) {
   let tagRegex = /^[a-z][a-z-]*[a-z]$/;
@@ -41,10 +59,9 @@ export function Component(config: ComponentConfig) {
 
   return function(VM: ComponentClass) {
     console.assert(typeof VM === 'function', `expected a component class, got:`, VM);
-    let name = config.tagName.toUpperCase();
-    console.assert(!registeredComponents[name],
+    console.assert(!registeredComponents[config.tagName],
                  `unexpected redefinition of component with tagname ${config.tagName}`);
-    registeredComponents[name] = VM;
+    registeredComponents[config.tagName] = VM;
   };
 }
 
@@ -92,100 +109,83 @@ function reflow() {
   reflowStackDepth--;
 }
 
-function reflowWithUnlimitedStack(element: Element = document.body): void {
-  console.assert(element instanceof Element, `expected an Element, got:`, element);
-
-  let container = <ComponentContainer>element[bindingKey];
-  if (container) {
-    container.phase();
-    return;
-  }
-
-  let VM = registeredComponents[element.tagName];
-  if (VM) {
-    let container = new ComponentContainer(element, VM);
-    container.instantiate();
-    container.phase();
-    return;
-  }
-
-  for (let i = 0, ii = element.childNodes.length; i < ii; ++i) {
-    let node = element.childNodes[i];
-    if (node instanceof Element) reflowWithUnlimitedStack(node);
+function reflowWithUnlimitedStack(): void {
+  for (let i = 0, ii = roots.length; i < ii; ++i) {
+    let root = roots[i];
+    if (!root.real.parentNode) {
+      // ToDo run a destroy phase here, for memory cleanup etc.
+      destroy(root.virtual, root.real);
+      delete root.virtual;
+      delete root.real;
+      roots.splice(i, 1);
+      continue;
+    }
+    getState(root.virtual).container.phase(root.virtual, root.real);
   }
 }
 
-function instantiateIfNecessary(element: Element): void {
-  if (element[bindingKey]) return;
-  let VM = registeredComponents[element.tagName];
-  if (VM) new ComponentContainer(element, VM).instantiate();
+function destroy(virtual: Element, real: Element): void {
+  let state = getState(virtual);
+  if (state) for (let key in state) delete state[key];
+  delete virtual[stateKey];
 }
 
 class ComponentContainer {
-  virtual: Element;
-  real: Element;
-  vm: ComponentInstance;
+  vm: ComponentVM;
   VM: ComponentClass;
 
   // For async templating.
   compiled: boolean = false;
   loadingTemplate: boolean = false;
 
-  constructor(element: Element, VM: ComponentClass) {
-    this.real = element;
+  constructor(virtual: Element, VM: ComponentClass) {
     this.VM = VM;
-  }
-
-  instantiate(): void {
-    this.vm = Object.create(this.VM.prototype);
+    this.vm = Object.create(VM.prototype);
 
     // Preassignment.
-    this.real[vmKey] = this.vm;
-    this.vm.element = this.real;
-    this.real[bindingKey] = this;
+    getOrAddState(virtual).container = this;
 
     // Instantiate the viewmodel.
-    this.VM.call(this.vm);
+    VM.call(this.vm);
 
     // Prepare the virtual DOM.
-    this.tryToCompile();
+    this.tryToCompile(virtual);
   }
 
-  tryToCompile(): boolean {
+  tryToCompile(virtual: Element): boolean {
     if (this.loadingTemplate) return;
 
     let template: any = this.VM.template;
 
     if (typeof template === 'string') {
-      this.compileTemplate(template);
+      this.compileTemplate(template, virtual);
       return;
     }
 
     let url: any = this.VM.templateUrl;
     if (typeof url === 'string' && url) {
-      let template = this.getTemplateFromUrl(url);
-      if (typeof template === 'string') this.compileTemplate(template);
+      let template = this.getTemplateFromUrl(url, virtual);
+      if (typeof template === 'string') this.compileTemplate(template, virtual);
       return;
     }
 
-    this.compileTemplate('');
+    this.compileTemplate('', virtual);
   }
 
-  compileTemplate(template: string): void {
+  compileTemplate(template: string, virtual: Element): void {
     this.loadingTemplate = false;
     this.compiled = true;
-    this.virtual = this.real.cloneNode();
-    this.virtual.innerHTML = template;
-    compileNode(this.virtual);
+    virtual.innerHTML = template;
+    compileNode(virtual);
   }
 
-  loadTemplateFromPromise(promise: Promise): void {
+  loadTemplateFromPromise(promise: Promise, virtual: Element): void {
     this.loadingTemplate = true;
     promise
       .then((result: any) => {
         this.loadingTemplate = false;
         if (typeof result === 'string') {
-          this.compileTemplate(result);
+          this.compileTemplate(result, virtual);
           return;
         }
         console.warn('expected a template promise to resolve to a string, got:', result);
@@ -198,21 +198,22 @@ class ComponentContainer {
       });
   }
 
-  getTemplateFromUrl(url: string): string|void {
+  getTemplateFromUrl(url: string, virtual: Element): string|void {
     let template = utils.templateCache.get(url);
     if (template) return template;
-    this.loadTemplateFromPromise(utils.templateCache.load(url));
+    this.loadTemplateFromPromise(utils.templateCache.load(url), virtual);
   }
 
-  phase() {
-    if (!this.compiled) this.tryToCompile();
-    if (this.compiled) this.phaseSync();
+  phase(virtual: Element, real: Element) {
+    if (!this.compiled) this.tryToCompile(virtual);
+    if (this.compiled) {
+      this.phaseSync(virtual, real);
+      this.vm.element = real;
+      if (typeof this.vm.onPhase === 'function') this.vm.onPhase();
+    }
   }
 
-  phaseSync(virtual: Node = this.virtual, real: Node = this.real): void {
-    // Sanity check.
-    console.assert(nodeTypesMatch(virtual, real), `expected nodes with matching types, got`, virtual, `and`, real);
-
+  phaseSync(virtual: Node, real: Node): void {
     if (virtual instanceof Text && real instanceof Text) {
       this.phaseTextNodes(virtual, real);
       return;
@@ -233,28 +234,29 @@ class ComponentContainer {
       for (var i = 0, ii = children.length; i < ii; ++i) {
         let virtualChild = children[i];
         let realChild = real.childNodes[i];
-        // Create a child if there's no similar one in this position.
-        if (!realChild || !nodeTypesMatch(virtualChild, realChild)) {
-          realChild = virtualChild.cloneNode();
+        let state = getState(virtualChild);
+
+        // Try to reuse a child or create a new one.
+        if (!realChild || state.realNode !== realChild) {
+          if (!state.realNode) {
+            state.realNode = virtualChild.cloneNode();
+          }
+          real.insertBefore(state.realNode, realChild);
+          realChild = state.realNode;
         }
+
         if (virtualChild instanceof Element && realChild instanceof Element) {
-          compileCustomAttributesOnElement(realChild);
+          compileAttributeBindingsOnRealElement(virtualChild, realChild);
           // Phase custom attributes on both children.
           this.phaseCustomAttributes(virtualChild, realChild);
           // Phase and sync static attributes.
-          this.phaseAndSyncStaticAttributes(virtualChild, realChild);
+          this.phaseAndSyncAttributeInterpolations(virtualChild, realChild);
           // Phase and sync contents. If the real child is a custom element
-          // managed by atril, instantiate and phase it instead.
-          instantiateIfNecessary(realChild);
-          let container = <ComponentContainer>realChild[bindingKey];
-          if (container) container.phase();
+          // managed by atril, let it phase itself.
+          if (state.container) state.container.phase(virtualChild, realChild);
           else this.phaseSync(virtualChild, realChild);
         } else {
           this.phaseSync(virtualChild, realChild);
-        }
-        // Add the element to the DOM if all operations are successful.
-        if (real.childNodes[i] !== realChild)  {
-          real.insertBefore(realChild, real.childNodes[i] || null);
         }
       }
       // Remove any leftovers.
@@ -262,30 +264,23 @@ class ComponentContainer {
         real.removeChild(real.lastChild);
       }
     }
-
-    if (real === this.real && typeof this.vm.phase === 'function') this.vm.phase();
   }
 
   phaseTextNodes(virtual: Text, real: Text): void {
-    let expression = virtual[bindingKey];
-    if (!expression) return;
-    let scope = this.scopeAtVirtualNode(virtual);
-    let result = expression(scope);
-    if (virtual.textContent !== result) virtual.textContent = result;
-    if (real.textContent !== result) real.textContent = result;
+    let state = getState(virtual);
+    if (state.textInterpolation) {
+      let scope = getScope(virtual);
+      let result = state.textInterpolation.call(scope, scope);
+      if (virtual.textContent !== result) virtual.textContent = result;
+      if (real.textContent !== result) real.textContent = result;
+    }
   }
 
   phaseTemplate(template: Element): void {
-    for (let i = 0, ii = template.attributes.length; i < ii; ++i) {
-      let attr = template.attributes[i];
-      // Attributes like `style` can get automatically removed during phasing.
-      if (!attr) continue;
-      let binding = getBindingForAttribute(template, attr.name);
-      if (binding instanceof AttributeBinding) {
-        binding.refreshState(template, this.scopeAtVirtualNode(template));
-        binding.phase();
-      }
-    }
+    let state = getState(template);
+    let binding = state.moldBinding;
+    binding.refreshState(template, state, getScope(template));
+    binding.phase();
   }
 
   phaseAndUnpackTemplate(template: Element): Node[] {
@@ -304,88 +299,180 @@ class ComponentContainer {
   }
 
   phaseCustomAttributes(virtual: Element, real: Element): void {
-    for (let i = 0, ii = real.attributes.length; i < ii; ++i) {
-      let attr = real.attributes[i];
-      // Attributes like `style` can get automatically removed during phasing.
-      if (!attr) continue;
-      let binding = getBindingForAttribute(real, attr.name);
-      if (binding instanceof AttributeBinding) {
-        binding.refreshState(real, this.scopeAtVirtualNode(virtual));
-        binding.phase();
-      }
+    let state = getState(virtual);
+    let bindings = state.attributeBindings;
+    if (!bindings) return;
+
+    for (let i = 0, ii = bindings.length; i < ii; ++i) {
+      let binding = bindings[i];
+      binding.refreshState(real, state, getScope(virtual));
+      binding.phase();
     }
   }
 
-  phaseAndSyncStaticAttributes(virtual: Element, real: Element): void {
-    for (let i = 0, ii = virtual.attributes.length; i < ii; ++i) {
-      let attr = virtual.attributes[i];
-      // Ignore custom attributes.
-      if (utils.looksLikeCustomAttribute(attr.name)) continue;
-      // Sync static attributes.
-      let expression = getBindingForAttribute(virtual, attr.name);
-      if (expression instanceof Function) {
-        let scope = this.scopeAtVirtualNode(virtual);
-        let result = expression.call(scope, scope);
-        attr.textContent = result;
-        let realAttr = real.attributes.getNamedItem(attr.name);
-        if (realAttr) realAttr.textContent = result;
-        else real.setAttribute(attr.name, result);
-      }
-    }
-    // We don't remove extraneous real attributes because this would mess with
-    // bindings to `style`, `hidden`, etc.
-  }
+  phaseAndSyncAttributeInterpolations(virtual: Element, real: Element): void {
+    let bindings = getState(virtual).attributeInterpolations;
+    if (!bindings) return;
 
-  scopeAtVirtualNode(node: Text|Element): any {
-    while (true) { // playing with fire
-      if (node[scopeKey]) return node[scopeKey];
-      if (node === this.virtual) return this.vm;
-      node = node.parentElement;
+    for (let i = 0, ii = bindings.length; i < ii; ++i) {
+      let binding = bindings[i];
+      let scope = getScope(virtual);
+      let result = binding.expression.call(scope, scope)
+
+      // Shouldn't bother syncing to virtual. Or maybe move this code elsewhere.
+      if (virtual.getAttribute(binding.name) !== result) {
+        virtual.setAttribute(binding.name, result);
+      }
+      if (real.getAttribute(binding.name) !== result) {
+        real.setAttribute(binding.name, result);
+      }
     }
   }
 }
 
-class AttributeBinding {
-  hint: string;
-  expression: Expression;
-  VM: Function;
-  vm: AttributeInstance;
+function compileNode(node: Node): void {
+  let state = getOrAddState(node);
 
-  constructor(attribute: Attr, VM: Function) {
-    this.hint = attribute.name.match(/^[a-z-]+\.(.*)/)[1];
-    this.expression = compileExpression(attribute.value);
-    this.VM = VM;
-  }
-
-  refreshState(element: Element, scope: any): void {
-    let isNew = !this.vm;
-    if (isNew) {
-      this.vm = Object.create(this.VM.prototype);
-      this.vm.hint = this.hint;
-      this.vm.expression = this.expression;
+  if (node instanceof Text) {
+    if (hasInterpolation(node.textContent)) {
+      state.textInterpolation = compileTextExpression(node.textContent);
     }
-    this.vm.element = element;
-    this.vm.scope = scope;
-    if (isNew) this.VM.call(this.vm);
+    return;
   }
 
-  phase(): void {
-    if (typeof this.vm.phase === 'function') this.vm.phase();
+  if (node instanceof Element) {
+    // Patch for an IE11 bug where it splits some text nodes when a
+    // MutationObserver is enabled somewhere.
+    utils.mergeAdjacentTextNodes(node);
+
+    if (!state.container) {
+      let VM = registeredComponents[node.tagName.toLowerCase()];
+      if (VM) {
+        state.container = new ComponentContainer(node, VM);
+        return;
+      }
+    }
+
+    for (let i = 0, ii = node.childNodes.length; i < ii; ++i) {
+      let child = node.childNodes[i];
+
+      if (child instanceof Element) {
+        let childElem = <Element>child;
+        let sibling = childElem.nextSibling;
+
+        childElem = unpackTemplatesFromDrafts(childElem);
+        if (childElem !== child) node.insertBefore(childElem, sibling);
+
+        if (childElem.tagName === 'TEMPLATE') {
+          utils.shimTemplateContent(childElem);
+          compileDraftsOnTemplate(childElem);
+        } else {
+          compileAttributeInterpolationsOnElement(childElem);
+        }
+      }
+      compileNode(child);
+    }
   }
 }
 
-function nodeTypesMatch(one: Node, other: Node): boolean {
-  return one instanceof Comment && other instanceof Comment ||
-         one instanceof Text && other instanceof Text ||
-         (one instanceof Element && other instanceof Element &&
-          one.tagName === other.tagName);
+function unpackTemplatesFromDrafts(element: Element): Element {
+  let outerElem = element;
+  let atCapacity: boolean = element.tagName !== 'TEMPLATE';
+  let attributes: Attr[] = [].slice.call(element.attributes);
+
+  // Unpack in reverse order.
+  for (let i = attributes.length - 1; i >= 0; --i) {
+    let attr = attributes[i];
+    if (utils.looksLikeCustomAttribute(attr.name)) {
+      let partialName = utils.customAttributeName(attr.name);
+      if (registeredDrafts[partialName]) {
+        if (!atCapacity) {
+          atCapacity = true;
+          continue;
+        }
+        let template = <TemplateElement>document.createElement('template');
+        utils.shimTemplateContent(template);
+        template.setAttribute(attr.name, attr.value);
+        element.removeAttribute(attr.name);
+        let container = template.content;
+        container.appendChild(outerElem);
+        outerElem = template;
+      }
+    }
+  }
+
+  return outerElem;
+}
+
+function compileDraftsOnTemplate(template: Element): void {
+  if (hasState(template)) return;
+  let state = getOrAddState(template);
+
+  for (let i = 0, ii = template.attributes.length; i < ii; ++i) {
+    let attr = template.attributes[i];
+
+    // A template is not allowed to have interpolated attributes.
+    console.assert(!hasInterpolation(attr.value), `unexpected interpolation on template:`, template);
+
+    // A template is allowed to have only one draft and no custom attributes.
+    if (utils.looksLikeCustomAttribute(attr.name)) {
+      let partialName = utils.customAttributeName(attr.name);
+
+      // Make sure it's registered.
+      let VM = registeredAttributes[partialName];
+      console.assert(!!VM, `no registered attribute found for '${attr.name}' on template:`, template);
+      console.assert(registeredDrafts[partialName], `unexpected non-draft '${attr.name}' on template:`, template);
+
+      // No more than one.
+      console.assert(!state.moldBinding, `unexpected second draft '${attr.name}' on template:`, template);
+
+      // Register binding.
+      state.moldBinding = new AttributeBinding(attr, VM);
+    }
+  }
+}
+
+function compileAttributeBindingsOnRealElement(virtual: Element, real: Element): void {
+  let state = getOrAddState(virtual);
+  // Use the presence of the bindings list as an indicator.
+  if (state.attributeBindings) return;
+  state.attributeBindings = [];
+
+  for (let i = 0, ii = real.attributes.length; i < ii; ++i) {
+    let attr = real.attributes[i];
+    if (utils.looksLikeCustomAttribute(attr.name)) {
+      let partialName = utils.customAttributeName(attr.name);
+
+      // Make sure it's registered and not a draft.
+      let VM = registeredAttributes[partialName];
+      console.assert(!!VM, `no registered custom attribute found for '${attr.name}' on element:`, real);
+      console.assert(!registeredDrafts[partialName], `unexpected draft '${attr.name}' on element:`, real);
+
+      // Register binding.
+      state.attributeBindings.push(new AttributeBinding(attr, VM));
+    }
+  }
+}
+
+function compileAttributeInterpolationsOnElement(element: Element): void {
+  if (hasState(element)) return;
+  let state = getOrAddState(element);
+
+  for (let i = 0, ii = element.attributes.length; i < ii; ++i) {
+    let attr = element.attributes[i];
+    if (utils.looksLikeCustomAttribute(attr.name)) continue;
+    if (hasInterpolation(attr.textContent)) {
+      if (!state.attributeInterpolations) state.attributeInterpolations = [];
+      state.attributeInterpolations.push(new AttributeInterpolation(attr));
+    }
+  }
 }
 
 function hasInterpolation(text: string): boolean {
   return /\{\{((?:[^}]|}(?=[^}]))*)\}\}/g.test(text);
 }
 
-function compileTextExpression(text: string): TextExpression {
+export function compileTextExpression(text: string): TextExpression {
   let reg = /\{\{((?:[^}]|}(?=[^}]))*)\}\}/g;
   let result: RegExpExecArray;
   let collection: (string|Expression)[] = [];
@@ -443,141 +530,86 @@ export function compileExpression(expression: string): Expression {
   };
 }
 
-function compileNode(node: Node): void {
-  if (node instanceof Text) {
-    if (!node[bindingKey] && hasInterpolation(node.textContent)) {
-      node[bindingKey] = compileTextExpression(node.textContent);
-    }
-    return;
-  }
-  if (node instanceof Element) {
-    // Patch for an IE11 bug where it splits some text nodes when a
-    // MutationObserver is enabled somewhere.
-    utils.mergeAdjacentTextNodes(node);
+function hasState(node: Node): boolean {
+  return node.hasOwnProperty(stateKey);
+}
 
-    for (let i = 0, ii = node.childNodes.length; i < ii; ++i) {
-      let child = node.childNodes[i];
-      if (child instanceof Element) {
-        let childElem = <Element>child;
-        let sibling = childElem.nextSibling;
-        childElem = unpackTemplatesFromDrafts(childElem);
-        node.insertBefore(childElem, sibling);
-        if (childElem.tagName === 'TEMPLATE') {
-          utils.shimTemplateContent(childElem);
-          compileDraftsOnTemplate(childElem);
-        } else {
-          compileTextAttributesOnElement(childElem);
-        }
-      }
-      compileNode(child);
-    }
+function getState(node: Node): State {
+  if (hasState(node)) return node[stateKey];
+  return null;
+}
+
+export function getOrAddState(node: Node): State {
+  if (hasState(node)) return node[stateKey];
+  node[stateKey] = new State();
+  return node[stateKey];
+}
+
+class State {
+  realNode: Node = null;
+  scope: any = null;
+  container: ComponentContainer = null;
+
+  textInterpolation: TextExpression = null;
+  attributeInterpolations: AttributeInterpolation[] = null;
+  attributeBindings: AttributeBinding[] = null;
+  moldBinding: AttributeBinding = null;
+}
+
+class AttributeInterpolation {
+  name: string;
+  value: string;
+  expression: TextExpression;
+  constructor(attr: Attr) {
+    this.name = attr.name;
+    this.value = attr.value;
+    this.expression = compileTextExpression(attr.textContent);
   }
 }
 
-function unpackTemplatesFromDrafts(element: Element): Element {
-  let outerElem = element;
-  let atCapacity: boolean = element.tagName !== 'TEMPLATE';
-  let attributes: Attr[] = [].slice.call(element.attributes);
+class AttributeBinding {
+  name: string;
+  value: string;
+  hint: string;
+  expression: Expression;
+  VM: Function;
+  vm: AttributeCtrl;
 
-  // Unpack in reverse order.
-  for (let i = attributes.length - 1; i >= 0; --i) {
-    let attr = attributes[i];
-    if (utils.looksLikeCustomAttribute(attr.name)) {
-      let partialName = utils.customAttributeName(attr.name);
-      if (registeredDrafts[partialName]) {
-        if (!atCapacity) {
-          atCapacity = true;
-          continue;
-        }
-        let template = <TemplateElement>document.createElement('template');
-        utils.shimTemplateContent(template);
-        template.setAttribute(attr.name, attr.value);
-        element.removeAttribute(attr.name);
-        let container = template.content;
-        container.appendChild(outerElem);
-        outerElem = template;
-      }
+  constructor(attr: Attr, VM: Function) {
+    this.name = attr.name;
+    this.value = attr.value;
+    this.hint = attr.name.match(/^[a-z-]+\.(.*)/)[1];
+    this.expression = compileExpression(attr.value);
+    this.VM = VM;
+  }
+
+  refreshState(element: Element, state: State, scope: any): void {
+    let isNew = !this.vm;
+    if (isNew) {
+      this.vm = Object.create(this.VM.prototype);
+      this.vm.hint = this.hint;
+      this.vm.expression = this.expression;
     }
+    this.vm.element = element;
+    this.vm.scope = scope;
+    this.vm.component = state.container ? state.container.vm : null;
+    if (isNew) this.VM.call(this.vm);
   }
 
-  return outerElem;
-}
-
-function compileDraftsOnTemplate(template: Element): void {
-  let oneDraftAllowed: boolean = true;
-  for (let i = 0, ii = template.attributes.length; i < ii; ++i) {
-    let attr = template.attributes[i];
-    if (getBindingForAttribute(template, attr.name)) continue;
-
-    // A template is not allowed to have interpolated attributes.
-    console.assert(!hasInterpolation(attr.value), `unexpected interpolation on template:`, template);
-
-    // A template is allowed to have only one draft and no custom attributes.
-    if (utils.looksLikeCustomAttribute(attr.name)) {
-      let partialName = utils.customAttributeName(attr.name);
-
-      // Make sure it's registered.
-      let VM = registeredAttributes[partialName];
-      console.assert(!!VM, `no registered attribute found for '${attr.name}' on template:`, template);
-      console.assert(registeredDrafts[partialName],
-                     `unexpected non-draft '${attr.name}' on template:`, template);
-      console.assert(oneDraftAllowed,
-                     `unexpected second draft '${attr.name}' on template:`, template);
-      oneDraftAllowed = false;
-
-      // Register binding.
-      setBindingForAttribute(template, attr.name, new AttributeBinding(attr, VM));
-    }
+  phase(): void {
+    if (typeof this.vm.onPhase === 'function') this.vm.onPhase();
   }
 }
 
-// Must be called on a real element.
-function compileCustomAttributesOnElement(element: Element): void {
-  for (let i = 0, ii = element.attributes.length; i < ii; ++i) {
-    let attr = element.attributes[i];
-    let binding = getBindingForAttribute(element, attr.name);
-    if (!binding && utils.looksLikeCustomAttribute(attr.name)) {
-      let partialName = utils.customAttributeName(attr.name);
-
-      // Make sure it's registered and not a draft.
-      let VM = registeredAttributes[partialName];
-      console.assert(!!VM, `no registered custom attribute found for '${attr.name}' on element:`, element);
-      console.assert(!registeredDrafts[partialName], `unexpected draft '${attr.name}' on element:`, element);
-
-      // Register binding.
-      setBindingForAttribute(element, attr.name, new AttributeBinding(attr, VM));
-    }
+// messy, fix
+function getScope(virtual: Node): any {
+  let state = getState(virtual);
+  if (state.scope) return state.scope;
+  if (virtual.parentNode) {
+    let parentState = getState(virtual.parentNode);
+    if (parentState.container) return parentState.container.vm;
+    return getScope(virtual.parentNode);
   }
-}
-
-function compileTextAttributesOnElement(element: Element): void {
-  for (let i = 0, ii = element.attributes.length; i < ii; ++i) {
-    let attr = element.attributes[i];
-    if (utils.looksLikeCustomAttribute(attr.name)) continue;
-    let expression = getBindingForAttribute(element, attr.name);
-    if (!expression && hasInterpolation(attr.textContent)) {
-      setBindingForAttribute(element, attr.name, compileTextExpression(attr.textContent));
-    }
-  }
-}
-
-function getBindingForAttribute(element: Element, attrName: string): AttributeBinding|Function {
-  let stash = element[bindingStashKey];
-  if (!stash) return null;
-  return stash[attrName] || null;
-}
-
-/**
- * Stores an attribute binding in a separate store on the element. Attributes
- * appear to be refreshed at arbitrary points in time due to garbage
- * collection, losing bindings, which we want to preserve over the lifetime of
- * an element. Happens consistently in Blink.
- */
-function setBindingForAttribute(element: Element, attrName: string, binding: AttributeBinding|Function): void {
-  let stash = element[bindingStashKey];
-  if (!stash) {
-    stash = Object.create(null);
-    element[bindingStashKey] = stash;
-  }
-  stash[attrName] = binding;
+  if (state.container) return state.container.vm;
+  return null;
 }
