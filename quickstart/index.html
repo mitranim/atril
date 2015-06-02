@@ -19,7 +19,48 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
-        <doc-index class="space-out-v"></doc-index>
+        <h2 id="quicklinks">Quicklinks</h2>
+<ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#usage">Usage</a></li>
+<li>...</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>To begin, get <code>atril</code> from GitHub or NPM. You can install it with <code>npm</code> or
+<code>jspm</code> (package manager that replaces <code>bower</code>).</p>
+<pre><code class="hljs lang-sh">npm i --save atril
+<span class="hljs-comment"># or</span>
+jspm install npm:atril
+<span class="hljs-comment"># or</span>
+jspm install atril=github:Mitranim/atril
+</code></pre>
+<p>Then import it in your application, using your module loader of choice
+(SystemJS, RequireJS, browserify, webpack, etc.).</p>
+<p>ES5 with CommonJS:</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-comment">// Import everything</span>
+<span class="hljs-keyword">var</span> atril = <span class="hljs-built_in">require</span>(<span class="hljs-string">'atril'</span>);
+<span class="hljs-comment">// Import piecemeal</span>
+<span class="hljs-keyword">var</span> Component = <span class="hljs-built_in">require</span>(<span class="hljs-string">'atril'</span>).Component;
+</code></pre>
+<p>ES6 with SystemJS:</p>
+<pre><code class="hljs lang-typescript"><span class="hljs-comment">// Import everything</span>
+<span class="hljs-keyword">import</span> * as atril from <span class="hljs-string">'atril'</span>;
+<span class="hljs-comment">// Import piecemeal</span>
+<span class="hljs-keyword">import</span> {Component} from <span class="hljs-string">'atril'</span>;
+</code></pre>
+<h2 id="usage">Usage</h2>
+<p>There are three steps to creating an <code>atril</code> component.</p>
+<ol>
+<li>Give it logic. In ES5, any function. In ES6, a class.</li>
+<li>Give it an HTML template.</li>
+<li>Include it on the page.</li>
+</ol>
+<p>This applies equally to <code>Component</code>, <code>Attribute</code>, and <code>Mold</code>.</p>
+<p>After all components are registered, call <code>atril.bootstrap()</code>. This is done just
+once. You can call <code>bootstrap()</code> again after including additional components to
+the page (e.g. by manually adding them to the DOM). Existing components will be
+ignored.</p>
+
       </div>
 
       <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>

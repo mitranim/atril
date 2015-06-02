@@ -19,19 +19,15 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
-        <h1 id="draft">Draft</h1>
-<p>A draft provides &quot;admin access&quot; to that part of the virtual DOM. In return, it&#39;s
-not allowed to touch the real DOM. It has access to the surrounding scope (the
-viewmodel), but doesn&#39;t create its own.</p>
-<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> {Draft} from <span class="hljs-string">'atril'</span>;
-
-@Draft({attributeName: <span class="hljs-string">'highlight'</span>})
-<span class="hljs-keyword">class</span> Highlight {
-  <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>() </span>{
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.element);
-  }
-}
-</code></pre>
+        <h2 id="overview">Overview</h2>
+<p>Built-in attributes that manipulate the DOM, conditionally adding or removing
+nodes.</p>
+<ul>
+<li><a href="#if"><code>if.</code></a></li>
+<li><a href="#for"><code>for.*</code></a></li>
+</ul>
+<h2 id="-if-"><code>if.</code></h2>
+<h2 id="-for-"><code>for.*</code></h2>
 
       </div>
 
