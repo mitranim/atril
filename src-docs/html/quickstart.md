@@ -42,7 +42,7 @@ import {Component} from 'atril';
 
 There are three steps to creating an `atril` component.
 1. Give it logic. In ES5, any function. In ES6, a class.
-2. Give it an HTML template.
+2. Give it an HTML view.
 3. Include it on the page.
 
 This applies equally to `Component`, `Attribute`, and `Mold`.

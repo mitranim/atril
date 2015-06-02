@@ -20,5 +20,5 @@ class VM {
     this.onPhase = null;
   }
 
-  static templateUrl = 'app/doc-sidenav/doc-sidenav.html';
+  static viewUrl = 'app/doc-sidenav/doc-sidenav.html';
 }

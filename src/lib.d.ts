@@ -39,14 +39,15 @@ interface ComponentConfig {
 }
 
 interface ComponentClass extends Function {
-  template?: string|Function;
-  templateUrl?: string|Function;
+  view?: string|Function;
+  viewUrl?: string|Function;
   bindable?: string[];
 }
 
 interface ComponentVM {
   element: Element;
   onPhase?(): void;
+  onDestroy?(): void;
 }
 
 interface AttributeConfig {
@@ -60,6 +61,7 @@ interface AttributeCtrl {
   scope: any;
   component: any;
   onPhase?(): void;
+  onDestroy?(): void;
 }
 
 interface Expression {

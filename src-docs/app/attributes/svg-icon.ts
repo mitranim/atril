@@ -1,4 +1,4 @@
-import {Mold, templateCache} from 'atril';
+import {Mold, viewCache} from 'atril';
 
 /**
  * SVG icon helper with optional async loading.
@@ -21,15 +21,15 @@ class Ctrl {
     let iconName = this.element.getAttribute(this.attrName);
     let path = 'app/svg/' + iconName + '.svg';
 
-    let template = templateCache.get(path);
-    if (typeof template === 'string') this.commit(template);
+    let view = viewCache.get(path);
+    if (typeof view === 'string') this.commit(view);
     else {
-      templateCache.load(path).then(template => this.commit(template));
+      viewCache.load(path).then(view => this.commit(view));
     }
   }
 
-  commit(template: string): void {
+  commit(view: string): void {
     this.element.appendChild(this.content.firstChild);
-    (<HTMLElement>this.element.firstChild).innerHTML = template;
+    (<HTMLElement>this.element.firstChild).innerHTML = view;
   }
 }

@@ -75,7 +75,7 @@ import {Component} from 'atril';
 })
 class ViewModel {
   name = 'world';
-  static templateUrl = 'app/hello-world/hello-world.html';
+  static viewUrl = 'app/hello-world/hello-world.html';
 }
 </pre>
 
@@ -117,7 +117,7 @@ function ViewModel() {
   this.name = 'world';
 }
 
-ViewModel.templateUrl = 'app/hello-world/hello-world.html';
+ViewModel.viewUrl = 'app/hello-world/hello-world.html';
 </pre>
 
 <pre highlight.html>
@@ -232,7 +232,7 @@ complete implementation).
 
 <div class="code-pair">
 <pre highlight.typescript>
-import {Mold, templateCache} from 'atril';
+import {Mold, viewCache} from 'atril';
 
 @Mold({
   attributeName: 'svg-icon'
@@ -247,7 +247,7 @@ class Ctrl {
     // .content is where the initial content of a template element is stored.
     let content = this.element.content;
     this.element.appendChild(content.firstChild);
-    this.element.firstChild.innerHTML = templateCache.get(path) || '';
+    this.element.firstChild.innerHTML = viewCache.get(path) || '';
   }
 }
 </pre>

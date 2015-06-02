@@ -5,5 +5,5 @@ import {Component} from 'atril';
 })
 class ViewModel {
   name = 'world';
-  static templateUrl = 'app/hello-world/hello-world.html';
+  static viewUrl = 'app/hello-world/hello-world.html';
 }

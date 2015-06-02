@@ -1,3 +1,24 @@
+# Bootstrap changes
+
+* Start at given element (not just document.body)
+* Scan for:
+  * Known tags
+  * Known attributes
+  * Known molds
+
+Found known tag -> create a root at that element
+Found known attribute -> create a root at that element's parent
+Found known mold -> create a root at that element's parent
+
+Attributes and molds can now have null scope.
+
+# Other
+
+phase methods -> move from component container into separate Root module, along with State-related things
+compile methods -> into separate module
+component container -> reduce its role to templating, move into module, join with template cache
+
+
 # Known issues
 
 Errors during compilation may leak curlies into view, must fix.
@@ -78,4 +99,9 @@ environment.
 Consider ways of letting non-molds opt into attaching to the virtual element
 instead of the real one. Not keen on the idea of autoassigning both virtual and
 real. But it makes sense to provide virtual DOM access to _some_ of those
-attributes.
+attributes, on an opt-in basis.
+
+Consider adding a "render-once" feature to embed DOM nodes managed by external
+code (e.g. third party UI widgets with their own DOM logic).
+
+Consider async queueing and batching of DOM updates.

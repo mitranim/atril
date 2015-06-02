@@ -1,6 +1,7 @@
 'use strict';
 
-import {Attribute, Mold, getOrAddState, scheduleReflow} from './atril';
+import {Attribute, Mold, scheduleReflow} from './boot';
+import {getOrAddState} from './tree';
 import * as utils from './utils';
 
 @Attribute({attributeName: 'bind'})
@@ -223,7 +224,9 @@ class If {
 
     let container = this.element.content;
     while (container.hasChildNodes()) {
-      this.stash.unshift(container.removeChild(container.lastChild));
+      let child = container.removeChild(container.lastChild);
+      getOrAddState(child).isDomImmutable = true;
+      this.stash.unshift(child);
     }
   }
 
@@ -300,9 +303,16 @@ class For {
   }
 
   step(value: any, index: number|string): void {
-    let nodes = this.stash.length >= this.originals.length ?
-            this.stash.splice(0, this.originals.length) :
-            this.originals.map(utils.cloneDeep);
+    let nodes: Node[];
+    if (this.stash.length >= this.originals.length) {
+      nodes = this.stash.splice(0, this.originals.length);
+    } else {
+      nodes = this.originals.map(node => {
+        let clone = utils.cloneDeep(node);
+        getOrAddState(clone).isDomImmutable = true;
+        return clone;
+      });
+    }
 
     let state = getOrAddState(nodes[0]);
     if (!state.scope) state.scope = Object.create(this.scope);
@@ -329,5 +339,24 @@ class Class {
     let result = this.expression(this.scope);
     if (result) this.element.classList.add(this.hint);
     else this.element.classList.remove(this.hint);
+  }
+}
+
+@Attribute({attributeName: 'ref'})
+class Ref {
+  // Autoassigned
+  element: Element;
+  hint: string;
+  scope: any;
+  component: any;
+
+  constructor() {
+    console.assert(!this.hint || this.hint === 'vm',
+                   `expected 'ref.' or 'ref.vm', got: 'ref.${this.hint}'`);
+    let value = this.element.getAttribute('ref.' + this.hint);
+    let pathfinder = new Pathfinder(value);
+    if (this.scope) {
+      pathfinder.assign(this.scope, this.hint ? this.component : this.element);
+    }
   }
 }

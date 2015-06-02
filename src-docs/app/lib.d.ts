@@ -4,9 +4,9 @@ declare module 'atril' {
   export function Mold(config: {attributeName: string}): any;
   export function bootstrap(): void;
   export function bindable(target: any, propertyName: string): void;
-  export const templateCache: {
+  export const viewCache: {
     get(url: string): string|void;
-    set(url: string, template: string): void;
+    set(url: string, view: string): void;
     load(url: string): Promise;
   };
 }

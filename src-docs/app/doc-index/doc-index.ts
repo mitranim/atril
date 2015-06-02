@@ -7,5 +7,5 @@ class VM {
   color = '';
   checked = true;
 
-  static templateUrl = 'app/doc-index/doc-index.html';
+  static viewUrl = 'app/doc-index/doc-index.html';
 }
