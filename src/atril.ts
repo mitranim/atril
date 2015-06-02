@@ -276,16 +276,18 @@ class ComponentContainer {
     }
   }
 
-  phaseTemplate(template: Element): void {
+  phaseTemplate(template: Element): boolean {
     let state = getState(template);
     let binding = state.moldBinding;
     binding.refreshState(template, state, getScope(template));
-    binding.phase();
+    return binding.phase();
   }
 
   phaseAndUnpackTemplate(template: Element): Node[] {
-    this.phaseTemplate(template);
-    compileNode(template);
+    let needsCompilation = getState(template).moldBinding.isNew;
+    if (this.phaseTemplate(template)) needsCompilation = true;
+    if (needsCompilation) compileNode(template);
+
     let nodes: Node[] = [];
     for (let i = 0, ii = template.childNodes.length; i < ii; ++i) {
       let child = template.childNodes[i];
@@ -584,7 +586,7 @@ class AttributeBinding {
   }
 
   refreshState(element: Element, state: State, scope: any): void {
-    let isNew = !this.vm;
+    let isNew = this.isNew;
     if (isNew) {
       this.vm = Object.create(this.VM.prototype);
       this.vm.hint = this.hint;
@@ -596,9 +598,14 @@ class AttributeBinding {
     if (isNew) this.VM.call(this.vm);
   }
 
-  phase(): void {
-    if (typeof this.vm.onPhase === 'function') this.vm.onPhase();
+  phase(): boolean {
+    if (typeof this.vm.onPhase === 'function') {
+      return this.vm.onPhase(), true;
+    }
+    return false;
   }
+
+  get isNew(): boolean {return !this.vm}
 }
 
 // messy, fix

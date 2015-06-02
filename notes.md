@@ -1,26 +1,13 @@
+# Known issues
+
+Errors during compilation may leak curlies into view, must fix.
+
 # Possible performance optimisations
 
-The naive implementation of the virtual DOM as a tree of native nodes is
-probably incurring heavy performance penalties (must measure). It needs to be
-converted into a series of super lightweight objects (virtual versions of
-Node et al).
-
-Instead of reflowing the entire document every time, we should split the
-bootstrap phase and the reflow phase. It should be the same process when
-bootstrapping the base document or any component, which should be treated as an
-object in itself. References to the virtual tree and other utility data, if any,
-should be kept on the root node in each "document" (html and each component).
-This architecture should also allow us to implement drafts in the vanilla DOM.
-
-- Currently the output of drafts is recompiled and rephased on each reflow. There
-- needs to be a way to detect when it doesn't need to.
-- * If the draft doesn't have a `phase` method, don't recompile its output (this
--   is probably a minor optimisation since bindings in its existing nodes don't
--   need to be recompiled anyway, we're just re-checking them).
-
-- In a similar vein, consider permanently marking bindings (both interpolations
-- and custom attributes) as "bad" if one of them throws during a phase, and
-- subsequently ignoring them.
+Tried using a synthetic virtual DOM (have a working implementation), but this
+caused too many edge case problems without (seemingly) a substantial performance
+increase, in comparison to other optimisations. Sticking with the "native"
+virtual DOM for now.
 
 Expressions are currently re-evaluated on each call. This is done in order to
 support locals without inheriting a masking object from the scope (which works
