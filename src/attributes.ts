@@ -360,3 +360,38 @@ class Ref {
     }
   }
 }
+
+@Mold({
+  attributeName: 'declare'
+})
+class Declare {
+  // Autoassigned
+  element: TemplateElement;
+  hint: string;
+  scope: any;
+
+  constructor() {
+    console.assert(/^[$_A-Za-z]+[$_A-Za-z0-9]*$/.test(this.hint),
+                   `'declare.*' expects the hint to be a valid JavaScript identifier, got: ${this.hint}`);
+
+    let attributeName = 'declare.' + this.hint;
+    console.assert(!this.element.getAttribute(attributeName),
+                   `'declare.*' doesn't accept an expression`);
+
+    // Make sure the scope is available.
+    if (!this.scope) {
+      let state = getOrAddState(this.element);
+      state.scope = Object.create(null);
+      this.scope = state.scope;
+    }
+
+    // Bring the identifier into scope.
+    if (!(this.hint in this.scope)) this.scope[this.hint] = undefined;
+
+    // Pass through any content.
+    let content = this.element.content;
+    while (content.hasChildNodes()) {
+      this.element.appendChild(content.removeChild(content.firstChild));
+    }
+  }
+}

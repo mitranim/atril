@@ -27,7 +27,8 @@ export class State {
   view: View = null;
   compiled: boolean = false;
   VM: ComponentClass = null;
-  // Set by a mold as a promise not to modify the node.
+  // Set by a mold as a promise to not modify the node or any of its
+  // descendants. Allows us to skip recompilation of entire trees during phases.
   isDomImmutable: boolean = false;
 
   textInterpolation: TextExpression = null;
@@ -142,9 +143,8 @@ function phaseChildNodes(virtual: Node, real: Node): void {
       phaseCustomAttributes(virtualChild, realChild);
       // Phase and sync static attributes.
       phaseAndSyncAttributeInterpolations(virtualChild, realChild);
-      // Phase and sync contents. If the real child is a custom element
-      // managed by atril, let it phase itself.
     }
+    // Phase and sync contents.
     phaseNodes(virtualChild, realChild);
   }
   // Remove any leftovers.

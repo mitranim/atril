@@ -1,7 +1,7 @@
 import {bootstrap} from 'atril';
 
 import 'views';
-import 'attributes/all';
+import 'molds/all';
 import 'doc-banner/doc-banner';
 import 'doc-index/doc-index';
 import 'doc-sidenav/doc-sidenav';

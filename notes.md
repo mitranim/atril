@@ -1,28 +1,3 @@
-# Bootstrap changes
-
-* Start at given element (not just document.body)
-* Scan for:
-  * Known tags
-  * Known attributes
-  * Known molds
-
-Found known tag -> create a root at that element
-Found known attribute -> create a root at that element's parent
-Found known mold -> create a root at that element's parent
-
-Attributes and molds can now have null scope.
-
-# Other
-
-phase methods -> move from component container into separate Root module, along with State-related things
-compile methods -> into separate module
-component container -> reduce its role to templating, move into module, join with template cache
-
-
-# Known issues
-
-Errors during compilation may leak curlies into view, must fix.
-
 # Possible performance optimisations
 
 Tried using a synthetic virtual DOM (have a working implementation), but this
@@ -105,3 +80,17 @@ Consider adding a "render-once" feature to embed DOM nodes managed by external
 code (e.g. third party UI widgets with their own DOM logic).
 
 Consider async queueing and batching of DOM updates.
+
+Consider if we no longer need to reassign the autoassigned values in bindings
+during each phase. Real nodes are now guaranteed to be mapped 1-1 to virtual
+ones. Scopes should also be stable now.
+
+# Expressions
+
+Considering a custom expression compiler. Will allow us to:
+* Safeguard access to globals.
+* May or may not allow to avoid reinterpreting the expression on each call.
+
+An expression compiler might allow us to avoid having to `declare.` variables
+in scope in view, but I'm not convinced about that. It's pretty good to have
+errors about missing things.

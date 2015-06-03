@@ -23,7 +23,9 @@ export const registeredAttributes: {[attributeName: string]: Function} = Object.
 export const registeredMolds: {[attributeName: string]: boolean} = Object.create(null);
 
 export function bootstrap(): void {
-  localZone.run(function bootstrap(element: Element = document.body): void {
+  // IE10 compat: doesn't support `apply` for function expressions. Have to
+  // define it in a statement.
+  function boot(element: Element = document.body): void {
     console.assert(element instanceof Element, `bootstrap expects an Element, got:`, element);
     // Don't register components twice.
     for (let i = 0, ii = roots.length; i < ii; ++i) {
@@ -57,24 +59,37 @@ export function bootstrap(): void {
           }
         }
         // Otherwise continue normally.
-        bootstrap(node);
+        boot(node);
       }
     }
-  });
+  }
+  localZone.run(boot);
 }
 
 function createRootAt(element: Element, VM?: ComponentClass): Root {
   let root = new Root();
   root.real = element;
-  let virtual: Element = (<any>element).cloneNode(true);
-  let state = getOrAddState(virtual);
-  state.real = element;
+
   if (VM) {
+    let virtual: Element = (<any>element).cloneNode(true);
+    let state = getOrAddState(virtual);
+    state.real = element;
     state.VM = VM;
     state.view = new View(VM);
     // view should take care of transclusion
     state.view.tryToCompile(virtual);
   }
+  // If we're instantiating a non-component, move its real child nodes to the
+  // virtual DOM.
+  else {
+    let virtual = element.cloneNode();
+    while (element.hasChildNodes()) {
+      virtual.appendChild(element.removeChild(element.firstChild));
+    }
+    let state = getOrAddState(virtual);
+    state.real = element;
+  }
+
   root.virtual = virtual;
   return root;
 }

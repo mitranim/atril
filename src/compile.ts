@@ -34,19 +34,18 @@ export function compileNode(node: Node): void {
 
     for (let i = 0, ii = node.childNodes.length; i < ii; ++i) {
       let child = node.childNodes[i];
-
       if (child instanceof Element) {
-        let childElem = <Element>child;
-        let sibling = childElem.nextSibling;
+        let oldChild = <Element>child;
+        let sibling = child.nextSibling;
 
-        childElem = unpackTemplatesFromMolds(childElem);
-        if (childElem !== child) node.insertBefore(childElem, sibling);
+        child = <Element>unpackTemplatesFromMolds(<Element>child);
+        if (child !== oldChild) node.insertBefore(child, sibling);
 
-        if (childElem.tagName === 'TEMPLATE') {
-          utils.shimTemplateContent(childElem);
-          compileMoldsOnTemplate(childElem);
+        if ((<Element>child).tagName === 'TEMPLATE') {
+          utils.shimTemplateContent(<Element>child);
+          compileMoldsOnTemplate(<Element>child);
         } else {
-          compileAttributeInterpolationsOnElement(childElem);
+          compileAttributeInterpolationsOnElement(<Element>child);
         }
       }
       compileNode(child);
@@ -81,13 +80,13 @@ export function unpackTemplatesFromMolds(element: Element): Element {
       }
     }
   }
-
   return outerElem;
 }
 
 export function compileMoldsOnTemplate(template: Element): void {
   if (hasState(template)) return;
   let state = getOrAddState(template);
+
 
   for (let i = 0, ii = template.attributes.length; i < ii; ++i) {
     let attr = template.attributes[i];

@@ -65,6 +65,9 @@ export function compileExpression(expression: string): Expression {
   if (!expression) return () => undefined;
 
   return function(scope: any, locals?: any) {
+    // Prevent `with` from throwing an error when the scope is empty.
+    if (scope == null) scope = Object.create(null);
+
     let argList: string[] = [];
     let argValues: any[] = [];
     if (locals != null && typeof locals === 'object') {
@@ -74,6 +77,7 @@ export function compileExpression(expression: string): Expression {
       }
     }
     argValues.push(scope);
+
     let returnPrefix = ~expression.indexOf(';') ? '' : 'return ';
     let body = `with (arguments[${argValues.length - 1}]) {
       return function() {'use strict';

@@ -139,13 +139,9 @@ ViewModel.viewUrl = 'app/hello-world/hello-world.html';
 </div>
 </sf-collapse>
 
-<div class="doc-demo">
-  <p>
-    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-    Demo
-  </p>
+<template doc-demo.>
   <hello-world></hello-world>
-</div>
+</template>
 
 <template markdown.>
 ## Attribute
@@ -199,18 +195,14 @@ class Ctrl {
 </pre>
 </div>
 
-<div class="doc-demo">
-  <p>
-    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-    Demo
-  </p>
+<template doc-demo.>
   <div class="pad-v">
     <label class="pad" class.info="checked" class.error="!checked">
       <input twoway.checked="checked" type="checkbox">
       <span>I'm checked: {{checked}}</span>
     </label>
   </div>
-</div>
+</template>
 
 <template markdown.>
 ## Mold
@@ -315,17 +307,13 @@ To sync the value in the other direction, use an event handler with the built-in
 ```
 </template>
 
-<div class="doc-demo">
-  <p>
-    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-    Demo
-  </p>
+<template doc-demo.>
   <p>My name is: {{name}}</p>
   <input bind.value="name" on.input="name = this.value" placeholder="type name here...">
 
   <p bind.style.color="color">My color is: {{color}}</p>
   <input bind.value="color" on.input="color = this.value" placeholder="try `blue`">
-</div>
+</template>
 
 <template markdown.>
 ## `twoway.*`
@@ -348,17 +336,13 @@ Example:
 ```
 </template>
 
-<div class="doc-demo">
-  <p>
-    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-    Demo
-  </p>
+<template doc-demo.>
   <p>My name is: {{name}}</p>
   <input twoway.value="name" placeholder="type name here...">
 
   <p bind.style.color="color">My color is: {{color}}</p>
   <input twoway.value="color" placeholder="try `blue`">
-</div>
+</template>
 
 <template markdown.>
 ## `@bindable`

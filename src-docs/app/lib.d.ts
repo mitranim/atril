@@ -9,6 +9,14 @@ declare module 'atril' {
     set(url: string, view: string): void;
     load(url: string): Promise;
   };
+  export function getOrAddState(node: Node): State;
+
+  interface State {
+    vm: any;
+    scope: any;
+    compiled: boolean;
+    isDomImmutable: boolean;
+  }
 }
 
 declare module 'highlightjs' {
