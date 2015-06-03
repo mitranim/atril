@@ -12,10 +12,9 @@ class Ctrl {
   constructor() {
     let content = this.element.content;
 
-    console.assert(content.firstChild instanceof HTMLPreElement,
-                   `'highlight.*' expects to be used on a <pre> tag, got:`, content.firstChild);
-
-    let pre = <HTMLPreElement>content.firstChild;
+    // Reuse or create a <pre>.
+    let pre = content.firstChild instanceof HTMLPreElement ?
+              <HTMLPreElement>content.firstChild : document.createElement('pre');
 
     // Convert existing content into text.
     let result = this.hint ? hjs.highlight(this.hint, pre.innerHTML): hjs.highlightAuto(pre.innerHTML);

@@ -96,19 +96,35 @@ export function shimTemplateContent(template: TemplateElement): void {
   }
 }
 
-// Adjacent text nodes happen due to browser bugs, e.g. IE11 splits some text
-// nodes if a MutationObserver is enabled somewhere on the page.
-export function mergeAdjacentTextNodes(node: Node): void {
+// 1. Empty text nodes are sometimes treated as missing by browsers, tripping
+//    up our mechanisms that depend on child count and order, like `for.`.
+// 2. In IE11, when a MutationObserver is enabled _anywhere_ in the document,
+//    the browser sometimes splits text nodes, tripping up interpolation.
+export function pruneTextNodes(node: Node): void {
+  let isPre = false;
+  let current = node;
+  do {
+    if (isPre = (current instanceof HTMLPreElement)) break;
+  } while (current = current.parentElement);
+
   for (let i = node.childNodes.length - 1; i >= 0; --i) {
     let child = node.childNodes[i];
-    let sibling = node.childNodes[i+1];
-    if (child instanceof Text && sibling instanceof Text) {
-      child.textContent += sibling.textContent;
-      node.removeChild(sibling);
+    if (child instanceof Text) {
+      // Keep whitespace in a `<pre>` and remove anywhere else.
+      if (!isPre && /^\s*$/.test(child.textContent)) {
+        node.removeChild(child);
+        continue;
+      }
+      // Merge adjacent text nodes.
+      let sibling = node.childNodes[i+1];
+      if (sibling instanceof Text) {
+        child.textContent += sibling.textContent;
+        node.removeChild(sibling);
+      }
     }
   }
   if (node instanceof Element && node.tagName === 'TEMPLATE') {
-    mergeAdjacentTextNodes((<TemplateElement>node).content);
+    pruneTextNodes((<TemplateElement>node).content);
   }
 }
 

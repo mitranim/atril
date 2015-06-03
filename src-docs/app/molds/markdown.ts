@@ -32,11 +32,6 @@ class Ctrl {
 
     // Render into markdown.
     let result = marked(buffer.innerHTML);
-
-    // Neuter interpolations. This is necessary because a mold's output is re-
-    // compiled, so interpolations would be evaluated.
-    result = result.replace(/\{\{((?:[^}]|}(?=[^}]))*)\}\}/g, '{{<span>$1</span>}}');
-
     buffer.innerHTML = result;
 
     // Fix code highlighting classes.

@@ -17,9 +17,8 @@ export function compileNode(node: Node): void {
   }
 
   if (node instanceof Element) {
-    // Patch for an IE11 bug where it splits some text nodes when a
-    // MutationObserver is enabled somewhere.
-    utils.mergeAdjacentTextNodes(node);
+    // Clean up text nodes.
+    utils.pruneTextNodes(node);
 
     if (!state.vm && !state.view) {
       let VM = registeredComponents[node.tagName.toLowerCase()];

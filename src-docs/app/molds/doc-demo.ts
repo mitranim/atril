@@ -1,4 +1,4 @@
-import {Mold} from 'atril';
+import {Mold, getOrAddState} from 'atril';
 
 @Mold({
   attributeName: 'doc-demo'
@@ -11,6 +11,15 @@ class Ctrl {
 
   constructor() {
     console.assert(!this.hint, `'doc-demo.' doesn't expect any hints, got: ${this.hint}`);
+
+    // Fork the scope. Useful for avoiding `let` conflicts in demos. Not
+    // recommended for other scenarios.
+    let state = getOrAddState(this.element);
+    if (!this.scope) this.scope = null;
+    if (!state.scope) {
+      state.scope = Object.create(this.scope);
+      this.scope = state.scope;
+    }
 
     // Add a demo wrapper.
     let div = document.createElement('div');

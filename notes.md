@@ -11,11 +11,6 @@ with the need to specify it separately on different children in `for.`.
 
 # Possible performance optimisations
 
-Tried using a synthetic virtual DOM (have a working implementation), but this
-caused too many edge case problems without (seemingly) a substantial performance
-increase, in comparison to other optimisations. Sticking with the "native"
-virtual DOM for now.
-
 Expressions are currently re-evaluated on each call. This is done in order to
 support locals without inheriting a masking object from the scope (which works
 fine for reads but breaks writes), or mutating the scope by assigning the locals
@@ -31,6 +26,11 @@ potential memory "leak" in a sense that if the viewmodel initially requires a
 lot of nodes but later only needs a few, the stashed nodes only gunk up the
 memory. Might want to keep track and discard nodes that have been unused for
 many phases (keeping an average index as an integer should be enough).
+
+Consider ways to localise reflow. Currently we reflow from each root. For
+inputs, it would be great if we could figure out that the given reflow is caused
+by an input event somewhere at the bottom of the tree, and reflow only that
+part. Might be the biggest performance improvement we can make.
 
 # Transclusion semantics
 
@@ -107,3 +107,8 @@ Considering a custom expression compiler. Will allow us to:
 * Safeguard access to globals.
 * May or may not allow to avoid reinterpreting the expression on each call.
 * Property accessors can be compiled into faster functions than other expressions.
+
+Considering to no longer autocompile expressions. Currently the only place where
+they're used as expressions in the `bind.*` attribute, and the only place where
+they're used as statements is the `on.` attribute. `twoway.` and some other
+attributes actually reparse them as property accessors.

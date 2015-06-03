@@ -99,14 +99,15 @@ export function compileTextExpression(text: string): TextExpression {
   let reg = /\{\{((?:[^}]|}(?=[^}]))*)\}\}/g;
   let result: RegExpExecArray;
   let collection: (string|Expression)[] = [];
-  let slice = text;
+  let lastIndex: number = 0;
 
-  while (result = reg.exec(slice)) {
-    let piece = slice.slice(0, result.index);
-    if (piece) collection.push(piece);
-    slice = slice.slice(result.index).replace(result[0], '');
+  while (result = reg.exec(text)) {
+    let slice = text.slice(lastIndex, result.index);
+    if (slice) collection.push(slice);
+    lastIndex = result.index + result[0].length;
     collection.push(compileExpression(result[1]));
   }
+  let slice = text.slice(lastIndex);
   if (slice) collection.push(slice);
 
   return function(scope: any, locals?: any): string {

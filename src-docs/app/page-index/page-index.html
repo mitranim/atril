@@ -195,7 +195,7 @@ class Ctrl {
 </pre>
 </div>
 
-<template doc-demo.>
+<template doc-demo. let.checked="true">
   <div class="pad-v">
     <label class="pad" class.info="checked" class.error="!checked">
       <input twoway.checked="checked" type="checkbox">
@@ -217,8 +217,8 @@ changes in the viewmodel. You can clone or completely remove the nodes, and
 later add them back. The framework takes care of syncing all that to the real
 DOM with minimal repaints.
 
-The built-in special attributes `if.` and `for.*` are implemented as molds.
-Here's an example of something custom (see this site's source for a more
+The built-in special attributes [`if.` and `for.*`](if-for) are implemented as
+molds. Here's an example of something custom (see this site's source for a more
 complete implementation).
 </template>
 
@@ -246,13 +246,13 @@ class Ctrl {
 
 <pre highlight.html>
 <!-- Default usage -->
-≺template svg-icon.="paper-plane-o"≻
+<template svg-icon.="paper-plane-o">
   <span></span>
-≺/template≻
+</template>
 
 <!-- Shorthand usage.
      This gets expanded into the form shown above. -->
-≺span svg-icon.="paper-plane-o"≻≺/span≻
+<span svg-icon.="paper-plane-o"></span>
 </pre>
 </div>
 </sf-article>
@@ -296,7 +296,7 @@ as `@bindable`, it's also bound.
 To sync the value in the other direction, use an event handler with the built-in
 `on.*` attribute. Example:
 
-```html
+<pre highlight.html>
 <!-- Bind a property -->
 <p>My name is: {{name}}</p>
 <input bind.value="name" on.input="name = this.value" placeholder="type name here...">
@@ -304,10 +304,10 @@ To sync the value in the other direction, use an event handler with the built-in
 <!-- Bind to a nested property -->
 <p bind.style.color="color">My color is: {{color}}</p>
 <input bind.value="color" on.input="color = this.value" placeholder="try `blue`">
-```
+</pre>
 </template>
 
-<template doc-demo.>
+<template doc-demo. let.name="''" let.color="''">
   <p>My name is: {{name}}</p>
   <input bind.value="name" on.input="name = this.value" placeholder="type name here...">
 
@@ -325,7 +325,7 @@ property is also bound. Any changes are synced both ways.
 
 Example:
 
-```html
+<pre highlight.html>
 <!-- Bind a property -->
 <p>My name is: {{name}}</p>
 <input twoway.value="name" placeholder="type name here...">
@@ -333,10 +333,10 @@ Example:
 <!-- Bind a nested property -->
 <p bind.style.color="color">My color is: {{color}}</p>
 <input twoway.value="color" placeholder="try `blue`">
-```
+</pre>
 </template>
 
-<template doc-demo.>
+<template doc-demo. let.name="''" let.color="''">
   <p>My name is: {{name}}</p>
   <input twoway.value="name" placeholder="type name here...">
 
@@ -352,7 +352,7 @@ via `bind.*` or `twoway.*`.
 
 Usage with ES6/7:
 
-```typescript
+<pre highlight.typescript>
 import {Component, bindable} from 'atril';
 
 @Component({
@@ -361,11 +361,11 @@ import {Component, bindable} from 'atril';
 class ViewModel {
   @bindable myProperty;
 }
-```
+</pre>
 
 Usage with ES5:
 
-```typescript
+<pre highlight.typescript>
 var Component = require('atril').Component;
 
 Component({tagName: 'inner-component'})(ViewModel);
@@ -373,15 +373,15 @@ Component({tagName: 'inner-component'})(ViewModel);
 function ViewModel() {}
 
 ViewModel.bindable = ['myProperty'];
-```
+</pre>
 
 Then you can bind that property from the outside:
 
-```html
+<pre highlight.html>
 <div>
   <inner-component twoway.my-property="outerProperty"></inner-component>
 </div>
-```
+</pre>
 </template>
 </sf-article>
 
@@ -400,8 +400,8 @@ This is primarily an implementation detail, and is done for internal
 consistency. However, this architecture should enable optimisations for high
 rendering performance, similar to ReactJS.
 
-(Note: this page is rendered entirely with `atril`, using multiple components and
-third party libraries for markdown and code.)
+(Note: this page is rendered entirely with `atril`. It also uses third party
+libraries for markdown and code.)
 </template>
 
 <sf-article class="pad">
