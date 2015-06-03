@@ -77,7 +77,7 @@ function getScope(virtual: Node): any {
 
 export function phaseElements(virtual: Element, real: Element) {
   let state = getOrAddState(virtual);
-  console.assert(state.compiled, `expected the state during a phase to be compiled`);
+  utils.assert(state.compiled, `expected the state during a phase to be compiled`);
 
   if (state.view) {
     // Ignore if view not ready. ToDo check if we need additional cleanup if failed.
@@ -87,7 +87,7 @@ export function phaseElements(virtual: Element, real: Element) {
       return;
     }
     state.view = null;
-    console.assert(!!state.VM, 'have state.view without a state.VM:', state);
+    utils.assert(!!state.VM, 'have state.view without a state.VM:', state);
     // The vm must be created before phasing its child nodes in order to provide
     // the viewmodel.
     state.vm = Object.create(state.VM.prototype);

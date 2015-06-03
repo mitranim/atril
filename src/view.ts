@@ -1,4 +1,5 @@
 import {compileNode} from './compile';
+import * as utils from './utils';
 
 export class View {
   VM: ComponentClass;
@@ -42,7 +43,7 @@ export class View {
           this.compileView(result, virtual);
           return;
         }
-        console.warn('expected a view promise to resolve to a string, got:', result);
+        utils.warn('expected a view promise to resolve to a string, got:', result);
         return Promise.reject(`expected a view promise to resolve to a string, got: ${result}`);
       })
       .catch(err => {
@@ -68,7 +69,7 @@ export const viewCache = {
   },
 
   set(url: string, view: string): void {
-    console.assert(typeof view === 'string',
+    utils.assert(typeof view === 'string',
                    'a view must be a string, received:', view);
     viewCache.views[url] = view;
   },
@@ -88,7 +89,7 @@ export const viewCache = {
 
       function fail(): void {
         let msg = `failed to load view for url ${url}`;
-        console.warn(msg);
+        utils.warn(msg);
         reject(msg);
       }
 

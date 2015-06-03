@@ -1,3 +1,14 @@
+Review the `this` strategy for expressions. Not convinced the flexibility is
+worth having to correctly call them in attribute VMs.
+
+For molds, demo how to make a live markdown component, and how to optimise it
+for speed through the isDomImmutable convention (unlike `if.`, this property
+will need to be set on the state of the template itself).
+
+Consider making `isDomImmutable` a mold VM property rather than state property,
+in order to avoid leaking state. Figure out if it's possible to reconcile this
+with the need to specify it separately on different children in `for.`.
+
 # Possible performance optimisations
 
 Tried using a synthetic virtual DOM (have a working implementation), but this
@@ -9,6 +20,11 @@ Expressions are currently re-evaluated on each call. This is done in order to
 support locals without inheriting a masking object from the scope (which works
 fine for reads but breaks writes), or mutating the scope by assigning the locals
 to it. Should look into ways to fix that.
+
+Lots and lots of expressions are going to be just property references. Should be
+easy to optimise this without writing an expression compiler. Should also
+emulate the behaviour of other expressions when the property is not in scope
+(throw a reference error).
 
 `for.*` keeps references to unused virtual nodes for fast reuse. This is a
 potential memory "leak" in a sense that if the viewmodel initially requires a
@@ -90,7 +106,4 @@ ones. Scopes should also be stable now.
 Considering a custom expression compiler. Will allow us to:
 * Safeguard access to globals.
 * May or may not allow to avoid reinterpreting the expression on each call.
-
-An expression compiler might allow us to avoid having to `declare.` variables
-in scope in view, but I'm not convinced about that. It's pretty good to have
-errors about missing things.
+* Property accessors can be compiled into faster functions than other expressions.

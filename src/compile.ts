@@ -92,7 +92,7 @@ export function compileMoldsOnTemplate(template: Element): void {
     let attr = template.attributes[i];
 
     // A template is not allowed to have interpolated attributes.
-    console.assert(!hasInterpolation(attr.value), `unexpected interpolation on template:`, template);
+    utils.assert(!hasInterpolation(attr.value), `unexpected interpolation on template:`, template);
 
     // A template is allowed to have only one mold and no custom attributes.
     if (utils.looksLikeCustomAttribute(attr.name)) {
@@ -100,11 +100,11 @@ export function compileMoldsOnTemplate(template: Element): void {
 
       // Make sure it's registered.
       let VM = registeredAttributes[partialName];
-      console.assert(!!VM, `no registered attribute found for '${attr.name}' on template:`, template);
-      console.assert(registeredMolds[partialName], `unexpected non-mold '${attr.name}' on template:`, template);
+      utils.assert(!!VM, `no registered attribute found for '${attr.name}' on template:`, template);
+      utils.assert(registeredMolds[partialName], `unexpected non-mold '${attr.name}' on template:`, template);
 
       // No more than one.
-      console.assert(!state.moldBinding, `unexpected second mold '${attr.name}' on template:`, template);
+      utils.assert(!state.moldBinding, `unexpected second mold '${attr.name}' on template:`, template);
 
       // Register binding.
       state.moldBinding = new AttributeBinding(attr, VM);
@@ -125,8 +125,8 @@ export function compileAttributeBindingsOnRealElement(virtual: Element, real: El
 
       // Make sure it's registered and not a mold.
       let VM = registeredAttributes[partialName];
-      console.assert(!!VM, `no registered custom attribute found for '${attr.name}' on element:`, real);
-      console.assert(!registeredMolds[partialName], `unexpected mold '${attr.name}' on element:`, real);
+      utils.assert(!!VM, `no registered custom attribute found for '${attr.name}' on element:`, real);
+      utils.assert(!registeredMolds[partialName], `unexpected mold '${attr.name}' on element:`, real);
 
       // Register binding.
       state.attributeBindings.push(new AttributeBinding(attr, VM));

@@ -56,22 +56,9 @@ class TwoWay {
   constructor() {
     let attributeName = 'twoway.' + this.hint;
 
-    // ToDo validate the hint accessor the same way as the expression.
-    console.assert(!!this.hint, `a 'twoway.*' attribute must be of form 'twoway.X' or 'twoway.X.X[...]', where X is a valid JavaScript identifier; got: '${attributeName}'`);
+    utils.assert(utils.isStaticPathAccessor(this.hint), `a 'twoway.*' attribute must be of form 'twoway.X(.X)*', where X is a valid JavaScript identifier; got: '${attributeName}'`);
 
     let expression = this.element.getAttribute(attributeName) || '';
-
-    // Split the expression into subpath accessors.
-    let keys = expression.split('.');
-
-    // Validate each accessor as a JavaScript identifier.
-    let valid = true;
-    for (let i = 0, ii = keys.length; i < ii; ++i) {
-      let key = keys[i];
-      if (valid) valid = /^[$_A-Za-z]+[$_A-Za-z0-9]*$/.test(key);
-      if (!valid) break;
-    }
-    console.assert(valid, `a twoway binding expression must be of form 'X' or 'X[.X]', where X is a valid JavaScript identifier; got: '${expression}'`);
 
     this.ownPathfinder = new Pathfinder(expression);
     this.targetPropertyPath = utils.camelCase(this.hint);
@@ -220,7 +207,7 @@ class If {
   stash: Node[] = [];
 
   constructor() {
-    console.assert(this.hint === '', `custom attribute 'if' doesn't support hints, got ${this.hint}`);
+    utils.assert(this.hint === '', `custom attribute 'if' doesn't support hints, got ${this.hint}`);
 
     let container = this.element.content;
     while (container.hasChildNodes()) {
@@ -256,17 +243,20 @@ class For {
   stash: Node[] = [];
 
   constructor() {
-    // Validate the hint.
-    let ofReg = /^[$_A-Za-z]+[$_A-Za-z0-9]*.of$/;
-    let inReg = /^[$_A-Za-z]+[$_A-Za-z0-9]*.in$/;
-    let anyReg = /^[$_A-Za-z]+[$_A-Za-z0-9]*$/;
-    console.assert(ofReg.test(this.hint) || inReg.test(this.hint) || anyReg.test(this.hint),
-                   `the 'for.*' attribute expects a hint in the form of 'X.of', 'X.in', or 'X', where X is a valid JavaScript identifier; received '${this.hint}'`);
+    let msg = `the 'for.*' attribute expects a hint in the form of 'X.of', 'X.in', or 'X', where X is a valid JavaScript identifier; received '${this.hint}'`;
 
-    this.key = this.hint.match(/^[$_A-Za-z]+[$_A-Za-z0-9]*/)[0];
+    let match = utils.matchValidIdentifier(this.hint);
+    utils.assert(!!match, msg);
+
+    // Find the variable key.
+    this.key = match[1];
 
     // Choose the iteration strategy.
-    this.mode = ofReg.test(this.hint) ? 'of' : inReg.test(this.hint) ? 'in' : 'any';
+    if (!match[2]) this.mode = 'any';
+    else if (match[2] === '.of') this.mode = 'of';
+    else if (match[2] == '.in') this.mode = 'in';
+
+    utils.assert(!!this.mode, msg);
 
     // Move the initial content to a safer place.
     let container = this.element.content;
@@ -351,7 +341,7 @@ class Ref {
   component: any;
 
   constructor() {
-    console.assert(!this.hint || this.hint === 'vm',
+    utils.assert(!this.hint || this.hint === 'vm',
                    `expected 'ref.' or 'ref.vm', got: 'ref.${this.hint}'`);
     let value = this.element.getAttribute('ref.' + this.hint);
     let pathfinder = new Pathfinder(value);
@@ -362,31 +352,33 @@ class Ref {
 }
 
 @Mold({
-  attributeName: 'declare'
+  attributeName: 'let'
 })
-class Declare {
+class Let {
   // Autoassigned
   element: TemplateElement;
   hint: string;
+  expression: Expression;
   scope: any;
 
   constructor() {
-    console.assert(/^[$_A-Za-z]+[$_A-Za-z0-9]*$/.test(this.hint),
-                   `'declare.*' expects the hint to be a valid JavaScript identifier, got: ${this.hint}`);
+    utils.assert(utils.isValidIdentifier(this.hint),
+                   `'let.*' expects the hint to be a valid JavaScript identifier, got: '${this.hint}'`);
 
-    let attributeName = 'declare.' + this.hint;
-    console.assert(!this.element.getAttribute(attributeName),
-                   `'declare.*' doesn't accept an expression`);
-
-    // Make sure the scope is available.
+    // Make sure a scope is available.
     if (!this.scope) {
       let state = getOrAddState(this.element);
       state.scope = Object.create(null);
       this.scope = state.scope;
     }
 
-    // Bring the identifier into scope.
-    if (!(this.hint in this.scope)) this.scope[this.hint] = undefined;
+    // The identifier must not be redeclared in the scope. We're being strict to
+    // safeguard against elusive errors.
+    utils.assert(!Object.prototype.hasOwnProperty.call(this.scope, this.hint),
+                   `unexpected re-declaration of '${this.hint}'' with 'let'`);
+
+    // Bring the identifier into scope, assigning the given value.
+    this.scope[this.hint] = this.expression.call(this.scope, this.scope);
 
     // Pass through any content.
     let content = this.element.content;

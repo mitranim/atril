@@ -399,17 +399,10 @@ diffs them with the live DOM and carefully updates the view.
 This is primarily an implementation detail, and is done for internal
 consistency. However, this architecture should enable optimisations for high
 rendering performance, similar to ReactJS.
-</template>
 
-  <div class="pad space-out-v error">
-    <p>
-      <sf-icon svg-icon.="exclamation-triangle" class="text-warning inline"></sf-icon>
-      <strong>Note:</strong> this is very much a 0.0.1 release in terms of
-      performance. The current implementation of the DOM is naive and incurs a
-      penalty for continuous updates. Optimisations are underway.
-    </p>
-  </div>
-</sf-article>
+(Note: this page is rendered entirely with `atril`, using multiple components and
+third party libraries for markdown and code.)
+</template>
 
 <sf-article class="pad">
   <h1 id="mpa">

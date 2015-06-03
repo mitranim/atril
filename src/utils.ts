@@ -111,3 +111,47 @@ export function mergeAdjacentTextNodes(node: Node): void {
     mergeAdjacentTextNodes((<TemplateElement>node).content);
   }
 }
+
+export function isValidIdentifier(expression: string): boolean {
+  return /^[$_A-Za-z]+[$_A-Za-z0-9]*$/.test(expression);
+}
+
+// match[1] -> identifier
+// match[2] -> everything else
+export function matchValidIdentifier(expression: string) {
+  return expression.match(/^([$_A-Za-z]+[$_A-Za-z0-9]*)(.*)/);
+}
+
+// Checks if something looks like `blah(.blah.blah)*`.
+// Doesn't support `blah[blah]` or `blah[0]`.
+export function isStaticPathAccessor(expression: string): boolean {
+  return /^[$_A-Za-z]+[$_A-Za-z0-9]*(?:\.[$_A-Za-z]+[$_A-Za-z0-9]*)*$/.test(expression);
+}
+
+let consoleWarnAvailable = typeof console !== 'undefined' && console && typeof console.warn === 'function';
+export function warn(msg: string, extra?: any): void {
+  if (!consoleWarnAvailable) return;
+  // warn.apply doesn't print error stack
+  if (arguments.length > 2) console.warn(msg, extra);
+  else console.warn(msg);
+}
+
+let consoleErrorAvailable = typeof console !== 'undefined' && console && typeof console.error === 'function';
+export function error(msg: string, extra?: any): void {
+  if (!consoleErrorAvailable) return;
+  // error.apply doesn't print error stack
+  if (arguments.length > 2) console.error(msg, extra);
+  else console.error(msg);
+}
+
+// Can't use console.assert because it doesn't interrupt the control flow.
+export function assert(ok: boolean, msg: string, extra?: any): void {
+  if (ok) return;
+  if (consoleErrorAvailable) {
+    // error.apply doesn't print error stack
+    if (arguments.length > 2) console.error(msg, extra);
+    else console.error(msg);
+  }
+  if (arguments.length > 2) msg += extra;
+  throw new Error(msg);
+}

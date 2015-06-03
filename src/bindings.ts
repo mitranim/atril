@@ -58,7 +58,6 @@ export class AttributeInterpolation {
 
 // Problems:
 // * Provides access to globals.
-// * Doesn't assign to missing properties (throws a reference error).
 // * Has to be re-interpreted on each call to support locals that don't mess
 //   with property assignment in scopes.
 export function compileExpression(expression: string): Expression {

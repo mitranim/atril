@@ -1,4 +1,4 @@
-import {Mold, getOrAddState} from 'atril';
+import {Mold} from 'atril';
 
 @Mold({
   attributeName: 'doc-demo'
@@ -10,9 +10,7 @@ class Ctrl {
   scope: any;
 
   constructor() {
-    // Create a dummy scope for property assignments.
-    let state = getOrAddState(this.element);
-    if (!this.scope && !state.scope) state.scope = Object.create(null);
+    console.assert(!this.hint, `'doc-demo.' doesn't expect any hints, got: ${this.hint}`);
 
     // Add a demo wrapper.
     let div = document.createElement('div');

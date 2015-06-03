@@ -14,7 +14,7 @@ let localZone = zone.fork({
     // if a binding consistently throws during a phase, it causes continuous
     // reflows. To avoid that, we have to capture the exception.
     try {reflow()}
-    catch (err) {console.error(err)}
+    catch (err) {utils.error(err)}
   }
 });
 
@@ -26,7 +26,7 @@ export function bootstrap(): void {
   // IE10 compat: doesn't support `apply` for function expressions. Have to
   // define it in a statement.
   function boot(element: Element = document.body): void {
-    console.assert(element instanceof Element, `bootstrap expects an Element, got:`, element);
+    utils.assert(element instanceof Element, `bootstrap expects an Element, got:`, element);
     // Don't register components twice.
     for (let i = 0, ii = roots.length; i < ii; ++i) {
       let root = roots[i];
@@ -78,6 +78,7 @@ function createRootAt(element: Element, VM?: ComponentClass): Root {
     state.view = new View(VM);
     // view should take care of transclusion
     state.view.tryToCompile(virtual);
+    root.virtual = virtual;
   }
   // If we're instantiating a non-component, move its real child nodes to the
   // virtual DOM.
@@ -88,9 +89,9 @@ function createRootAt(element: Element, VM?: ComponentClass): Root {
     }
     let state = getOrAddState(virtual);
     state.real = element;
+    root.virtual = virtual;
   }
 
-  root.virtual = virtual;
   return root;
 }
 
@@ -98,12 +99,12 @@ export function Component(config: ComponentConfig) {
   let tagRegex = /^[a-z][a-z-]*[a-z]$/;
 
   // Type checks.
-  console.assert(typeof config.tagName === 'string', `expected a string tagname, got:`, config.tagName);
-  console.assert(tagRegex.test(config.tagName), `the tagname must match regex ${tagRegex}, got:`, config.tagName);
+  utils.assert(typeof config.tagName === 'string', `expected a string tagname, got:`, config.tagName);
+  utils.assert(tagRegex.test(config.tagName), `the tagname must match regex ${tagRegex}, got:`, config.tagName);
 
   return function(VM: ComponentClass) {
-    console.assert(typeof VM === 'function', `expected a component class, got:`, VM);
-    console.assert(!registeredComponents[config.tagName],
+    utils.assert(typeof VM === 'function', `expected a component class, got:`, VM);
+    utils.assert(!registeredComponents[config.tagName],
                  `unexpected redefinition of component with tagname ${config.tagName}`);
     registeredComponents[config.tagName] = VM;
   };
@@ -113,15 +114,15 @@ export function Attribute(config: AttributeConfig) {
   let nameRegex = /^[a-z][a-z-]*[a-z]$/;
 
   // Type checks.
-  console.assert(typeof config.attributeName === 'string',
+  utils.assert(typeof config.attributeName === 'string',
                  `expected a string attribute name, got:`, config.attributeName);
-  console.assert(nameRegex.test(config.attributeName),
+  utils.assert(nameRegex.test(config.attributeName),
                  `the attribute name must match regex ${nameRegex}, got:`, config.attributeName);
-  console.assert(!registeredAttributes[config.attributeName],
+  utils.assert(!registeredAttributes[config.attributeName],
                  `unexpected redefinition of attribute ${config.attributeName}`);
 
   return function(VM: Function) {
-    console.assert(typeof VM === 'function', `expected an attribute class, got:`, VM);
+    utils.assert(typeof VM === 'function', `expected an attribute class, got:`, VM);
     registeredAttributes[config.attributeName] = VM;
   };
 }
