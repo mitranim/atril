@@ -1,0 +1,177 @@
+<template markdown.>
+## Overview
+
+Built-ins that conditionally add, remove, or clone nodes.
+
+* [`if.`](if-for/#-if-)
+* [`for.*`](if-for/#-for-)
+
+## `if.`
+
+Adds the element to the DOM when the condition evaluates to truthy, and removes
+it when the condition evaluates to falsy. Example:
+</template>
+
+<pre highlight.html>
+<div let.visible="true">
+  <button on.click="visible = !visible">Toggle one!</button>
+  <div if.="true">I'm always visible!</div>
+  <div if.="visible">I'm conditionally visible!</div>
+</div>
+</pre>
+
+<template doc-demo.>
+  <div let.visible="true" class="space-out-v">
+    <button on.click="visible = !visible">Toggle one!</button>
+    <div if.="true" class="pad success">I'm always visible!</div>
+    <div if.="visible" class="pad info">I'm conditionally visible!</div>
+  </div>
+</template>
+
+<template markdown.>
+Internally, the element is cached while hidden, so adding and removing it is
+very cheap.
+
+To hide multiple nodes at once, use it on a `template` tag:
+</template>
+
+<pre highlight.html>
+<div let.visible="true">
+  <button on.click="visible = !visible">Toggle both!</button>
+  <template if.="visible">
+    <div >I'm first!</div>
+    <div>I'm second!</div>
+  </template>
+</div>
+</pre>
+
+<template doc-demo.>
+  <div let.visible="true" class="space-out-v">
+    <button on.click="visible = !visible">Toggle both!</button>
+    <template if.="visible">
+      <div class="pad success">I'm first!</div>
+      <div class="pad info">I'm second!</div>
+    </template>
+  </div>
+</template>
+
+<div>
+  <sf-collapse class="info pad-ch">
+    <input id="if-extra" type="checkbox">
+    <label for="if-extra">
+      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+      Click me for info
+    </label>
+    <sf-collapse-body class="space-out-v">
+      <p>
+        You can also hide an element without removing it from
+        the DOM by binding to its `hidden` property:
+      </p>
+
+<pre highlight.html>
+<div let.visible="true">
+  <button on.click="visible = !visible">Toggle one!</button>
+  <div bind.hidden="false">I'm always visible!</div>
+  <div bind.hidden="!visible">I'm conditionally visible!</div>
+</div>
+</pre>
+
+<template doc-demo.>
+  <div let.visible="true" class="space-out-v">
+    <button on.click="visible = !visible">Toggle one!</button>
+    <div bind.hidden="false" class="pad success">I'm always visible!</div>
+    <div bind.hidden="!visible" class="pad info">I'm conditionally visible!</div>
+  </div>
+</template>
+
+    </sf-collapse-body>
+  </sf-collapse>
+</div>
+
+<template markdown.>
+## `for.*`
+
+Clones an element over an iterable, making individual items available under the
+given key.
+</template>
+
+<pre highlight.html>
+<div let.numbers="[1, 2, 3, 4, 5]">
+  <button on.click="numbers.pop()">-</button>
+  <button on.click="numbers.push((numbers[numbers.length-1]|0)+1)">+</button>
+  <span for.num="numbers">{{num}}</span>
+</div>
+</pre>
+
+<template doc-demo.>
+  <div let.numbers="[1, 2, 3, 4, 5]" class="pad-ch space-out-v">
+    <button on.click="numbers.pop()">-</button>
+    <button on.click="numbers.push((numbers[numbers.length-1]|0)+1)" style="margin-right: 0.5rem">+</button>
+    <span for.num="numbers" class="info">{{num}}</span>
+  </div>
+</template>
+
+<template markdown.>
+Use it on several elements at once with `template`:
+</template>
+
+<pre highlight.html>
+<div let.numbers="[1, 2, 3, 4, 5]">
+  <button on.click="numbers.pop()">-</button>
+  <button on.click="numbers.push((numbers[numbers.length-1]|0)+1)">+</button>
+  <template for.num="numbers">
+    <span>#</span>
+    <span>{{num}}</span>
+  </template>
+</div>
+</pre>
+
+<template doc-demo.>
+  <div let.numbers="[1, 2, 3, 4, 5]" class="pad-ch space-out-v">
+    <button on.click="numbers.pop()">-</button>
+    <button on.click="numbers.push((numbers[numbers.length-1]|0)+1)" style="margin-right: 0.5rem">+</button>
+    <template for.num="numbers">
+      <span class="success">#</span>
+      <span class="info">{{num}}</span>
+    </template>
+  </div>
+</template>
+
+<template markdown.>
+The individual indices or keys are available under the `$index` identifier.
+
+By default, this chooses the iteration strategy depending on the type of the
+iterable. Arrays and strings are iterated via `for (;;;)`, and hash tables are
+iterated via `for..in`. You can enforce one or the other via `for.X.of` and
+`for.X.in`.
+
+### `for.X.of`
+</template>
+
+<pre highlight.html>
+<div let.words="['one', 'two', 'three']">
+  <span for.word.of="words">{{word}}</span>
+</div>
+</pre>
+
+<template doc-demo.>
+  <div let.words="['one', 'two', 'three']" class="pad-ch pad-v space-out-v">
+    <span for.word.of="words" class="info">{{word}}@{{$index}}</span>
+  </div>
+</template>
+
+<template markdown.>
+### `for.X.in`
+</template>
+
+<pre highlight.html>
+<div let.words="{first: 'one', second: 'two', third: 'three'}">
+  <span for.word.in="words">{{word}}</span>
+</div>
+</pre>
+
+<template doc-demo.>
+  <div let.words="{first: 'one', second: 'two', third: 'three'}" class="pad-ch pad-v space-out-v">
+    <span for.word.in="words" class="info">{{word}}@{{$index}}</span>
+  </div>
+</template>
