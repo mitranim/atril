@@ -190,7 +190,8 @@ class On {
 
   constructor() {
     this.element.addEventListener(this.hint, event => {
-      this.expression.call(this.element, this.scope, {$event: event});
+      let result = this.expression.call(this.element, this.scope, {$event: event});
+      if (result === false) event.preventDefault();
     });
   }
 }
@@ -351,9 +352,7 @@ class Ref {
   }
 }
 
-@Mold({
-  attributeName: 'let'
-})
+@Mold({attributeName: 'let'})
 class Let {
   // Autoassigned
   element: TemplateElement;

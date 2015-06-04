@@ -307,7 +307,7 @@ atril.bootstrap();
 If the document isn't yet available, the framework will defer bootstrapping
 until it's loaded.
 
-Now open the page and see the component in action ([demo](todo/)).
+Now open the page and see the component in action.
 
 ## Data Flow
 

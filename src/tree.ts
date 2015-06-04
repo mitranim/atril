@@ -180,12 +180,14 @@ function phaseTextNodes(virtual: Text, real: Text): void {
 function phaseTemplate(template: Element): boolean {
   let state = getState(template);
   let binding = state.moldBinding;
+  if (!binding) return false;
   binding.refreshState(template, state, getScope(template));
   return binding.phase();
 }
 
 function phaseAndUnpackTemplate(template: Element): Node[] {
-  let needsCompilation = getState(template).moldBinding.isNew;
+  let state = getState(template);
+  let needsCompilation = !state.moldBinding || state.moldBinding.isNew;
   if (phaseTemplate(template)) needsCompilation = true;
   if (needsCompilation) compileNode(template);
 

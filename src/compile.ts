@@ -24,6 +24,9 @@ function compileTextNode(node: Text): void {
   if (state.isDomImmutable && state.compiled) return;
   if (hasInterpolation(node.textContent)) {
     state.textInterpolation = compileTextExpression(node.textContent);
+    // Erase the existing text content to prevent curlies from leaking into the
+    // view.
+    node.textContent = '';
   }
   state.compiled = true;
 }
