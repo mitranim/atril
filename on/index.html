@@ -24,7 +24,34 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
-        <page-index></page-index>
+        <h2 id="-on-"><code>on.*</code></h2>
+<p>Adds a listener for the given event. Executes the given statement whenever the
+event occurs.</p>
+<p>The event name is included as the <em>hint</em> (the part after the dot). You can
+listen to any events, not just the standard ones.</p>
+<p>Example:</p>
+<div class="code-pair">
+<pre highlight.html>
+<!-- Outer component -->
+<inner-component on.my-event="console.log($event.detail)"></inner-component>
+</pre>
+<pre highlight.html>
+<!-- Inner component -->
+<button on.click="this.dispatchEvent(new CustomEvent('my-event', 'r-r-roar'))"></button>
+</pre>
+</div>
+
+<p>When clicked, the outer component will log <code>r-r-roar</code>.</p>
+<p><code>on.*</code> is similar to the native <code>onsomething</code> handlers. It&#39;s also executed with
+the element as its context (<code>this</code>). The main difference is that it evaluates
+the expression or statement against the current <em>viewmodel</em> (component), or
+against a local scope that inherits from the viewmodel (<code>for.*</code> creates local
+scopes for cloned items). Native handlers are always evaluated against the
+global scope and don&#39;t have access to components.</p>
+<p>Dispatching events and reacting to events as the paradigm for communicating
+between components has been adopted by several major frameworks, including
+Angular 2, Aurelia, and Polymer, so give it a go.</p>
+
       </div>
 
       <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>

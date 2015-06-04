@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>atril</title>
+    <meta name="author" content="Mitranim">
+    <meta name="description" content="Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <base href="/atril/">
+    
+      <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300&subset=latin" rel="stylesheet" type="text/css">
+    
+    <link rel="stylesheet" type="text/css" href="/atril/css/app.css">
+
+    <!-- Block rendering while preparing the document -->
+    
+      <script src="build.js"></script>
+    
+  </head>
+
+  <body>
+    <doc-banner></doc-banner>
+
+    <div class="flex" style="width: 100%; margin-top: 2rem">
+      <div class="flex-5 space-out-v" style="padding: 0 1rem">
+        <h2 id="-if-"><code>if.</code></h2>
+<p>Adds the element to the DOM when the condition evaluates to truthy, and removes
+it when the condition evaluates to falsy. Example:</p>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">let.visible</span>=<span class="hljs-value">"true"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">on.click</span>=<span class="hljs-value">"visible = !visible"</span>&gt;</span>Toggle one!<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">if.</span>=<span class="hljs-value">"true"</span>&gt;</span>I'm always visible!<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">if.</span>=<span class="hljs-value">"visible"</span>&gt;</span>I'm conditionally visible!<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+<template doc-demo.>
+  <div let.visible="true" class="space-out-v">
+    <button on.click="visible = !visible">Toggle one!</button>
+    <div if.="true" class="pad success">I&#39;m always visible!</div>
+    <div if.="visible" class="pad info">I&#39;m conditionally visible!</div>
+  </div>
+</template>
+
+<p>Internally, the element is cached while hidden, so adding and removing it is
+very cheap.</p>
+<p>To hide multiple nodes at once, use it on a <code>template</code> tag:</p>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">let.visible</span>=<span class="hljs-value">"true"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">on.click</span>=<span class="hljs-value">"visible = !visible"</span>&gt;</span>Toggle both!<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">template</span> <span class="hljs-attribute">if.</span>=<span class="hljs-value">"visible"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> &gt;</span>I'm first!<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>I'm second!<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">template</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+<template doc-demo.>
+  <div let.visible="true" class="space-out-v">
+    <button on.click="visible = !visible">Toggle both!</button>
+    <template if.="visible">
+      <div class="pad success">I&#39;m first!</div>
+      <div class="pad info">I&#39;m second!</div>
+    </template>
+  </div>
+</template>
+
+<h3 id="note">Note</h3>
+<p>You can also hide an element without removing it from the DOM by binding to its
+<code>hidden</code> property:</p>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">let.visible</span>=<span class="hljs-value">"true"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">on.click</span>=<span class="hljs-value">"visible = !visible"</span>&gt;</span>Toggle one!<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">bind.hidden</span>=<span class="hljs-value">"false"</span>&gt;</span>I'm always visible!<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">bind.hidden</span>=<span class="hljs-value">"!visible"</span>&gt;</span>I'm conditionally visible!<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+<template doc-demo.>
+  <div let.visible="true" class="space-out-v">
+    <button on.click="visible = !visible">Toggle one!</button>
+    <div bind.hidden="false" class="pad success">I&#39;m always visible!</div>
+    <div bind.hidden="!visible" class="pad info">I&#39;m conditionally visible!</div>
+  </div>
+</template>
+
+      </div>
+
+      <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>
+    </div>
+
+    <sf-footer></sf-footer>
+  </body>
+
+  <noscript>
+    <doc-noscript>
+  <doc-noscript-content class="narrow-inverse">
+    <h2>Hello! :)</h2>
+    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a web UI framework. For demo purposes, it's mostly rendered with JavaScript.</p>
+    <p>Please enable JavaScript in your browser. Thank you!</p>
+  </doc-noscript-content>
+</doc-noscript>
+
+  </noscript>
+</html>

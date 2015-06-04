@@ -24,7 +24,48 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
-        <page-index></page-index>
+        <h2 id="-let-"><code>let.*</code></h2>
+<p>Defines a new property in the current scope, assigning the given value.</p>
+<p>The reason you need this is because unlike typical expression parsers in
+frameworks like Angular or Polymer, expressions in <code>atril</code> don&#39;t silently
+swallow references to missing properties. If you try to reference a property
+that doesn&#39;t exist on the viewmodel, it throws an error.</p>
+<p><code>let</code> lets you explicitly define a new property from your view.</p>
+<p>Example:</p>
+<div class="code-pair">
+<pre highlight.typescript>
+class VM {
+  constructor() {
+    console.log(&quot;I don&#39;t know what eidolon means&quot;);
+  }
+}
+</pre>
+<pre highlight.html>
+<div let.eidolon="''">
+  <input on.input="eidolon = this.value">
+  <p>{{eidolon}}</p>
+</div>
+</pre>
+</div>
+
+<p>Without <code>let</code> or an explicit property definition in the class, this would throw
+a missing reference error.</p>
+<p><code>let</code> is implemented as a mold, so you can use it on a <code>template</code> tag (only the
+contents are included into the DOM).</p>
+<pre highlight.html>
+<template let.eidolon="''">
+  <input on.input="eidolon = this.value">
+  <p>{{eidolon}}</p>
+</template>
+</pre>
+
+<template doc-demo.>
+  <template let.eidolon="''">
+    <input on.input="eidolon = this.value">
+    <p>{{eidolon}}</p>
+  </template>
+</template>
+
       </div>
 
       <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>

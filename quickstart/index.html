@@ -12,6 +12,11 @@
       <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300&subset=latin" rel="stylesheet" type="text/css">
     
     <link rel="stylesheet" type="text/css" href="/atril/css/app.css">
+
+    <!-- Block rendering while preparing the document -->
+    
+      <script src="build.js"></script>
+    
   </head>
 
   <body>
@@ -19,21 +24,35 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
-        <h2 id="quicklinks">Quicklinks</h2>
+        <h2 id="quickstart">Quickstart</h2>
+<p>The quickest way to get started is by using the source of <a href="https://github.com/Mitranim/atril" target="_blank">this very
+site</a> as your demo project.</p>
+<p>Clone and start it by running the following commands:</p>
+<pre><code class="hljs lang-sh">git <span class="hljs-built_in">clone</span> https://github.com/Mitranim/atril.git atril-demo
+<span class="hljs-built_in">cd</span> atril-demo
+npm run install-all
+npm start
+</code></pre>
+<p>This will the site and run it locally. It&#39;s a multi page app mostly rendered
+with <code>atril</code>. Ruffle through <code>src-docs/app</code> to see how to add custom components.</p>
+<p>The rest of this article assumes you have the app running, but we&#39;ll briefly
+overview some setup basics.</p>
+<h2 id="quicklinks">Quicklinks</h2>
 <ul>
-<li><a href="#installation">Installation</a></li>
-<li><a href="#usage">Usage</a></li>
-<li>...</li>
+<li><a href="quickstart/#installation">Installation</a></li>
+<li><a href="quickstart/#build">Build</a></li>
+<li><a href="quickstart/#component">Component</a></li>
 </ul>
 <h2 id="installation">Installation</h2>
-<p>To begin, get <code>atril</code> from GitHub or NPM. You can install it with <code>npm</code> or
-<code>jspm</code> (package manager that replaces <code>bower</code>).</p>
+<p>Get it with <code>npm</code> or <a href="http://jspm.io" target="_blank"><code>jspm</code></a>.</p>
 <pre><code class="hljs lang-sh">npm i --save atril
 <span class="hljs-comment"># or</span>
 jspm install npm:atril
 <span class="hljs-comment"># or</span>
 jspm install atril=github:Mitranim/atril
 </code></pre>
+<p>Or just grab the source from <a href="https://github.com/Mitranim/atril" target="_blank">GitHub</a>, and
+don&#39;t forget to star the project. :)</p>
 <p>Then import it in your application, using your module loader of choice
 (SystemJS, RequireJS, browserify, webpack, etc.).</p>
 <p>ES5 with CommonJS:</p>
@@ -48,18 +67,267 @@ jspm install atril=github:Mitranim/atril
 <span class="hljs-comment">// Import piecemeal</span>
 <span class="hljs-keyword">import</span> {Component} from <span class="hljs-string">'atril'</span>;
 </code></pre>
-<h2 id="usage">Usage</h2>
-<p>There are three steps to creating an <code>atril</code> component.</p>
+<h2 id="build">Build</h2>
+<p>This is the typical folder structure for a project of this kind.</p>
+<pre><code class="hljs lang-sh">dist ─── ...
+src  ─┬─ app
+      │   ├─ app.ts
+      │   ├─ ...
+      │   └─ my-component
+      │              ├─ my-component.html
+      ├─ html        └─ my-component.ts
+      ├─ styles
+      └─ ...
+</code></pre>
+<p>In development mode, you have a build system that continuously compiles scripts,
+views, templates, styles and images, and outputs them into <code>dist</code>, from where
+the application is served.</p>
+<p>For production, you bundle scripts and views, minify all your files, output this
+into <code>dist</code>, and deploy that folder. <code>.html</code> views are converted into <code>.js</code>
+and included into the script bundle.</p>
+<p>The documentation repo includes tasks and scripts for production builds. See
+<code>package.json</code> and <code>gulpfile.js</code>.</p>
+<h2 id="component">Component</h2>
+<p>Let&#39;s make an obligatory todo demo — the &quot;hello world&quot; of custom elements.
+Assuming you have the site running, create <code>src/html/todo.html</code> with the
+following content:</p>
+<pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- src/html/<span class="hljs-doctag"><span class="hljs-keyword">todo</span>.</span>html --&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">todo-list</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">todo-list</span>&gt;</span>
+</code></pre>
+<p>Navigate to this page in your browser.</p>
+<p>Create <code>src/app/todo-list/</code> with the following:</p>
+<div class="code-pair">
+<pre highlight.typescript>
+// src/app/todo-list/todo-list.ts
+
+import {Component} from &#39;atril&#39;;
+
+@Component({
+  tagName: &#39;todo-list&#39;
+})
+class VM {
+  text = &#39;&#39;;
+  items = [
+    {text: &#39;Learn a new framework&#39;, completed: true},
+    {text: &#39;Be awesome&#39;}
+  ];
+  newItem = {text: &#39;&#39;, completed: false};
+
+  add() {
+    this.items.unshift(this.newItem);
+    this.newItem = {text: &#39;&#39;, completed: false};
+  }
+
+  remove(item) {
+    this.items.splice(this.items.indexOf(item), 1);
+  }
+
+  static viewUrl = &#39;app/todo-list/todo-list.html&#39;;
+}
+</pre>
+
+<pre highlight.html>
+<!-- src/app/todo-list/todo-list.html -->
+
+<todo-item bind.item="newItem" bind.is-new="true" on.add="add()"></todo-item>
+
+<todo-item for.item.of="items" bind.item="item" on.remove="remove(item)"></todo-item>
+</pre>
+</div>
+
+<div>
+  <sf-collapse class="info pad-ch">
+    <input id="quickstart-es5" type="checkbox">
+    <label for="quickstart-es5">
+      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+      Click for ES5 version.
+    </label>
+    <div class="space-out-v">
+      <p>Same component in plain old EcmaScript 5.</p>
+
+<pre highlight.javascript>
+var Component = require(&#39;atril&#39;).Component;
+
+Component({tagName: &#39;todo-list&#39;})(function() {
+  function VM() {
+    this.text = &#39;&#39;;
+    this.items = [
+      {text: &#39;Learn a new framework&#39;, completed: true},
+      {text: &#39;Be awesome&#39;}
+    ];
+    this.newItem = {text: &#39;&#39;, completed: false}
+  }
+
+  VM.prototype.add = function() {
+    this.items.unshift(this.newItem);
+    this.newItem = {text: &#39;&#39;, completed: false}
+  };
+
+  VM.prototype.remove = function(item) {
+    this.items.splice(this.items.indexOf(item), 1);
+  };
+
+  VM.viewUrl = &#39;app/todo-list/todo-list.html&#39;;
+
+  return VM;
+}());
+</pre>
+
+    </div>
+  </sf-collapse>
+</div>
+
+<p>This will display nothing, because we don&#39;t have a custom <code>todo-item</code> element
+yet. Let&#39;s create it.</p>
+<p>Make <code>src/app/todo-item/</code> with the following:</p>
+<div class="code-pair">
+<pre highlight.typescript>
+// src/app/todo-item/todo-item.ts
+
+import {Component, bindable} from &#39;atril&#39;;
+
+@Component({
+  tagName: &#39;todo-item&#39;
+})
+class VM {
+  @bindable item = null;
+  @bindable isNew = false;
+
+  element: HTMLElement;
+
+  add() {
+    this.element.dispatchEvent(new CustomEvent(&#39;add&#39;));
+  }
+
+  remove() {
+    this.element.dispatchEvent(new CustomEvent(&#39;remove&#39;));
+  }
+
+  static viewUrl = &#39;app/todo-item/todo-item.html&#39;;
+}
+</pre>
+<pre highlight.html>
+<!-- src/app/todo-item/todo-item.html -->
+
+<div class.success="item.completed" class.strikethrough="item.completed"
+     class.info="!item.completed" class.orange="isNew">
+  <label if.="!isNew">
+    <input twoway.checked="item.completed" type="checkbox">
+  </label>
+  <form on.submit="add()" onsubmit="return false">
+    <input twoway.value="item.text" bind.disabled="item.completed" required>
+    <button if.="isNew" svg-icon.="plus"></button>
+  </form>
+  <button on.click="remove()" if.="!isNew" svg-icon.="times"></button>
+</div>
+</pre>
+</div>
+
+<div>
+  <sf-collapse class="info pad-ch">
+    <input id="quickstart-es5-todo-item" type="checkbox">
+    <label for="quickstart-es5-todo-item">
+      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+      Click for ES5 version.
+    </label>
+    <div class="space-out-v">
+      <p>Same component in plain old EcmaScript 5.</p>
+
+<pre highlight.javascript>
+var Component = require(&#39;atril&#39;).Component;
+
+Component({tagName: &#39;todo-item&#39;})(function() {
+  function VM() {
+    this.item = null;
+    this.isNew = false;
+  }
+
+  VM.bindable = [&#39;item&#39;, &#39;isNew&#39;];
+
+  VM.prototype.add = function() {
+    this.element.dispatchEvent(new CustomEvent(&#39;add&#39;));
+  };
+
+  VM.prototype.remove = function() {
+    this.element.dispatchEvent(new CustomEvent(&#39;remove&#39;));
+  };
+
+  VM.viewUrl = &#39;app/todo-item/todo-item.html&#39;;
+
+  return VM;
+}());
+</pre>
+
+    </div>
+  </sf-collapse>
+</div>
+
+<div>
+  <sf-collapse class="info pad-ch">
+    <input id="quickstart-views" type="checkbox">
+    <label for="quickstart-views">
+      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+      Note on views.
+    </label>
+    <div class="space-out-v">
+      <p>
+        This component specifies its view as <code>viewUrl</code>. The view can also be
+        specified inline as the static class property <code>view</code> (great with
+        <a href="https://github.com/systemjs/plugin-text">SystemJS/text</a>),
+        or return a promise that resolves to a view.
+      </p>
+    </div>
+  </sf-collapse>
+</div>
+
+<p>To activate these elements on the page, you need to:</p>
 <ol>
-<li>Give it logic. In ES5, any function. In ES6, a class.</li>
-<li>Give it an HTML view.</li>
-<li>Include it on the page.</li>
+<li>Import the components in your source.</li>
+<li>Call <code>atril.bootstrap()</code>. This is done once for the entire application. You
+can optionally pass a DOM element as an argument, and the framework will
+start search for <code>atril</code> features from that element, ignoring the rest.</li>
 </ol>
-<p>This applies equally to <code>Component</code>, <code>Attribute</code>, and <code>Mold</code>.</p>
-<p>After all components are registered, call <code>atril.bootstrap()</code>. This is done just
-once. You can call <code>bootstrap()</code> again after including additional components to
-the page (e.g. by manually adding them to the DOM). Existing components will be
-ignored.</p>
+<p>Your core <code>app.ts</code> file would look something like this:</p>
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">import</span> {bootstrap} from <span class="hljs-string">'atril'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'todo-item/todo-item'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'todo-list/todo-list'</span>;
+atril.bootstrap();
+</code></pre>
+<p>If the document isn&#39;t yet available, the framework will defer bootstrapping
+until it&#39;s loaded.</p>
+<p>Now open the page and see the component in action.</p>
+<h2 id="data-flow">Data Flow</h2>
+<p>A few notes on the data flow. Components generally interoperate in three ways.</p>
+<ol>
+<li>One-way binding from parent to child. Can use arbitrary expressions.</li>
+</ol>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">inner-child</span> <span class="hljs-attribute">bind.child-property</span>=<span class="hljs-value">"parentProperty || somethingElse"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">inner-child</span>&gt;</span>
+</code></pre>
+<ol>
+<li>Two-way binding between parent and child.</li>
+</ol>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">inner-child</span> <span class="hljs-attribute">twoway.child-property</span>=<span class="hljs-value">"parentProperty"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">inner-child</span>&gt;</span>
+</code></pre>
+<ol>
+<li>Event-based feedback from child to parent.</li>
+</ol>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">inner-child</span> <span class="hljs-attribute">on.child-event</span>=<span class="hljs-value">"parentMethod($event.detail)"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">inner-child</span>&gt;</span>
+</code></pre>
+<p>The todo example uses all three. It&#39;s generally best to bind custom components
+one-way and feed the data back through events. For form inputs, two-way
+databinding is a good fit.</p>
+<p>Another thing to note is that <code>bind</code> and <code>twoway</code> pull double duty. They bind to
+properties on the target DOM element, and if it happens to be a custom element
+with a viewmodel, also try to bind to that viewmodel&#39;s properties.</p>
+<p>To avoid surprises, the child component has to declare which properties are
+bindable. The <code>list-item</code> example shows how to do this with the <code>@bindable</code>
+decorator or in plain ES5.</p>
+<hr>
+<p>That&#39;s it! In a few lines, you have an interactive, data driven micro
+application built out of reusable elements (<a href="todo/">demo</a>). Check the
+site&#39;s source for more examples, and stay tuned for documentation on custom
+attributes and molds.</p>
 
       </div>
 
@@ -67,12 +335,7 @@ ignored.</p>
     </div>
 
     <sf-footer></sf-footer>
-
   </body>
-
-  
-    <script src="build.js"></script>
-  
 
   <noscript>
     <doc-noscript>

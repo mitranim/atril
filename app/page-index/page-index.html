@@ -22,7 +22,7 @@
     <sf-icon svg-icon.="sitemap"></sf-icon>
   </a>
   <a href="#light" class="text-warning">
-    <div>Lightweight (33 KB)</div>
+    <div>Lightweight (40 KB)</div>
     <sf-icon svg-icon.="paper-plane-o"></sf-icon>
   </a>
 </doc-features>
@@ -165,7 +165,6 @@ Here's an example attribute. This is the entire implementation of the built-in
 @Attribute({attributeName: 'class'})
 class Ctrl {
   // Autoassigned by the framework.
-  // (Compile-time type information in TS.)
   element: Element;
   hint: string;
   expression: Function;
@@ -180,8 +179,7 @@ class Ctrl {
 </pre>
 
 <pre highlight.html>
-<!-- Example usage. -->
-<div>
+<div let.checked="true">
   <!-- Set class `info` when `checked` is true
        and `error` otherwise. -->
   <label class.info="checked" class.error="!checked">
@@ -410,40 +408,21 @@ libraries for markdown and code.)
     Multi-page Application Friendly
   </h1>
 <template markdown.>
-`atril` is a tool for doing cool things on _existing_ sites.
+This framework is targeting websites over web applications. It's aimed at
+multi-page, document-oriented sites with server-side routing and large amounts
+of static content — in other words, the majority of the web.
 
-Big-name next generation frameworks put so much focus on clientside routing and
-single-page applications that it becomes detrimental. They penalise multi-page
-applications (normal websites) in multiple ways:
+It's designed to be as light, fast, and non-intrusive as possible. The library
+clocks at 40KB, starts up incredibly quickly, and you can use custom components
+just by including new tags on the page — without any effect on the rest of the
+content, routing, or page rendering.
 
-* By making it difficult to include multiple components all over the page
-  (Angular 2, Aurelia, ReactJS). You're expected to root the app in one component.
-* By making it difficult or impossible to progressively enhance existing content
-  (ReactJS, Aurelia).
+Big-name next generation frameworks like Angular 2 and Aurelia are targeting a
+wider range of applications, with the primary focus on single-page apps. You can
+certainly use them for any website, but at the moment of writing, they incur a
+significant performance and mental overhead for an MPA.
 
-Other shared problems with impact on MPAs:
-
-* Huge library size.
-* Reliance on experimental or slow polyfills.
-* Reliance on XHR imports.
-* Considerable startup time.
-
-In reality, for the majority of websites clientside routing is either not
-relevant, or is a bad choice. Most are document-oriented, meaning that from the
-client's perspective, most of the content is static (and it should be accessible
-to visitors without JavaScript). What you actually need is fast loading and fast
-startup.
-
-With that in mind, what a modern UI framework actually needs:
-
-* Ability to define custom elements and attributes and include them anywhere
-  in the existing HTML.
-* Small size and fast startup.
-* Make it easy to bundle scripts and views for production.
-
-`atril` negates these problems and ticks all the checkboxes. It's extremely
-light and has unbeatably fast startup. Despite that, it boasts automatic change
-detection and powerful features like two-way binding.
+Make a comparison and pick the right tool for the given use case.
 </template>
 </sf-article>
 
@@ -453,11 +432,10 @@ detection and powerful features like two-way binding.
     Lightweight
   </h1>
 <template markdown.>
-Despite its power, `atril` is simple at its core. The entire library is 33KB
+Despite its power, `atril` is simple at its core. The entire library is 40KB
 minified with dependencies. This includes 14KB of `zone.js`, which comes with
 a `Promise` polyfill. The framework has no other ES6 dependencies.
 
-At the moment, it works in the standards-compliant browsers. Support for IE10
-and IE11 is coming up.
+Browser support: standards-compliant browsers; IE10 and above.
 </template>
 </sf-article>
