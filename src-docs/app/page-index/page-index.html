@@ -22,7 +22,7 @@
     <sf-icon svg-icon.="sitemap"></sf-icon>
   </a>
   <a href="#light" class="text-warning">
-    <div>Lightweight (33 KB)</div>
+    <div>Lightweight (40 KB)</div>
     <sf-icon svg-icon.="paper-plane-o"></sf-icon>
   </a>
 </doc-features>
@@ -165,7 +165,6 @@ Here's an example attribute. This is the entire implementation of the built-in
 @Attribute({attributeName: 'class'})
 class Ctrl {
   // Autoassigned by the framework.
-  // (Compile-time type information in TS.)
   element: Element;
   hint: string;
   expression: Function;
@@ -180,8 +179,7 @@ class Ctrl {
 </pre>
 
 <pre highlight.html>
-<!-- Example usage. -->
-<div>
+<div let.checked="true">
   <!-- Set class `info` when `checked` is true
        and `error` otherwise. -->
   <label class.info="checked" class.error="!checked">
@@ -453,11 +451,10 @@ detection and powerful features like two-way binding.
     Lightweight
   </h1>
 <template markdown.>
-Despite its power, `atril` is simple at its core. The entire library is 33KB
+Despite its power, `atril` is simple at its core. The entire library is 40KB
 minified with dependencies. This includes 14KB of `zone.js`, which comes with
 a `Promise` polyfill. The framework has no other ES6 dependencies.
 
-At the moment, it works in the standards-compliant browsers. Support for IE10
-and IE11 is coming up.
+Browser support: standards-compliant browsers; IE10 and above.
 </template>
 </sf-article>

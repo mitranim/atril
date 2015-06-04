@@ -5,7 +5,7 @@ import * as utils from './utils';
 import {View} from './view';
 import {compileNode} from './compile';
 import {Root, roots, getState, getOrAddState, phaseElements} from './tree';
-import 'zone';
+import 'zone.js';
 
 let localZone = zone.fork({
   afterTask: function() {
@@ -17,6 +17,48 @@ let localZone = zone.fork({
     catch (err) {utils.error(err)}
   }
 });
+
+let reflowScheduled: boolean = false;
+export function scheduleReflow(): void {
+  reflowScheduled = true;
+}
+
+let reflowStackDepth = 0;
+const maxReflowStackDepth = 10;
+function reflow() {
+  reflowStackDepth++;
+  if (reflowStackDepth >= maxReflowStackDepth) {
+    throw new Error(`reached ${maxReflowStackDepth} recursive reflow phases, aborting`);
+  }
+  reflowWithUnlimitedStack();
+  if (reflowScheduled) {
+    reflowScheduled = false;
+    reflow();
+  }
+  reflowStackDepth--;
+}
+
+function reflowWithUnlimitedStack(): void {
+  for (let i = 0, ii = roots.length; i < ii; ++i) {
+    let root = roots[i];
+    if (!root.real.parentNode) {
+      destroy(root.virtual);
+      roots.splice(i, 1);
+      continue;
+    }
+    phaseElements(root.virtual, root.real);
+  }
+}
+
+function destroy(virtual: Element): void {
+  let state = getState(virtual);
+  state.destroy();
+  let nodes = virtual.childNodes;
+  for (let i = 0, ii = nodes.length; i < ii; ++i) {
+    let node = nodes[i];
+    if (node instanceof Element) destroy(node);
+  }
+}
 
 export const registeredComponents: {[tagName: string]: ComponentClass} = Object.create(null);
 export const registeredAttributes: {[attributeName: string]: Function} = Object.create(null);
@@ -39,7 +81,12 @@ export function bootstrap(): void {
       return;
     }
 
+    // Child scan must be breadth-first because a child may register the current
+    // element as a root. If we go depth-first, we may end up with a root that
+    // is also a descendant of another root. So we need two passes over the
+    // child list.
     let nodes = element.childNodes;
+    // First pass.
     for (let i = 0, ii = nodes.length; i < ii; ++i) {
       let node = nodes[i];
       if (node instanceof Element) {
@@ -58,12 +105,15 @@ export function bootstrap(): void {
             }
           }
         }
-        // Otherwise continue normally.
-        boot(node);
       }
     }
+    // Second pass.
+    for (let i = 0, ii = nodes.length; i < ii; ++i) {
+      let node = nodes[i];
+      if (node instanceof Element) boot(node);
+    }
   }
-  localZone.run(boot);
+  utils.onload(() => {localZone.run(boot)});
 }
 
 function createRootAt(element: Element, VM?: ComponentClass): Root {
@@ -132,46 +182,4 @@ export function Mold(config: AttributeConfig) {
     Attribute(config)(VM);
     registeredMolds[config.attributeName] = true;
   };
-}
-
-let reflowScheduled: boolean = false;
-export function scheduleReflow(): void {
-  reflowScheduled = true;
-}
-
-let reflowStackDepth = 0;
-const maxReflowStackDepth = 10;
-function reflow() {
-  reflowStackDepth++;
-  if (reflowStackDepth >= maxReflowStackDepth) {
-    throw new Error(`reached ${maxReflowStackDepth} recursive reflow phases, aborting`);
-  }
-  reflowWithUnlimitedStack();
-  if (reflowScheduled) {
-    reflowScheduled = false;
-    reflow();
-  }
-  reflowStackDepth--;
-}
-
-function reflowWithUnlimitedStack(): void {
-  for (let i = 0, ii = roots.length; i < ii; ++i) {
-    let root = roots[i];
-    if (!root.real.parentNode) {
-      destroy(root.virtual);
-      roots.splice(i, 1);
-      continue;
-    }
-    phaseElements(root.virtual, root.real);
-  }
-}
-
-function destroy(virtual: Element): void {
-  let state = getState(virtual);
-  state.destroy();
-  let nodes = virtual.childNodes;
-  for (let i = 0, ii = nodes.length; i < ii; ++i) {
-    let node = nodes[i];
-    if (node instanceof Element) destroy(node);
-  }
 }

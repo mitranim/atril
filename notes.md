@@ -5,10 +5,6 @@ For molds, demo how to make a live markdown component, and how to optimise it
 for speed through the isDomImmutable convention (unlike `if.`, this property
 will need to be set on the state of the template itself).
 
-Consider making `isDomImmutable` a mold VM property rather than state property,
-in order to avoid leaking state. Figure out if it's possible to reconcile this
-with the need to specify it separately on different children in `for.`.
-
 # Possible performance optimisations
 
 Expressions are currently re-evaluated on each call. This is done in order to
@@ -87,13 +83,11 @@ vanilla DOM (if no viewmodel is found all the way up to `<html>`).
 Consider providing a 'global.atril' export for scenarios without a module
 environment.
 
-Consider ways of letting non-molds opt into attaching to the virtual element
-instead of the real one. Not keen on the idea of autoassigning both virtual and
-real. But it makes sense to provide virtual DOM access to _some_ of those
-attributes, on an opt-in basis.
-
 Consider adding a "render-once" feature to embed DOM nodes managed by external
-code (e.g. third party UI widgets with their own DOM logic).
+code (e.g. third party UI widgets with their own DOM logic). This could be done
+by adding a `State` flag to completely skip phasing starting at the given
+virtual node and its real counterpart. This needs to be usable without writing
+custom molds, so we'll probably add a built-in.
 
 Consider async queueing and batching of DOM updates.
 
@@ -112,3 +106,6 @@ Considering to no longer autocompile expressions. Currently the only place where
 they're used as expressions in the `bind.*` attribute, and the only place where
 they're used as statements is the `on.` attribute. `twoway.` and some other
 attributes actually reparse them as property accessors.
+
+Another problem is that prototypal scope inheritance leaks getters and setters
+from the VM, leading to unintuitive and difficult to debug errors.

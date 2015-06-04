@@ -29,7 +29,9 @@ class Ctrl {
   }
 
   commit(view: string): void {
-    this.element.appendChild(this.content.firstChild);
-    (<HTMLElement>this.element.firstChild).innerHTML = view;
+    let child = <HTMLElement>this.content.firstChild;
+    this.element.appendChild(this.content.removeChild(child));
+    if (child.tagName !== 'sf-icon') child.classList.add('sf-icon');
+    child.innerHTML = view;
   }
 }

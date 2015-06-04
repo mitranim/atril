@@ -171,3 +171,22 @@ export function assert(ok: boolean, msg: string, extra?: any): void {
   if (arguments.length > 2) msg += extra;
   throw new Error(msg);
 }
+
+// Can be sync or async. No guarantees. We really want to be sync when possible
+// in order to pause the UI thread.
+export function onload(callback: Function): void {
+  if (document.readyState === 'loaded' ||
+      document.readyState === 'complete' ||
+      document.readyState === 'interactive') {
+    callback();
+  } else {
+    document.addEventListener('DOMContentLoaded', function cb() {
+      document.removeEventListener('DOMContentLoaded', cb);
+      callback();
+    });
+  }
+}
+
+// User agent sniffing. You're welcome to sniffing the "capability" to randomly
+// erase custom properties of Text nodes.
+export const msie = !!(<any>document).documentMode;

@@ -1,3 +1,5 @@
+'use strict';
+
 import {View} from './view';
 import {registeredComponents} from './boot';
 import {compileNode, compileAttributeBindingsOnRealElement} from './compile';
@@ -36,6 +38,15 @@ export class State {
   attributeBindings: AttributeBinding[] = null;
   moldBinding: AttributeBinding = null;
 
+  // Workaround for an IE10/11 problem where the browser removes non-standard
+  // properties from text nodes (instances of Text). The problem is prevented if
+  // references to those text nodes are kept _somewhere_ in the JavaScript code.
+  // The reference also can't be held by the state associated with the text node
+  // in question, so we keep it on the parent state to give it a good chance of
+  // being automatically garbage collected when this branch is destroyed. This
+  // should never be used by our JS code — it exists solely to keep references.
+  msieChildTextNodes: Text[] = null;
+
   destroy(): void {
     if (this.moldBinding) this.moldBinding.destroy();
     if (this.attributeBindings) {
@@ -60,6 +71,12 @@ export function getState(node: Node): State {
 
 export function getOrAddState(node: Node): State {
   if (hasState(node)) return node[stateKey];
+  // IE 10/11 workaround, see State.
+  if (node instanceof Text && utils.msie) {
+    let parentState = getState(node.parentNode);
+    if (!parentState.msieChildTextNodes) parentState.msieChildTextNodes = [];
+    parentState.msieChildTextNodes.push(node);
+  }
   node[stateKey] = new State();
   return node[stateKey];
 }
@@ -67,20 +84,23 @@ export function getOrAddState(node: Node): State {
 function getScope(virtual: Node): any {
   let state = getState(virtual);
   if (state.scope) return state.scope;
-  while (virtual = virtual.parentNode) {
-    let state = getState(virtual);
-    if (state.scope) return state.scope;
+  let node = virtual;
+  while (node = node.parentNode) {
+    let state = getState(node);
     if (state.vm) return state.vm;
+    if (state.scope) return state.scope;
   }
   return null;
 }
 
-export function phaseElements(virtual: Element, real: Element) {
+// Must follow the sequence: (two elements?) -> init VMs -> phase attributes ->
+// phase child nodes.
+export function phaseElements(virtual: Element, real: Element): void {
   let state = getOrAddState(virtual);
   utils.assert(state.compiled, `expected the state during a phase to be compiled`);
 
   if (state.view) {
-    // Ignore if view not ready. ToDo check if we need additional cleanup if failed.
+    // Ignore if view not ready.
     if (state.view.loading) return;
     if (state.view.failed) {
       // TODO check if we need additional cleanup here.
@@ -94,6 +114,9 @@ export function phaseElements(virtual: Element, real: Element) {
     state.vm.element = real;
     state.VM.call(state.vm);
   }
+
+  // Currently also tries to phase attributes on a root, must fix.
+  compileAndPhaseAttributes(virtual, real);
 
   phaseChildNodes(virtual, real);
   if (state.vm && typeof state.vm.onPhase === 'function') state.vm.onPhase();
@@ -121,7 +144,6 @@ function phaseChildNodes(virtual: Node, real: Node): void {
       children.push(child);
     }
   }
-
   // Compare the children side by side.
   for (var i = 0, ii = children.length; i < ii; ++i) {
     let virtualChild = children[i];
@@ -135,14 +157,6 @@ function phaseChildNodes(virtual: Node, real: Node): void {
       }
       real.insertBefore(state.real, realChild);
       realChild = state.real;
-    }
-
-    if (virtualChild instanceof Element && realChild instanceof Element) {
-      compileAttributeBindingsOnRealElement(virtualChild, realChild);
-      // Phase custom attributes on both children.
-      phaseCustomAttributes(virtualChild, realChild);
-      // Phase and sync static attributes.
-      phaseAndSyncAttributeInterpolations(virtualChild, realChild);
     }
     // Phase and sync contents.
     phaseNodes(virtualChild, realChild);
@@ -185,6 +199,14 @@ function phaseAndUnpackTemplate(template: Element): Node[] {
     }
   }
   return nodes;
+}
+
+function compileAndPhaseAttributes(virtual: Element, real: Element): void {
+  compileAttributeBindingsOnRealElement(virtual, real);
+  // Phase custom attributes on both children.
+  phaseCustomAttributes(virtual, real);
+  // Phase and sync static attributes.
+  phaseAndSyncAttributeInterpolations(virtual, real);
 }
 
 function phaseCustomAttributes(virtual: Element, real: Element): void {

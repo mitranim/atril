@@ -1,0 +1,23 @@
+todo-item {
+  > * {
+    display: flex;
+    label {
+      padding: @sf-common-padding;
+    }
+    form {
+      display: flex;
+      flex-direction: row;
+      flex: 1;
+      input:not([type]), input[type] {
+        flex: 1;
+        outline: none;
+      }
+    }
+    button {
+      padding: @sf-common-padding;
+    }
+  }
+  .strikethrough {
+    text-decoration: line-through;
+  }
+}

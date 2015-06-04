@@ -1,3 +1,5 @@
+'use strict';
+
 import {compileNode} from './compile';
 import * as utils from './utils';
 

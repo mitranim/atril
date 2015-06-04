@@ -2,8 +2,8 @@
   "version": "v4",
   "repo": "borisyankov/DefinitelyTyped",
   "ref": "master",
-  "path": "src-demo/app/typings",
-  "bundle": "src-demo/app/typings/tsd.d.ts",
+  "path": "src-docs/app/typings",
+  "bundle": "src-docs/app/typings/tsd.d.ts",
   "installed": {
     "highlightjs/highlightjs.d.ts": {
       "commit": "2d4c4679bc2b509f27435a4f9da5e2de11258571"

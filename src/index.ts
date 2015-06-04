@@ -1,3 +1,5 @@
+'use strict';
+
 import './attributes';
 import './bindings';
 export {Attribute, bootstrap, Component, Mold, scheduleReflow} from './boot';

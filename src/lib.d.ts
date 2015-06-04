@@ -1,6 +1,6 @@
 /*--------------------------------- Modules ---------------------------------*/
 
-declare module 'zone' {
+declare module 'zone.js' {
   var x;
   export default x;
 }

@@ -1,6 +1,6 @@
 {
   "name": "atril",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.",
   "main": "lib/index",
   "author": "Mitranim",
@@ -19,6 +19,9 @@
     "aurelia"
   ],
   "scripts": {
+    "jspm": "jspm",
+    "tsd": "tsd",
+    "install-all": "npm install && jspm install --dev && bower install && tsd update",
     "start": "gulp",
     "gulp": "gulp",
     "prepublish": "gulp lib:build",
@@ -28,12 +31,13 @@
     "push": "npm run build-prod && (cd dist && git add -A . && git commit -a -m autocommit && git push origin gh-pages)"
   },
   "dependencies": {
-    "zone.js": "^0.5.0"
+    "zone.js": "angular/zone.js@master"
   },
   "devDependencies": {
+    "bower": "^1.4.1",
     "browser-sync": "^2.7.6",
     "gulp": "gulpjs/gulp#4.0",
-    "gulp-atril-html2js": "^0.0.2",
+    "gulp-atril-html2js": "^0.0.4",
     "gulp-autoprefixer": "^2.3.0",
     "gulp-babel": "^5.1.0",
     "gulp-filter": "^2.0.2",
@@ -53,6 +57,7 @@
     "highlight.js": "^8.6.0",
     "jspm": "^0.15.6",
     "stylific": "0.0.11",
+    "tsd": "^0.6.0",
     "typescript": "git://github.com/microsoft/TypeScript.git",
     "yargs": "^3.10.0"
   },
@@ -65,9 +70,10 @@
     },
     "configFile": "system.config.js",
     "dependencies": {
-      "zone": "github:angular/zone.js@^0.5.0"
+      "zone.js": "github:angular/zone.js@master"
     },
     "devDependencies": {
+      "atril": "github:Mitranim/atril@master",
       "highlightjs": "github:components/highlightjs@^8.5.0",
       "marked": "npm:marked@^0.3.3",
       "text": "github:systemjs/plugin-text@^0.0.2",

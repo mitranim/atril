@@ -12,6 +12,18 @@
       <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300&subset=latin" rel="stylesheet" type="text/css">
     <% } %>
     <link rel="stylesheet" type="text/css" href="/atril/css/app.css">
+
+    <!-- Block rendering while preparing the document -->
+    <% if (prod()) { %>
+      <script src="build.js"></script>
+    <% } else { %>
+      <script src="jspm_packages/es6-module-loader.js"></script>
+      <script src="jspm_packages/system.js"></script>
+      <script src="system.config.js"></script>
+      <script>
+        System.import('app');
+      </script>
+    <% } %>
   </head>
 
   <body>
@@ -26,19 +38,7 @@
     </div>
 
     <sf-footer></sf-footer>
-
   </body>
-
-  <% if (prod()) { %>
-    <script src="build.js"></script>
-  <% } else { %>
-    <script src="jspm_packages/es6-module-loader.js"></script>
-    <script src="jspm_packages/system.js"></script>
-    <script src="system.config.js"></script>
-    <script>
-      System.import('app');
-    </script>
-  <% } %>
 
   <noscript>
     <%= $include('$index/noscript', $) %>

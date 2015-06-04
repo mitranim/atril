@@ -105,7 +105,8 @@ gulp.task('lib:compile', function() {
       typescript: require('typescript'),
       target: 'ES5',
       module: 'commonjs',
-      noExternalResolve: true
+      noExternalResolve: true,
+      experimentalDecorators: true
     }))
     .pipe(filter)
     // Allow SystemJS to consume our named exports the ES6 way.
@@ -140,7 +141,8 @@ gulp.task('docs:scripts:compile', function() {
       noExternalResolve: true,
       typescript: require('typescript'),
       target: 'ES5',
-      module: 'system'
+      module: 'system',
+      experimentalDecorators: true
     }))
     .pipe($.sourcemaps.write())
     .pipe(gulp.dest(dest.app));
@@ -166,7 +168,6 @@ gulp.task('docs:views:html2js', function() {
       stripPrefix: 'src-docs',
       concat: 'views.js'
     }))
-    .pipe($.babel({modules: 'system'}))
     .pipe(gulp.dest(dest.app));
 });
 

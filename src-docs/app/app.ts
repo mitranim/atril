@@ -10,5 +10,7 @@ import 'hello-world/hello-world';
 // import 'inner-component/inner-component';
 // import 'mock-component/mock-component';
 import 'sf-footer/sf-footer';
+import 'todo-item/todo-item';
+import 'todo-list/todo-list';
 
 bootstrap();

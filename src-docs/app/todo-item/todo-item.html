@@ -1,0 +1,11 @@
+<div class.success="item.completed" class.strikethrough="item.completed"
+     class.info="!item.completed" class.orange="isNew">
+  <label if.="!isNew">
+    <input twoway.checked="item.completed" type="checkbox">
+  </label>
+  <form on.submit="add()" onsubmit="return false">
+    <input twoway.value="item.text" bind.disabled="item.completed" required>
+    <button if.="isNew" svg-icon.="plus"></button>
+  </form>
+  <button on.click="remove()" if.="!isNew" svg-icon.="times"></button>
+</div>

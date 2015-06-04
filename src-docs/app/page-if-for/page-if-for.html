@@ -62,7 +62,7 @@ To hide multiple nodes at once, use it on a `template` tag:
       <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
       Click me for info
     </label>
-    <sf-collapse-body class="space-out-v">
+    <div class="space-out-v">
       <p>
         You can also hide an element without removing it from
         the DOM by binding to its `hidden` property:
@@ -84,7 +84,7 @@ To hide multiple nodes at once, use it on a `template` tag:
   </div>
 </template>
 
-    </sf-collapse-body>
+    </div>
   </sf-collapse>
 </div>
 
@@ -150,7 +150,7 @@ iterated via `for..in`. You can enforce one or the other via `for.X.of` and
 
 <pre highlight.html>
 <div let.words="['one', 'two', 'three']">
-  <span for.word.of="words">{{word}}</span>
+  <span for.word.of="words">{{word}}@{{$index}}</span>
 </div>
 </pre>
 
@@ -166,7 +166,7 @@ iterated via `for..in`. You can enforce one or the other via `for.X.of` and
 
 <pre highlight.html>
 <div let.words="{first: 'one', second: 'two', third: 'three'}">
-  <span for.word.in="words">{{word}}</span>
+  <span for.word.in="words">{{word}}@{{$index}}</span>
 </div>
 </pre>
 

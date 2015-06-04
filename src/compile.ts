@@ -1,3 +1,5 @@
+'use strict';
+
 import {registeredComponents, registeredAttributes, registeredMolds} from './boot';
 import {hasState, getState, getOrAddState} from './tree';
 import {AttributeBinding, AttributeInterpolation, hasInterpolation, compileExpression, compileTextExpression} from './bindings';
@@ -5,56 +7,76 @@ import {View} from './view';
 import * as utils from './utils';
 
 export function compileNode(node: Node): void {
-  let state = getOrAddState(node);
-  if (state.isDomImmutable && state.compiled) return;
-
   if (node instanceof Text) {
-    if (hasInterpolation(node.textContent)) {
-      state.textInterpolation = compileTextExpression(node.textContent);
-    }
-    state.compiled = true;
+    compileTextNode(node);
     return;
   }
-
   if (node instanceof Element) {
-    // Clean up text nodes.
-    utils.pruneTextNodes(node);
-
-    if (!state.vm && !state.view) {
-      let VM = registeredComponents[node.tagName.toLowerCase()];
-      if (VM) {
-        state.VM = VM;
-        state.view = new View(VM);
-        // view should take care of transclusion
-        state.view.tryToCompile(node);
-        return;
-      }
-    }
-
-    for (let i = 0, ii = node.childNodes.length; i < ii; ++i) {
-      let child = node.childNodes[i];
-      if (child instanceof Element) {
-        let oldChild = <Element>child;
-        let sibling = child.nextSibling;
-
-        child = <Element>unpackTemplatesFromMolds(<Element>child);
-        if (child !== oldChild) node.insertBefore(child, sibling);
-
-        if ((<Element>child).tagName === 'TEMPLATE') {
-          utils.shimTemplateContent(<Element>child);
-          compileMoldsOnTemplate(<Element>child);
-        } else {
-          compileAttributeInterpolationsOnElement(<Element>child);
-        }
-      }
-      compileNode(child);
-    }
+    compileElement(node);
+    return;
   }
+  // A state should always be made available, even for comments.
+  getOrAddState(node);
+}
 
+function compileTextNode(node: Text): void {
+  let state = getOrAddState(node);
+  if (state.isDomImmutable && state.compiled) return;
+  if (hasInterpolation(node.textContent)) {
+    state.textInterpolation = compileTextExpression(node.textContent);
+  }
   state.compiled = true;
 }
 
-export function unpackTemplatesFromMolds(element: Element): Element {
+function compileElement(element: Element): void {
+  let state = getOrAddState(element);
+  // Allows us to skip recompilation of nodes returned from molds. Molds are
+  // expected to explicitly mark their children as immutable. Child molds can't
+  // be considered immutable in the compilation sense because parent molds can't
+  // trust their output to stay the same.
+  if (state.isDomImmutable && state.compiled) {
+    if (element.tagName !== 'TEMPLATE') return;
+  }
+
+  // Clean up text nodes.
+  utils.pruneTextNodes(element);
+
+  if (!state.vm && !state.view) {
+    let VM = registeredComponents[element.tagName.toLowerCase()];
+    if (VM) {
+      state.VM = VM;
+      state.view = new View(VM);
+      // view should take care of transclusion
+      state.view.tryToCompile(element);
+      return;
+    }
+  }
+
+  // If the element is a template, here we intentionally do not compile its
+  // `.content` in order to give it a chance to modify its "raw" state. This is
+  // useful for molds that e.g. compile markdown or highlight code.
+  for (let i = 0, ii = element.childNodes.length; i < ii; ++i) {
+    let child = element.childNodes[i];
+    if (child instanceof Element) {
+      let oldChild = <Element>child;
+      let sibling = child.nextSibling;
+
+      child = <Element>unpackTemplatesFromMolds(<Element>child);
+      if (child !== oldChild) element.insertBefore(child, sibling);
+
+      if ((<Element>child).tagName === 'TEMPLATE') {
+        utils.shimTemplateContent(<Element>child);
+        compileMoldsOnTemplate(<Element>child);
+      } else {
+        compileAttributeInterpolationsOnElement(<Element>child);
+      }
+    }
+    compileNode(child);
+  }
+  state.compiled = true;
+}
+
+function unpackTemplatesFromMolds(element: Element): Element {
   let outerElem = element;
   let atCapacity: boolean = element.tagName !== 'TEMPLATE';
   let attributes: Attr[] = [].slice.call(element.attributes);
@@ -82,10 +104,9 @@ export function unpackTemplatesFromMolds(element: Element): Element {
   return outerElem;
 }
 
-export function compileMoldsOnTemplate(template: Element): void {
-  if (hasState(template)) return;
+function compileMoldsOnTemplate(template: Element): void {
   let state = getOrAddState(template);
-
+  if (state.compiled) return;
 
   for (let i = 0, ii = template.attributes.length; i < ii; ++i) {
     let attr = template.attributes[i];
@@ -133,9 +154,9 @@ export function compileAttributeBindingsOnRealElement(virtual: Element, real: El
   }
 }
 
-export function compileAttributeInterpolationsOnElement(element: Element): void {
-  if (hasState(element)) return;
+function compileAttributeInterpolationsOnElement(element: Element): void {
   let state = getOrAddState(element);
+  if (state.compiled) return;
 
   for (let i = 0, ii = element.attributes.length; i < ii; ++i) {
     let attr = element.attributes[i];

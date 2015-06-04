@@ -1,3 +1,5 @@
+'use strict';
+
 import {State} from './tree';
 
 export class AttributeBinding {
