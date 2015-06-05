@@ -1,6 +1,3 @@
-Review the `this` strategy for expressions. Not convinced the flexibility is
-worth having to correctly call them in attribute VMs.
-
 For molds, demo how to make a live markdown component, and how to optimise it
 for speed through the isDomImmutable convention (unlike `if.`, this property
 will need to be set on the state of the template itself).
@@ -27,6 +24,36 @@ Consider ways to localise reflow. Currently we reflow from each root. For
 inputs, it would be great if we could figure out that the given reflow is caused
 by an input event somewhere at the bottom of the tree, and reflow only that
 part. Might be the biggest performance improvement we can make.
+
+Kicking some reflow localisation ideas around. How about this:
+* In addition to the virtual DOM structure, link `State` objects like a tree,
+  with shorter paths that are faster to traverse than the DOM. Don't create
+  State objects for nodes without interpolations, or custom attributes, or
+  molds. Give each State a reference both to its real node _and_ its virtual
+  node (surefire memory leak since the virtual node also references the state,
+  but we have a destroy phase specifically to clean this up).
+* The secondary tree is built during compilation and refreshed when recompiling
+  mold outputs.
+* After the first reflow pass, use this secondary tree to short-curcuit reflows
+  by skipping "dumb" DOM paths. For each State, do the following:
+  * Assert that its virtual node is in the expected place in the virtual DOM.
+    The compile (and mold recompile) step runs before the phase step. It must
+    correctly sync the state tree with any DOM changes caused by molds.
+  * If this is a template, run the mold and recompile if necessary. Go to the
+    next state.
+  * Run interpolations or phase custom attributes, whatever is registered with
+    this state.
+  * When syncing changes to the live DOM, make an additional check for matching
+    parent nodes. If they don't match, this is a signal that the live DOM
+    structure has been unexpectedly altered in the intermittent path skipped
+    before this state. In this case, travel up the hierarchy until we find a
+    child/parent pair with a match in the real DOM (at their own location) and
+    sync the DOM from there, falling back on the "raw" synchronisation strategy
+    used in the first phase.
+This doesn't allow us to fully localise reflows, but could significantly
+decrease traversal time in documents with large numbers of dumb nodes.
+
+Consider trying out `virtual-dom`.
 
 # Transclusion semantics
 
@@ -89,11 +116,20 @@ by adding a `State` flag to completely skip phasing starting at the given
 virtual node and its real counterpart. This needs to be usable without writing
 custom molds, so we'll probably add a built-in.
 
-Consider async queueing and batching of DOM updates.
+Consider async queueing and batching of DOM updates via `requestAnimationFrame`.
 
 Consider if we no longer need to reassign the autoassigned values in bindings
 during each phase. Real nodes are now guaranteed to be mapped 1-1 to virtual
 ones. Scopes should also be stable now.
+
+Review the `this` strategy for expressions. Not convinced the flexibility is
+worth having to correctly call them in attribute VMs.
+
+When an event is bubbling up through multiple listeners registered from within
+our zone context (e.g. with `on.*`), zone makes multiple `afterTask` calls. Need
+to either (1) debounce reflows (is event propagation sync or async? if async,
+this is a questionable solution), or (2) use a single document-level event
+aggregator as the default way of handling events.
 
 # Expressions
 
