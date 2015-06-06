@@ -5,7 +5,7 @@ import 'zone.js';
 import * as utils from './utils';
 import {View} from './view';
 import {compileNode} from './compile';
-import {Root, roots, getState, getOrAddState, phaseElements} from './tree';
+import {Root, roots, getTrace, getOrAddTrace, phaseElements} from './tree';
 
 const localZone = zone.fork({
   afterTask: function() {
@@ -51,8 +51,8 @@ function reflowWithUnlimitedStack(): void {
 }
 
 function destroy(virtual: Element): void {
-  let state = getState(virtual);
-  state.destroy();
+  let trace = getTrace(virtual);
+  trace.destroy();
   let nodes = virtual.childNodes;
   for (let i = 0, ii = nodes.length; i < ii; ++i) {
     let node = nodes[i];
@@ -122,12 +122,12 @@ function createRootAt(element: Element, VM?: ComponentClass): Root {
 
   if (VM) {
     let virtual: Element = (<any>element).cloneNode(true);
-    let state = getOrAddState(virtual);
-    state.real = element;
-    state.VM = VM;
-    state.view = new View(VM);
+    let trace = getOrAddTrace(virtual);
+    trace.real = element;
+    trace.VM = VM;
+    trace.view = new View(VM);
     // view should take care of transclusion
-    state.view.tryToCompile(virtual);
+    trace.view.tryToCompile(virtual);
     root.virtual = virtual;
   }
   // If we're instantiating a non-component, move its real child nodes to the
@@ -137,8 +137,8 @@ function createRootAt(element: Element, VM?: ComponentClass): Root {
     while (element.hasChildNodes()) {
       virtual.appendChild(element.removeChild(element.firstChild));
     }
-    let state = getOrAddState(virtual);
-    state.real = element;
+    let trace = getOrAddTrace(virtual);
+    trace.real = element;
     root.virtual = virtual;
   }
 

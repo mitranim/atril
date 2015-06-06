@@ -1,4 +1,4 @@
-import {Mold, getOrAddState} from 'atril';
+import {Mold, getOrAddTrace} from 'atril';
 
 @Mold({
   attributeName: 'doc-demo'
@@ -14,11 +14,11 @@ class Ctrl {
 
     // Fork the scope. Useful for avoiding `let` conflicts in demos. Not
     // recommended for other scenarios.
-    let state = getOrAddState(this.element);
+    let trace = getOrAddTrace(this.element);
     if (!this.scope) this.scope = null;
-    if (!state.scope) {
-      state.scope = Object.create(this.scope);
-      this.scope = state.scope;
+    if (!trace.scope) {
+      trace.scope = Object.create(this.scope);
+      this.scope = trace.scope;
     }
 
     // Add a demo wrapper.

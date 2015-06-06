@@ -6,7 +6,7 @@ import {compileNode, compileAttributeBindingsOnRealElement} from './compile';
 import {AttributeBinding, AttributeInterpolation} from './bindings';
 import * as utils from './utils';
 
-const stateKey = typeof Symbol === 'function' ? Symbol('atrilState') : utils.randomString();
+const traceKey = typeof Symbol === 'function' ? Symbol('atrilTrace') : utils.randomString();
 export const roots: Root[] = [];
 
 // A Root is a start of a virtual DOM hierarchy. It may be any element.
@@ -19,12 +19,12 @@ export class Root {
 // A State belongs to a virtual node and stores all of our private data relevant
 // to that node. Each node in the virtual DOM receives a State either during
 // bootstrap or during compilation.
-export class State {
+export class Trace {
   real: Node = null;
   vm: ComponentVM = null;
   scope: any = null;
   // A view tracks the progress of asynchronously fetching a view by URL. While
-  // it exists (while a template is unavailable), this state's node won't be
+  // it exists (while a template is unavailable), this trace's node won't be
   // phased.
   view: View = null;
   compiled: boolean = false;
@@ -41,8 +41,8 @@ export class State {
   // Workaround for an IE10/11 problem where the browser removes non-standard
   // properties from text nodes (instances of Text). The problem is prevented if
   // references to those text nodes are kept _somewhere_ in the JavaScript code.
-  // The reference also can't be held by the state associated with the text node
-  // in question, so we keep it on the parent state to give it a good chance of
+  // The reference also can't be held by the trace associated with the text node
+  // in question, so we keep it on the parent trace to give it a good chance of
   // being automatically garbage collected when this branch is destroyed. This
   // should never be used by our JS code — it exists solely to keep references.
   msieChildTextNodes: Text[] = null;
@@ -60,35 +60,35 @@ export class State {
   }
 }
 
-export function hasState(node: Node): boolean {
-  return node.hasOwnProperty(stateKey);
+export function hasTrace(node: Node): boolean {
+  return node.hasOwnProperty(traceKey);
 }
 
-export function getState(node: Node): State {
-  if (hasState(node)) return node[stateKey];
+export function getTrace(node: Node): Trace {
+  if (hasTrace(node)) return node[traceKey];
   return null;
 }
 
-export function getOrAddState(node: Node): State {
-  if (hasState(node)) return node[stateKey];
+export function getOrAddTrace(node: Node): Trace {
+  if (hasTrace(node)) return node[traceKey];
   // IE 10/11 workaround, see State.
   if (node instanceof Text && utils.msie) {
-    let parentState = getState(node.parentNode);
+    let parentState = getTrace(node.parentNode);
     if (!parentState.msieChildTextNodes) parentState.msieChildTextNodes = [];
     parentState.msieChildTextNodes.push(node);
   }
-  node[stateKey] = new State();
-  return node[stateKey];
+  node[traceKey] = new Trace();
+  return node[traceKey];
 }
 
 function getScope(virtual: Node): any {
-  let state = getState(virtual);
-  if (state.scope) return state.scope;
+  let trace = getTrace(virtual);
+  if (trace.scope) return trace.scope;
   let node = virtual;
   while (node = node.parentNode) {
-    let state = getState(node);
-    if (state.vm) return state.vm;
-    if (state.scope) return state.scope;
+    let trace = getTrace(node);
+    if (trace.vm) return trace.vm;
+    if (trace.scope) return trace.scope;
   }
   return null;
 }
@@ -96,30 +96,30 @@ function getScope(virtual: Node): any {
 // Must follow the sequence: (two elements?) -> init VMs -> phase attributes ->
 // phase child nodes.
 export function phaseElements(virtual: Element, real: Element): void {
-  let state = getOrAddState(virtual);
-  utils.assert(state.compiled, `expected the state during a phase to be compiled`);
+  let trace = getOrAddTrace(virtual);
+  utils.assert(trace.compiled, `expected the trace during a phase to be compiled`);
 
-  if (state.view) {
+  if (trace.view) {
     // Ignore if view not ready.
-    if (state.view.loading) return;
-    if (state.view.failed) {
+    if (trace.view.loading) return;
+    if (trace.view.failed) {
       // TODO check if we need additional cleanup here.
       return;
     }
-    state.view = null;
-    utils.assert(!!state.VM, 'have state.view without a state.VM:', state);
+    trace.view = null;
+    utils.assert(!!trace.VM, 'have trace.view without a trace.VM:', trace);
     // The vm must be created before phasing its child nodes in order to provide
     // the viewmodel.
-    state.vm = Object.create(state.VM.prototype);
-    state.vm.element = real;
-    state.VM.call(state.vm);
+    trace.vm = Object.create(trace.VM.prototype);
+    trace.vm.element = real;
+    trace.VM.call(trace.vm);
   }
 
   // Currently also tries to phase attributes on a root, must fix.
   compileAndPhaseAttributes(virtual, real);
 
   phaseChildNodes(virtual, real);
-  if (state.vm && typeof state.vm.onPhase === 'function') state.vm.onPhase();
+  if (trace.vm && typeof trace.vm.onPhase === 'function') trace.vm.onPhase();
 }
 
 function phaseNodes(virtual: Node, real: Node): void {
@@ -148,15 +148,15 @@ function phaseChildNodes(virtual: Node, real: Node): void {
   for (var i = 0, ii = children.length; i < ii; ++i) {
     let virtualChild = children[i];
     let realChild = real.childNodes[i];
-    let state = getState(virtualChild);
+    let trace = getTrace(virtualChild);
 
     // Try to reuse a child or create a new one.
-    if (!realChild || state.real !== realChild) {
-      if (!state.real) {
-        state.real = virtualChild.cloneNode();
+    if (!realChild || trace.real !== realChild) {
+      if (!trace.real) {
+        trace.real = virtualChild.cloneNode();
       }
-      real.insertBefore(state.real, realChild);
-      realChild = state.real;
+      real.insertBefore(trace.real, realChild);
+      realChild = trace.real;
     }
     // Phase and sync contents.
     phaseNodes(virtualChild, realChild);
@@ -167,10 +167,10 @@ function phaseChildNodes(virtual: Node, real: Node): void {
 }
 
 function phaseTextNodes(virtual: Text, real: Text): void {
-  let state = getState(virtual);
-  if (state.textInterpolation) {
+  let trace = getTrace(virtual);
+  if (trace.textInterpolation) {
     let scope = getScope(virtual);
-    let result = state.textInterpolation.call(scope, scope);
+    let result = trace.textInterpolation.call(scope, scope);
     // Skip the virtual node update, refresh only the real node content.
     // if (virtual.textContent !== result) virtual.textContent = result;
     if (real.textContent !== result) real.textContent = result;
@@ -178,16 +178,16 @@ function phaseTextNodes(virtual: Text, real: Text): void {
 }
 
 function phaseTemplate(template: Element): boolean {
-  let state = getState(template);
-  let binding = state.moldBinding;
+  let trace = getTrace(template);
+  let binding = trace.moldBinding;
   if (!binding) return false;
-  binding.refreshState(template, state, getScope(template));
+  binding.refreshState(template, trace, getScope(template));
   return binding.phase();
 }
 
 function phaseAndUnpackTemplate(template: Element): Node[] {
-  let state = getState(template);
-  let needsCompilation = !state.moldBinding || state.moldBinding.isNew;
+  let trace = getTrace(template);
+  let needsCompilation = !trace.moldBinding || trace.moldBinding.isNew;
   if (phaseTemplate(template)) needsCompilation = true;
   if (needsCompilation) compileNode(template);
 
@@ -212,19 +212,19 @@ function compileAndPhaseAttributes(virtual: Element, real: Element): void {
 }
 
 function phaseCustomAttributes(virtual: Element, real: Element): void {
-  let state = getState(virtual);
-  let bindings = state.attributeBindings;
+  let trace = getTrace(virtual);
+  let bindings = trace.attributeBindings;
   if (!bindings) return;
 
   for (let i = 0, ii = bindings.length; i < ii; ++i) {
     let binding = bindings[i];
-    binding.refreshState(real, state, getScope(virtual));
+    binding.refreshState(real, trace, getScope(virtual));
     binding.phase();
   }
 }
 
 function phaseAndSyncAttributeInterpolations(virtual: Element, real: Element): void {
-  let bindings = getState(virtual).attributeInterpolations;
+  let bindings = getTrace(virtual).attributeInterpolations;
   if (!bindings) return;
 
   for (let i = 0, ii = bindings.length; i < ii; ++i) {

@@ -1,7 +1,7 @@
 'use strict';
 
 import {Attribute, Mold, scheduleReflow} from './boot';
-import {getOrAddState} from './tree';
+import {getOrAddTrace} from './tree';
 import * as utils from './utils';
 
 @Attribute({attributeName: 'bind'})
@@ -213,7 +213,7 @@ class If {
     let container = this.element.content;
     while (container.hasChildNodes()) {
       let child = container.removeChild(container.lastChild);
-      getOrAddState(child).isDomImmutable = true;
+      getOrAddTrace(child).isDomImmutable = true;
       this.stash.unshift(child);
     }
   }
@@ -300,19 +300,19 @@ class For {
     } else {
       nodes = this.originals.map(node => {
         let clone = utils.cloneDeep(node);
-        getOrAddState(clone).isDomImmutable = true;
+        getOrAddTrace(clone).isDomImmutable = true;
         return clone;
       });
     }
 
-    let state = getOrAddState(nodes[0]);
-    if (!state.scope) state.scope = Object.create(this.scope);
-    state.scope.$index = index;
-    state.scope[this.key] = value[index];
+    let trace = getOrAddTrace(nodes[0]);
+    if (!trace.scope) trace.scope = Object.create(this.scope);
+    trace.scope.$index = index;
+    trace.scope[this.key] = value[index];
 
     while (nodes.length) {
       let node = nodes.shift();
-      getOrAddState(node).scope = state.scope;
+      getOrAddTrace(node).scope = trace.scope;
       this.element.appendChild(node);
     }
   }
@@ -366,9 +366,9 @@ class Let {
 
     // Make sure a scope is available.
     if (!this.scope) {
-      let state = getOrAddState(this.element);
-      state.scope = Object.create(null);
-      this.scope = state.scope;
+      let trace = getOrAddTrace(this.element);
+      trace.scope = Object.create(null);
+      this.scope = trace.scope;
     }
 
     // The identifier must not be redeclared in the scope. We're being strict to

@@ -1,7 +1,7 @@
 'use strict';
 
 import {registeredComponents, registeredAttributes, registeredMolds} from './boot';
-import {hasState, getState, getOrAddState} from './tree';
+import {hasTrace, getTrace, getOrAddTrace} from './tree';
 import {AttributeBinding, AttributeInterpolation, hasInterpolation, compileExpression, compileInterpolation} from './bindings';
 import {View} from './view';
 import * as utils from './utils';
@@ -15,42 +15,42 @@ export function compileNode(node: Node): void {
     compileElement(node);
     return;
   }
-  // A state should always be made available, even for comments.
-  getOrAddState(node);
+  // A trace should always be made available, even for comments.
+  getOrAddTrace(node);
 }
 
 function compileTextNode(node: Text): void {
-  let state = getOrAddState(node);
-  if (state.isDomImmutable && state.compiled) return;
+  let trace = getOrAddTrace(node);
+  if (trace.isDomImmutable && trace.compiled) return;
   if (hasInterpolation(node.textContent)) {
-    state.textInterpolation = compileInterpolation(node.textContent);
+    trace.textInterpolation = compileInterpolation(node.textContent);
     // Erase the existing text content to prevent curlies from leaking into the
     // view.
     node.textContent = '';
   }
-  state.compiled = true;
+  trace.compiled = true;
 }
 
 function compileElement(element: Element): void {
-  let state = getOrAddState(element);
+  let trace = getOrAddTrace(element);
   // Allows us to skip recompilation of nodes returned from molds. Molds are
   // expected to explicitly mark their children as immutable. Child molds can't
   // be considered immutable in the compilation sense because parent molds can't
   // trust their output to stay the same.
-  if (state.isDomImmutable && state.compiled) {
+  if (trace.isDomImmutable && trace.compiled) {
     if (element.tagName !== 'TEMPLATE') return;
   }
 
   // Clean up text nodes.
   utils.pruneTextNodes(element);
 
-  if (!state.vm && !state.view) {
+  if (!trace.vm && !trace.view) {
     let VM = registeredComponents[element.tagName.toLowerCase()];
     if (VM) {
-      state.VM = VM;
-      state.view = new View(VM);
+      trace.VM = VM;
+      trace.view = new View(VM);
       // view should take care of transclusion
-      state.view.tryToCompile(element);
+      trace.view.tryToCompile(element);
       return;
     }
   }
@@ -76,7 +76,7 @@ function compileElement(element: Element): void {
     }
     compileNode(child);
   }
-  state.compiled = true;
+  trace.compiled = true;
 }
 
 function unpackTemplatesFromMolds(element: Element): Element {
@@ -108,8 +108,8 @@ function unpackTemplatesFromMolds(element: Element): Element {
 }
 
 function compileMoldsOnTemplate(template: Element): void {
-  let state = getOrAddState(template);
-  if (state.compiled) return;
+  let trace = getOrAddTrace(template);
+  if (trace.compiled) return;
 
   for (let i = 0, ii = template.attributes.length; i < ii; ++i) {
     let attr = template.attributes[i];
@@ -127,19 +127,19 @@ function compileMoldsOnTemplate(template: Element): void {
       utils.assert(registeredMolds[partialName], `unexpected non-mold '${attr.name}' on template:`, template);
 
       // No more than one.
-      utils.assert(!state.moldBinding, `unexpected second mold '${attr.name}' on template:`, template);
+      utils.assert(!trace.moldBinding, `unexpected second mold '${attr.name}' on template:`, template);
 
       // Register binding.
-      state.moldBinding = new AttributeBinding(attr, VM);
+      trace.moldBinding = new AttributeBinding(attr, VM);
     }
   }
 }
 
 export function compileAttributeBindingsOnRealElement(virtual: Element, real: Element): void {
-  let state = getOrAddState(virtual);
+  let trace = getOrAddTrace(virtual);
   // Use the presence of the bindings list as an indicator.
-  if (state.attributeBindings) return;
-  state.attributeBindings = [];
+  if (trace.attributeBindings) return;
+  trace.attributeBindings = [];
 
   for (let i = 0, ii = real.attributes.length; i < ii; ++i) {
     let attr = real.attributes[i];
@@ -152,21 +152,21 @@ export function compileAttributeBindingsOnRealElement(virtual: Element, real: El
       utils.assert(!registeredMolds[partialName], `unexpected mold '${attr.name}' on element:`, real);
 
       // Register binding.
-      state.attributeBindings.push(new AttributeBinding(attr, VM));
+      trace.attributeBindings.push(new AttributeBinding(attr, VM));
     }
   }
 }
 
 function compileAttributeInterpolationsOnElement(element: Element): void {
-  let state = getOrAddState(element);
-  if (state.compiled) return;
+  let trace = getOrAddTrace(element);
+  if (trace.compiled) return;
 
   for (let i = 0, ii = element.attributes.length; i < ii; ++i) {
     let attr = element.attributes[i];
     if (utils.looksLikeCustomAttribute(attr.name)) continue;
     if (hasInterpolation(attr.textContent)) {
-      if (!state.attributeInterpolations) state.attributeInterpolations = [];
-      state.attributeInterpolations.push(new AttributeInterpolation(attr));
+      if (!trace.attributeInterpolations) trace.attributeInterpolations = [];
+      trace.attributeInterpolations.push(new AttributeInterpolation(attr));
     }
   }
 }

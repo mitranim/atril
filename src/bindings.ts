@@ -1,6 +1,6 @@
 'use strict';
 
-import {State} from './tree';
+import {Trace} from './tree';
 
 export class AttributeBinding {
   name: string;
@@ -18,7 +18,7 @@ export class AttributeBinding {
     this.VM = VM;
   }
 
-  refreshState(element: Element, state: State, scope: any): void {
+  refreshState(element: Element, trace: Trace, scope: any): void {
     let isNew = this.isNew;
     if (isNew) {
       this.vm = Object.create(this.VM.prototype);
@@ -27,7 +27,7 @@ export class AttributeBinding {
     }
     this.vm.element = element;
     this.vm.scope = scope;
-    this.vm.component = state.vm || null;
+    this.vm.component = trace.vm || null;
     if (isNew) this.VM.call(this.vm);
   }
 
@@ -68,8 +68,8 @@ export function compileExpression(expression: string): Expression {
       ${returnPrefix}${expression}
     }.call(this);
   }`;
-
   let func = new Function(body);
+
   return function(scope: any, locals?: any): any {
     // Prevent `with` from throwing an error when the scope or the locals are
     // empty.

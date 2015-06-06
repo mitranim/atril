@@ -9,9 +9,9 @@ declare module 'atril' {
     set(url: string, view: string): void;
     load(url: string): Promise;
   };
-  export function getOrAddState(node: Node): State;
+  export function getOrAddTrace(node: Node): Trace;
 
-  interface State {
+  interface Trace {
     vm: any;
     scope: any;
     compiled: boolean;
