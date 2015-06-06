@@ -1,13 +1,13 @@
 'use strict';
 'Thou shalt not comment.';
 
+import 'zone.js';
 import * as utils from './utils';
 import {View} from './view';
 import {compileNode} from './compile';
 import {Root, roots, getState, getOrAddState, phaseElements} from './tree';
-import 'zone.js';
 
-let localZone = zone.fork({
+const localZone = zone.fork({
   afterTask: function() {
     // zone.js automatically reruns a task after ≈1 s if the task throws. It
     // also hides all exceptions after the first during these retries. For us,

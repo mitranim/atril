@@ -161,7 +161,6 @@ function phaseChildNodes(virtual: Node, real: Node): void {
     // Phase and sync contents.
     phaseNodes(virtualChild, realChild);
   }
-  // Remove any leftovers.
   while (real.childNodes.length > children.length) {
     real.removeChild(real.lastChild);
   }
@@ -172,7 +171,8 @@ function phaseTextNodes(virtual: Text, real: Text): void {
   if (state.textInterpolation) {
     let scope = getScope(virtual);
     let result = state.textInterpolation.call(scope, scope);
-    if (virtual.textContent !== result) virtual.textContent = result;
+    // Skip the virtual node update, refresh only the real node content.
+    // if (virtual.textContent !== result) virtual.textContent = result;
     if (real.textContent !== result) real.textContent = result;
   }
 }
@@ -232,10 +232,10 @@ function phaseAndSyncAttributeInterpolations(virtual: Element, real: Element): v
     let scope = getScope(virtual);
     let result = binding.expression.call(scope, scope)
 
-    // Shouldn't bother syncing to virtual. Or maybe move this code elsewhere.
-    if (virtual.getAttribute(binding.name) !== result) {
-      virtual.setAttribute(binding.name, result);
-    }
+    // Skip updating the virtual node, only refresh the real one.
+    // if (virtual.getAttribute(binding.name) !== result) {
+    //   virtual.setAttribute(binding.name, result);
+    // }
     if (real.getAttribute(binding.name) !== result) {
       real.setAttribute(binding.name, result);
     }

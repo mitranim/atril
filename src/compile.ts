@@ -2,7 +2,7 @@
 
 import {registeredComponents, registeredAttributes, registeredMolds} from './boot';
 import {hasState, getState, getOrAddState} from './tree';
-import {AttributeBinding, AttributeInterpolation, hasInterpolation, compileExpression, compileTextExpression} from './bindings';
+import {AttributeBinding, AttributeInterpolation, hasInterpolation, compileExpression, compileInterpolation} from './bindings';
 import {View} from './view';
 import * as utils from './utils';
 
@@ -23,7 +23,7 @@ function compileTextNode(node: Text): void {
   let state = getOrAddState(node);
   if (state.isDomImmutable && state.compiled) return;
   if (hasInterpolation(node.textContent)) {
-    state.textInterpolation = compileTextExpression(node.textContent);
+    state.textInterpolation = compileInterpolation(node.textContent);
     // Erase the existing text content to prevent curlies from leaking into the
     // view.
     node.textContent = '';

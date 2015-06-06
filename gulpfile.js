@@ -212,8 +212,11 @@ gulp.task('docs:html:compile', function() {
       pedantic:    false,
       // Code highlighter.
       highlight: function(code, lang) {
-        if (lang) return hjs.highlight(lang, code).value;
-        return hjs.highlightAuto(code).value;
+        var result = lang ? hjs.highlight(lang, code) : hjs.highlightAuto(code);
+        // Neuter interpolations. This is necessary to prevent atril from
+        // evaluating them in code blocks.
+        result.value = result.value.replace(/\{\{((?:[^}]|}(?=[^}]))*)\}\}/g, '{{<span>$1</span>}}');
+        return result.value;
       }
     }))
     // Add the hljs code class.

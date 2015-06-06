@@ -54,40 +54,29 @@ export class AttributeInterpolation {
   constructor(attr: Attr) {
     this.name = attr.name;
     this.value = attr.value;
-    this.expression = compileTextExpression(attr.textContent);
+    this.expression = compileInterpolation(attr.textContent);
   }
 }
 
-// Problems:
-// * Provides access to globals.
-// * Has to be re-interpreted on each call to support locals that don't mess
-//   with property assignment in scopes.
+// Problem: provides access to globals.
 export function compileExpression(expression: string): Expression {
   if (!expression) return () => undefined;
 
-  return function(scope: any, locals?: any) {
-    // Prevent `with` from throwing an error when the scope is empty.
+  let returnPrefix = ~expression.indexOf(';') ? '' : 'return ';
+  let body = `with (arguments[0]) with (arguments[1]) {
+    return function() {'use strict';
+      ${returnPrefix}${expression}
+    }.call(this);
+  }`;
+
+  let func = new Function(body);
+  return function(scope: any, locals?: any): any {
+    // Prevent `with` from throwing an error when the scope or the locals are
+    // empty.
     if (scope == null) scope = Object.create(null);
+    if (locals == null) locals = Object.create(null);
 
-    let argList: string[] = [];
-    let argValues: any[] = [];
-    if (locals != null && typeof locals === 'object') {
-      argList = Object.keys(locals);
-      for (let i = 0, ii = argList.length; i < ii; ++i) {
-        argValues.push(locals[argList[i]]);
-      }
-    }
-    argValues.push(scope);
-
-    let returnPrefix = ~expression.indexOf(';') ? '' : 'return ';
-    let body = `with (arguments[${argValues.length - 1}]) {
-      return function() {'use strict';
-        ${returnPrefix}${expression}
-      }.call(this);
-    }`;
-    argList.push(body);
-    let func = Function(...argList);
-    return func.call(this === window ? scope : this, ...argValues);
+    return func.call(this === window ? scope : this, scope, locals);
   };
 }
 
@@ -95,7 +84,7 @@ export function hasInterpolation(text: string): boolean {
   return /\{\{((?:[^}]|}(?=[^}]))*)\}\}/g.test(text);
 }
 
-export function compileTextExpression(text: string): TextExpression {
+export function compileInterpolation(text: string): TextExpression {
   if (!text) return () => '';
 
   let reg = /\{\{((?:[^}]|}(?=[^}]))*)\}\}/g;
@@ -112,17 +101,11 @@ export function compileTextExpression(text: string): TextExpression {
   let slice = text.slice(lastIndex);
   if (slice) collection.push(slice);
 
-  return function(scope: any, locals?: any): string {
-    if (scope == null) return '';
+  return function(scope: any): string {
     let total = '';
     for (let i = 0, ii = collection.length; i < ii; ++i) {
       let item = collection[i];
-      if (typeof item === 'string') {
-        total += item;
-        continue;
-      }
-      let result = (<Expression>item).call(scope, scope, locals);
-      if (result != null) total += result;
+      total += typeof item === 'string' ? item : (<Expression>item).call(this, scope);
     }
     return total;
   };
