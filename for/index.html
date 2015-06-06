@@ -30,7 +30,7 @@ given key.</p>
 <pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">let.numbers</span>=<span class="hljs-value">"[1, 2, 3, 4, 5]"</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">on.click</span>=<span class="hljs-value">"numbers.pop()"</span>&gt;</span>-<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">on.click</span>=<span class="hljs-value">"numbers.push((numbers[numbers.length-1]|0)+1)"</span>&gt;</span>+<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">for.num</span>=<span class="hljs-value">"numbers"</span>&gt;</span>{{num}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">for.num</span>=<span class="hljs-value">"numbers"</span>&gt;</span>{{<span>num</span>}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
 </code></pre>
 <template doc-demo.>
@@ -47,7 +47,7 @@ given key.</p>
   <span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">on.click</span>=<span class="hljs-value">"numbers.push((numbers[numbers.length-1]|0)+1)"</span>&gt;</span>+<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-title">template</span> <span class="hljs-attribute">for.num</span>=<span class="hljs-value">"numbers"</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-title">span</span>&gt;</span>#<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">span</span>&gt;</span>{{num}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">span</span>&gt;</span>{{<span>num</span>}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
   <span class="hljs-tag">&lt;/<span class="hljs-title">template</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
 </code></pre>
@@ -69,7 +69,7 @@ iterated via <code>for..in</code>. You can enforce one or the other via <code>fo
 <code>for.X.in</code>.</p>
 <h3 id="-for-x-of-"><code>for.X.of</code></h3>
 <pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">let.words</span>=<span class="hljs-value">"['one', 'two', 'three']"</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">for.word.of</span>=<span class="hljs-value">"words"</span>&gt;</span>{{word}}@{{$index}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">for.word.of</span>=<span class="hljs-value">"words"</span>&gt;</span>{{<span>word</span>}}@{{<span>$index</span>}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
 </code></pre>
 <template doc-demo.>
@@ -80,7 +80,7 @@ iterated via <code>for..in</code>. You can enforce one or the other via <code>fo
 
 <h3 id="-for-x-in-"><code>for.X.in</code></h3>
 <pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">let.words</span>=<span class="hljs-value">"{first: 'one', second: 'two', third: 'three'}"</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">for.word.in</span>=<span class="hljs-value">"words"</span>&gt;</span>{{word}}@{{$index}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">for.word.in</span>=<span class="hljs-value">"words"</span>&gt;</span>{{<span>word</span>}}@{{<span>$index</span>}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
 </code></pre>
 <template doc-demo.>
