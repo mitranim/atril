@@ -104,15 +104,12 @@ class TwoWay {
   }
 
   syncTopDown(newValue: any): void {
-    let needReflow: boolean = false;
-
     this.lastOwnValue = newValue;
     this.lastTargetValue = newValue;
 
     // Sync the result to the element. Dirty checking avoids setter side effects.
     if (!utils.strictEqual(this.targetPathfinder.read(this.element), newValue)) {
       this.targetPathfinder.assign(this.element, newValue);
-      needReflow = true;
     }
 
     // If the element has a VM that declares this property as bindable, sync
@@ -121,11 +118,8 @@ class TwoWay {
     if (vm && isBindable(vm, this.targetPropertyPath)) {
       if (!utils.strictEqual(this.targetPathfinder.read(vm), newValue)) {
         this.targetPathfinder.assign(vm, newValue);
-        needReflow = true;
       }
     }
-
-    if (needReflow) scheduleReflow();
   }
 
   syncBottomUp(newValue: any): void {
@@ -305,14 +299,12 @@ class For {
       });
     }
 
-    let trace = getOrAddTrace(nodes[0]);
-    if (!trace.scope) trace.scope = Object.create(this.scope);
-    trace.scope.$index = index;
-    trace.scope[this.key] = value[index];
-
     while (nodes.length) {
       let node = nodes.shift();
-      getOrAddTrace(node).scope = trace.scope;
+      getOrAddTrace(node).insertScope({
+        $index: index,
+        [this.key]: value[index]
+      });
       this.element.appendChild(node);
     }
   }

@@ -23,6 +23,7 @@ function compileTextNode(node: Text): void {
   let trace = getOrAddTrace(node);
   if (trace.isDomImmutable && trace.compiled) return;
   if (hasInterpolation(node.textContent)) {
+    trace.markDynamic();
     trace.textInterpolation = compileInterpolation(node.textContent);
     // Erase the existing text content to prevent curlies from leaking into the
     // view.
@@ -47,6 +48,7 @@ function compileElement(element: Element): void {
   if (!trace.vm && !trace.view) {
     let VM = registeredComponents[element.tagName.toLowerCase()];
     if (VM) {
+      trace.markDynamic();
       trace.VM = VM;
       trace.view = new View(VM);
       // view should take care of transclusion
@@ -130,6 +132,7 @@ function compileMoldsOnTemplate(template: Element): void {
       utils.assert(!trace.moldBinding, `unexpected second mold '${attr.name}' on template:`, template);
 
       // Register binding.
+      trace.markDynamic();
       trace.moldBinding = new AttributeBinding(attr, VM);
     }
   }
@@ -152,6 +155,7 @@ export function compileAttributeBindingsOnRealElement(virtual: Element, real: El
       utils.assert(!registeredMolds[partialName], `unexpected mold '${attr.name}' on element:`, real);
 
       // Register binding.
+      if (!trace.dynamic) trace.markDynamic();
       trace.attributeBindings.push(new AttributeBinding(attr, VM));
     }
   }
@@ -166,6 +170,7 @@ function compileAttributeInterpolationsOnElement(element: Element): void {
     if (utils.looksLikeCustomAttribute(attr.name)) continue;
     if (hasInterpolation(attr.textContent)) {
       if (!trace.attributeInterpolations) trace.attributeInterpolations = [];
+      if (!trace.dynamic) trace.markDynamic();
       trace.attributeInterpolations.push(new AttributeInterpolation(attr));
     }
   }

@@ -20,6 +20,7 @@ export class Root {
 // to that node. Each node in the virtual DOM receives a State either during
 // bootstrap or during compilation.
 export class Trace {
+  virtual: Node = null;
   real: Node = null;
   vm: ComponentVM = null;
   scope: any = null;
@@ -32,6 +33,12 @@ export class Trace {
   // Set by a mold as a promise to not modify the node or any of its
   // descendants. Allows us to skip recompilation of entire trees during phases.
   isDomImmutable: boolean = false;
+  // A trace is marked as dynamic if it has any bindings.
+  dynamic: boolean = false;
+  // Closest ancestral dynamic trace.
+  ancestorTrace: Trace = null;
+  // Descendant dynamic traces.
+  descendantTraces: Trace[] = null;
 
   textInterpolation: TextExpression = null;
   attributeInterpolations: AttributeInterpolation[] = null;
@@ -47,6 +54,47 @@ export class Trace {
   // should never be used by our JS code — it exists solely to keep references.
   msieChildTextNodes: Text[] = null;
 
+  constructor(virtual: Node, real?: Node) {
+    this.virtual = virtual;
+    if (real) {
+      this.real = real;
+    }
+    // Unicorn creates its own horn
+    else if (!(virtual instanceof Element && virtual.tagName === 'TEMPLATE')) {
+      this.real = virtual.cloneNode();
+    }
+  }
+
+  markDynamic(): void {
+    utils.assert(!this.ancestorTrace, `unexpected second dynamic registration of trace:`, this);
+    let trace = getAncestorDynamicTrace(this.virtual);
+    if (trace) {
+      if (!trace.descendantTraces) trace.descendantTraces = [];
+      utils.assert(!~trace.descendantTraces.indexOf(this), `unexpected second dynamic registration of trace:`, this);
+      trace.descendantTraces.push(this);
+      this.ancestorTrace = trace;
+    }
+    this.dynamic = true;
+  }
+
+  insertScope(locals?: {}): void {
+    this.scope = this.scope || Object.create(this.getScope());
+    if (locals != null && typeof locals === 'object') {
+      for (let key in locals) this.scope[key] = locals[key];
+    }
+    if (!this.dynamic) this.markDynamic();
+  }
+
+  getScope(): any {
+    if (this.scope) return this.scope;
+    let trace = this;
+    while (trace = trace.ancestorTrace) {
+      if (trace.vm) return trace.vm;
+      if (trace.scope) return trace.scope;
+    }
+    return null;
+  }
+
   destroy(): void {
     if (this.moldBinding) this.moldBinding.destroy();
     if (this.attributeBindings) {
@@ -57,40 +105,51 @@ export class Trace {
     if (this.vm && typeof this.vm.onDestroy === 'function') {
       this.vm.onDestroy();
     }
+    delete this.virtual[traceKey];
+    this.virtual = null;
+    this.real = null;
+    this.ancestorTrace = null;
   }
 }
 
-export function hasTrace(node: Node): boolean {
-  return node.hasOwnProperty(traceKey);
+export function hasTrace(virtual: Node): boolean {
+  return virtual.hasOwnProperty(traceKey);
 }
 
-export function getTrace(node: Node): Trace {
-  if (hasTrace(node)) return node[traceKey];
+export function getTrace(virtual: Node): Trace {
+  if (hasTrace(virtual)) return virtual[traceKey];
   return null;
 }
 
-export function getOrAddTrace(node: Node): Trace {
-  if (hasTrace(node)) return node[traceKey];
+export function getOrAddTrace(virtual: Node): Trace {
+  if (hasTrace(virtual)) return virtual[traceKey];
   // IE 10/11 workaround, see State.
-  if (node instanceof Text && utils.msie) {
-    let parentState = getTrace(node.parentNode);
+  if (virtual instanceof Text && utils.msie) {
+    let parentState = getTrace(virtual.parentNode);
     if (!parentState.msieChildTextNodes) parentState.msieChildTextNodes = [];
-    parentState.msieChildTextNodes.push(node);
+    parentState.msieChildTextNodes.push(virtual);
   }
-  node[traceKey] = new Trace();
-  return node[traceKey];
+  virtual[traceKey] = new Trace(virtual);
+  return virtual[traceKey];
 }
 
-function getScope(virtual: Node): any {
-  let trace = getTrace(virtual);
-  if (trace.scope) return trace.scope;
-  let node = virtual;
-  while (node = node.parentNode) {
-    let trace = getTrace(node);
-    if (trace.vm) return trace.vm;
-    if (trace.scope) return trace.scope;
+export function addRootTrace(virtual: Element, real: Element): Trace {
+  utils.assert(virtual instanceof Element, `unexpected root trace addition to non-element:`, virtual);
+  utils.assert(real instanceof Element, `unexpected root trace addition to non-element:`, virtual);
+  let trace = new Trace(virtual, real);
+  trace.markDynamic();
+  virtual[traceKey] = trace;
+  return trace;
+}
+
+function getAncestorDynamicTrace(virtual: Node): Trace {
+  let trace: Trace;
+  while (virtual.parentNode) {
+    virtual = virtual.parentNode;
+    trace = getTrace(virtual);
+    if (trace.dynamic) return trace;
   }
-  return null;
+  return trace || null;
 }
 
 // Must follow the sequence: (two elements?) -> init VMs -> phase attributes ->
@@ -127,7 +186,6 @@ function phaseNodes(virtual: Node, real: Node): void {
     phaseTextNodes(virtual, real);
     return;
   }
-
   if (virtual instanceof Element && real instanceof Element) {
     phaseElements(virtual, real);
     return;
@@ -150,12 +208,9 @@ function phaseChildNodes(virtual: Node, real: Node): void {
     let realChild = real.childNodes[i];
     let trace = getTrace(virtualChild);
 
-    // Try to reuse a child or create a new one.
-    if (!realChild || trace.real !== realChild) {
-      if (!trace.real) {
-        trace.real = virtualChild.cloneNode();
-      }
-      real.insertBefore(trace.real, realChild);
+    // Put the real child in position.
+    if (realChild !== trace.real) {
+      real.insertBefore(trace.real, realChild || null);
       realChild = trace.real;
     }
     // Phase and sync contents.
@@ -169,10 +224,9 @@ function phaseChildNodes(virtual: Node, real: Node): void {
 function phaseTextNodes(virtual: Text, real: Text): void {
   let trace = getTrace(virtual);
   if (trace.textInterpolation) {
-    let scope = getScope(virtual);
+    let scope = trace.getScope();
     let result = trace.textInterpolation.call(scope, scope);
     // Skip the virtual node update, refresh only the real node content.
-    // if (virtual.textContent !== result) virtual.textContent = result;
     if (real.textContent !== result) real.textContent = result;
   }
 }
@@ -181,7 +235,7 @@ function phaseTemplate(template: Element): boolean {
   let trace = getTrace(template);
   let binding = trace.moldBinding;
   if (!binding) return false;
-  binding.refreshState(template, trace, getScope(template));
+  binding.refreshState(template, trace, trace.getScope());
   return binding.phase();
 }
 
@@ -218,26 +272,21 @@ function phaseCustomAttributes(virtual: Element, real: Element): void {
 
   for (let i = 0, ii = bindings.length; i < ii; ++i) {
     let binding = bindings[i];
-    binding.refreshState(real, trace, getScope(virtual));
+    binding.refreshState(real, trace, trace.getScope());
     binding.phase();
   }
 }
 
 function phaseAndSyncAttributeInterpolations(virtual: Element, real: Element): void {
-  let bindings = getTrace(virtual).attributeInterpolations;
+  let trace = getTrace(virtual);
+  let bindings = trace.attributeInterpolations;
   if (!bindings) return;
 
   for (let i = 0, ii = bindings.length; i < ii; ++i) {
     let binding = bindings[i];
-    let scope = getScope(virtual);
+    let scope = trace.getScope();
     let result = binding.expression.call(scope, scope)
-
     // Skip updating the virtual node, only refresh the real one.
-    // if (virtual.getAttribute(binding.name) !== result) {
-    //   virtual.setAttribute(binding.name, result);
-    // }
-    if (real.getAttribute(binding.name) !== result) {
-      real.setAttribute(binding.name, result);
-    }
+    if (binding.attr.value !== result) binding.attr.value = result;
   }
 }

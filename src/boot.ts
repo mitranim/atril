@@ -5,7 +5,7 @@ import 'zone.js';
 import * as utils from './utils';
 import {View} from './view';
 import {compileNode} from './compile';
-import {Root, roots, getTrace, getOrAddTrace, phaseElements} from './tree';
+import {Root, roots, getTrace, addRootTrace, phaseElements} from './tree';
 
 const localZone = zone.fork({
   afterTask: function() {
@@ -122,8 +122,7 @@ function createRootAt(element: Element, VM?: ComponentClass): Root {
 
   if (VM) {
     let virtual: Element = (<any>element).cloneNode(true);
-    let trace = getOrAddTrace(virtual);
-    trace.real = element;
+    let trace = addRootTrace(virtual, element);
     trace.VM = VM;
     trace.view = new View(VM);
     // view should take care of transclusion
@@ -137,8 +136,7 @@ function createRootAt(element: Element, VM?: ComponentClass): Root {
     while (element.hasChildNodes()) {
       virtual.appendChild(element.removeChild(element.firstChild));
     }
-    let trace = getOrAddTrace(virtual);
-    trace.real = element;
+    addRootTrace(virtual, element);
     root.virtual = virtual;
   }
 

@@ -48,12 +48,10 @@ export class AttributeBinding {
 }
 
 export class AttributeInterpolation {
-  name: string;
-  value: string;
+  attr: Attr;
   expression: TextExpression;
   constructor(attr: Attr) {
-    this.name = attr.name;
-    this.value = attr.value;
+    this.attr = attr;
     this.expression = compileInterpolation(attr.textContent);
   }
 }
