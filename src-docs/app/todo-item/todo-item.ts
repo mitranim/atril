@@ -1,4 +1,4 @@
-import {Component, bindable, Trace} from 'atril';
+import {Component, bindable, Meta} from 'atril';
 
 @Component({
   tagName: 'todo-item'

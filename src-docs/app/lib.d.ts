@@ -9,7 +9,7 @@ declare module 'atril' {
     set(url: string, view: string): void;
     load(url: string): Promise;
   };
-  export var Trace: any;
+  export var Meta: any;
 }
 
 declare module 'highlightjs' {

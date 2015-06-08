@@ -1,7 +1,7 @@
 'use strict';
 
 import {Attribute, Mold, scheduleReflow} from './boot';
-import {Trace} from './tree';
+import {Meta} from './tree';
 import * as utils from './utils';
 
 @Attribute({attributeName: 'bind'})
@@ -207,7 +207,7 @@ class If {
     let container = this.element.content;
     while (container.hasChildNodes()) {
       let child = container.removeChild(container.lastChild);
-      Trace.getOrAddTrace(child).isDomImmutable = true;
+      Meta.getOrAddMeta(child).isDomImmutable = true;
       this.stash.unshift(child);
     }
   }
@@ -294,7 +294,7 @@ class For {
     } else {
       nodes = this.originals.map(node => {
         let clone = utils.cloneDeep(node);
-        Trace.getOrAddTrace(clone).isDomImmutable = true;
+        Meta.getOrAddMeta(clone).isDomImmutable = true;
         return clone;
       });
     }
@@ -302,7 +302,7 @@ class For {
     while (nodes.length) {
       let node = nodes.shift();
       this.element.appendChild(node);
-      Trace.getOrAddTrace(node).insertScope({
+      Meta.getOrAddMeta(node).insertScope({
         $index: index,
         [this.key]: value[index]
       });
@@ -360,9 +360,9 @@ class Let {
 
     // Make sure a scope is available.
     if (!this.scope) {
-      let trace = Trace.getOrAddTrace(this.element);
-      trace.insertScope();
-      this.scope = trace.scope;
+      let meta = Meta.getOrAddMeta(this.element);
+      meta.insertScope();
+      this.scope = meta.scope;
     }
 
     // The identifier must not be redeclared in the scope. We're being strict to

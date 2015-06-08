@@ -1,7 +1,7 @@
 'use strict';
 
 import {registeredComponents, registeredAttributes, registeredMolds} from './boot';
-import {Trace} from './tree';
+import {Meta} from './tree';
 import {AttributeBinding, AttributeInterpolation, hasInterpolation, compileExpression, compileInterpolation} from './bindings';
 import {View} from './view';
 import * as utils from './utils';
@@ -15,44 +15,44 @@ export function compileNode(node: Node): void {
     compileElement(node);
     return;
   }
-  // A trace should always be made available, even for comments.
-  Trace.getOrAddTrace(node);
+  // A meta should always be made available, even for comments.
+  Meta.getOrAddMeta(node);
 }
 
 function compileTextNode(node: Text): void {
-  let trace = Trace.getOrAddTrace(node);
-  if (trace.isDomImmutable && trace.compiled) return;
+  let meta = Meta.getOrAddMeta(node);
+  if (meta.isDomImmutable && meta.compiled) return;
   if (hasInterpolation(node.textContent)) {
-    trace.markDynamic();
-    trace.textInterpolation = compileInterpolation(node.textContent);
+    meta.markDynamic();
+    meta.textInterpolation = compileInterpolation(node.textContent);
     // Wipe text content of the real node to prevent curlies from leaking
     // into the view.
-    trace.real.textContent = '';
+    meta.real.textContent = '';
   }
-  trace.compiled = true;
+  meta.compiled = true;
 }
 
 function compileElement(element: Element): void {
-  let trace = Trace.getOrAddTrace(element);
+  let meta = Meta.getOrAddMeta(element);
   // Allows us to skip recompilation of nodes returned from molds. Molds are
   // expected to explicitly mark their children as immutable. Child molds can't
   // be considered immutable in the compilation sense because parent molds can't
   // trust their output to stay the same.
-  if (trace.isDomImmutable && trace.compiled) {
+  if (meta.isDomImmutable && meta.compiled) {
     if (element.tagName !== 'TEMPLATE') return;
   }
 
   // Clean up text nodes.
   utils.pruneTextNodes(element);
 
-  if (!trace.vm && !trace.view) {
+  if (!meta.vm && !meta.view) {
     let VM = registeredComponents[element.tagName.toLowerCase()];
     if (VM) {
-      trace.markDynamic();
-      trace.VM = VM;
-      trace.view = new View(VM);
+      meta.markDynamic();
+      meta.VM = VM;
+      meta.view = new View(VM);
       // view should take care of transclusion
-      trace.view.tryToCompile(element);
+      meta.view.tryToCompile(element);
       return;
     }
   }
@@ -74,13 +74,13 @@ function compileElement(element: Element): void {
         compileMoldsOnTemplate(<Element>child);
       } else {
         compileAttributeInterpolationsOnElement(<Element>child);
-        let trace = Trace.getTrace(child);
-        compileAttributeBindingsOnRealElement(<Element>child, <Element>trace.real);
+        let meta = Meta.getMeta(child);
+        compileAttributeBindingsOnRealElement(<Element>child, <Element>meta.real);
       }
     }
     compileNode(child);
   }
-  trace.compiled = true;
+  meta.compiled = true;
 }
 
 function unpackTemplatesFromMolds(element: Element): Element {
@@ -112,8 +112,8 @@ function unpackTemplatesFromMolds(element: Element): Element {
 }
 
 function compileMoldsOnTemplate(template: Element): void {
-  let trace = Trace.getOrAddTrace(template);
-  if (trace.compiled) return;
+  let meta = Meta.getOrAddMeta(template);
+  if (meta.compiled) return;
 
   for (let i = 0, ii = template.attributes.length; i < ii; ++i) {
     let attr = template.attributes[i];
@@ -131,20 +131,20 @@ function compileMoldsOnTemplate(template: Element): void {
       utils.assert(registeredMolds[partialName], `unexpected non-mold '${attr.name}' on template:`, template);
 
       // No more than one.
-      utils.assert(!trace.moldBinding, `unexpected second mold '${attr.name}' on template:`, template);
+      utils.assert(!meta.moldBinding, `unexpected second mold '${attr.name}' on template:`, template);
 
       // Register binding.
-      trace.markDynamic();
-      trace.moldBinding = new AttributeBinding(attr, VM);
+      meta.markDynamic();
+      meta.moldBinding = new AttributeBinding(attr, VM);
     }
   }
 }
 
 export function compileAttributeBindingsOnRealElement(virtual: Element, real: Element): void {
-  let trace = Trace.getOrAddTrace(virtual);
+  let meta = Meta.getOrAddMeta(virtual);
   // Use the presence of the bindings list as an indicator.
-  if (trace.attributeBindings) return;
-  trace.attributeBindings = [];
+  if (meta.attributeBindings) return;
+  meta.attributeBindings = [];
 
   for (let i = 0, ii = real.attributes.length; i < ii; ++i) {
     let attr = real.attributes[i];
@@ -157,23 +157,23 @@ export function compileAttributeBindingsOnRealElement(virtual: Element, real: El
       utils.assert(!registeredMolds[partialName], `unexpected mold '${attr.name}' on element:`, real);
 
       // Register binding.
-      if (!trace.dynamic) trace.markDynamic();
-      trace.attributeBindings.push(new AttributeBinding(attr, VM));
+      if (!meta.dynamic) meta.markDynamic();
+      meta.attributeBindings.push(new AttributeBinding(attr, VM));
     }
   }
 }
 
 function compileAttributeInterpolationsOnElement(element: Element): void {
-  let trace = Trace.getOrAddTrace(element);
-  if (trace.compiled) return;
+  let meta = Meta.getOrAddMeta(element);
+  if (meta.compiled) return;
 
   for (let i = 0, ii = element.attributes.length; i < ii; ++i) {
     let attr = element.attributes[i];
     if (utils.looksLikeCustomAttribute(attr.name)) continue;
     if (hasInterpolation(attr.textContent)) {
-      if (!trace.attributeInterpolations) trace.attributeInterpolations = [];
-      if (!trace.dynamic) trace.markDynamic();
-      trace.attributeInterpolations.push(new AttributeInterpolation(attr));
+      if (!meta.attributeInterpolations) meta.attributeInterpolations = [];
+      if (!meta.dynamic) meta.markDynamic();
+      meta.attributeInterpolations.push(new AttributeInterpolation(attr));
     }
   }
 }

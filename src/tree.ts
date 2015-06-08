@@ -6,21 +6,21 @@ import {compileNode} from './compile';
 import {AttributeBinding, AttributeInterpolation} from './bindings';
 import * as utils from './utils';
 
-const traceKey = typeof Symbol === 'function' ? Symbol('atrilTrace') : utils.randomString();
+const metaKey = typeof Symbol === 'function' ? Symbol('atrilMeta') : utils.randomString();
 export const roots: Root[] = [];
 const neutralZone = zone.fork();
 
 const queue = {
-  traces: <Trace[]>[],
-  plan(trace: Trace): void {
-    if (!~queue.traces.indexOf(trace)) queue.traces.push(trace);
+  metas: <Meta[]>[],
+  plan(meta: Meta): void {
+    if (!~queue.metas.indexOf(meta)) queue.metas.push(meta);
   },
   flush(timestamp: number): void {
-    while (queue.traces.length) {
-      let trace = queue.traces.shift();
-      utils.assert(trace.virtual instanceof Element && (<Element>trace.virtual).tagName !== 'TEMPLATE',
-                   `unexpected non-Element trace in queue:`, trace.virtual);
-      syncChildNodes(<Element>trace.virtual, <Element>trace.real);
+    while (queue.metas.length) {
+      let meta = queue.metas.shift();
+      utils.assert(meta.virtual instanceof Element && (<Element>meta.virtual).tagName !== 'TEMPLATE',
+                   `unexpected non-Element meta in queue:`, meta.virtual);
+      syncChildNodes(<Element>meta.virtual, <Element>meta.real);
     }
   }
 }
@@ -41,14 +41,14 @@ export class Root {
 // A State belongs to a virtual node and stores all of our private data relevant
 // to that node. Each node in the virtual DOM receives a State either during
 // bootstrap or during compilation.
-export class Trace {
+export class Meta {
   virtual: Node = null;
   real: Node = null;
   vm: ComponentVM = null;
   VM: ComponentClass = null;
   scope: any = null;
   // A view tracks the progress of asynchronously fetching a view by URL. While
-  // it exists (while a template is unavailable), this trace's node won't be
+  // it exists (while a template is unavailable), this meta's node won't be
   // phased.
   view: View = null;
   // Allows to skip compilation on reflow.
@@ -58,13 +58,13 @@ export class Trace {
   // Set by a mold as a promise to not modify the node or any of its
   // descendants. Allows us to skip recompilation of entire trees during phases.
   isDomImmutable: boolean = false;
-  // A trace is marked as dynamic if it has any bindings.
+  // A meta is marked as dynamic if it has any bindings.
   dynamic: boolean = false;
-  // Closest ancestral dynamic trace.
-  dynamicAncestor: Trace = null;
-  // Descendant dynamic traces.
-  dynamicDescendants: Trace[] = null;
-  // True when the trace belongs to a root element.
+  // Closest ancestral dynamic meta.
+  dynamicAncestor: Meta = null;
+  // Descendant dynamic metas.
+  dynamicDescendants: Meta[] = null;
+  // True when the meta belongs to a root element.
   isRoot: boolean = false;
 
   textInterpolation: TextExpression = null;
@@ -75,8 +75,8 @@ export class Trace {
   // Workaround for an IE10/11 problem where the browser removes non-standard
   // properties from text nodes (instances of Text). The problem is prevented if
   // references to those text nodes are kept _somewhere_ in the JavaScript code.
-  // The reference also can't be held by the trace associated with the text node
-  // in question, so we keep it on the parent trace to give it a good chance of
+  // The reference also can't be held by the meta associated with the text node
+  // in question, so we keep it on the parent meta to give it a good chance of
   // being automatically garbage collected when this branch is destroyed. This
   // should never be used by our JS code — it exists solely to keep references.
   msieChildTextNodes: Text[] = null;
@@ -97,12 +97,12 @@ export class Trace {
     // bindings on them.
     if (this.dynamic) return;
 
-    let trace = Trace.getDynamicAncestor(this.virtual);
-    if (trace) {
-      if (!trace.dynamicDescendants) trace.dynamicDescendants = [];
-      utils.assert(!~trace.dynamicDescendants.indexOf(this), `unexpected second dynamic registration of trace:`, this);
-      trace.dynamicDescendants.push(this);
-      this.dynamicAncestor = trace;
+    let meta = Meta.getDynamicAncestor(this.virtual);
+    if (meta) {
+      if (!meta.dynamicDescendants) meta.dynamicDescendants = [];
+      utils.assert(!~meta.dynamicDescendants.indexOf(this), `unexpected second dynamic registration of meta:`, this);
+      meta.dynamicDescendants.push(this);
+      this.dynamicAncestor = meta;
     }
     this.dynamic = true;
   }
@@ -120,10 +120,10 @@ export class Trace {
 
   getScope(): any {
     if (this.scope) return this.scope;
-    let trace = this;
-    while (trace = trace.dynamicAncestor) {
-      if (trace.vm) return trace.vm;
-      if (trace.scope) return trace.scope;
+    let meta = this;
+    while (meta = meta.dynamicAncestor) {
+      if (meta.vm) return meta.vm;
+      if (meta.scope) return meta.scope;
     }
     return null;
   }
@@ -131,7 +131,7 @@ export class Trace {
   // Must follow the sequence: (two elements?) -> init VMs -> phase attributes
   // -> phase child nodes.
   phase(): void {
-    utils.assert(this.dynamic, `unexpected phase() call on a non-dynamic trace:`, this);
+    utils.assert(this.dynamic, `unexpected phase() call on a non-dynamic meta:`, this);
 
     if (this.virtual instanceof Text) {
       if (this.textInterpolation) this.phaseTextInterpolation();
@@ -165,7 +165,7 @@ export class Trace {
 
       if (this.isRoot || this.virtual.parentNode instanceof Element) {
         if (this.dynamicDescendants) {
-          for (let trace of this.dynamicDescendants) trace.phase();
+          for (let meta of this.dynamicDescendants) meta.phase();
         }
       }
 
@@ -214,7 +214,7 @@ export class Trace {
       let node: Node = template;
       while (node = node.parentNode) {
         if (node instanceof Element && node.tagName !== 'TEMPLATE') {
-          queue.plan(Trace.getTrace(node));
+          queue.plan(Meta.getMeta(node));
           break;
         }
       }
@@ -229,51 +229,51 @@ export class Trace {
     if (this.vm && typeof this.vm.onDestroy === 'function') {
       this.vm.onDestroy();
     }
-    delete this.virtual[traceKey];
+    delete this.virtual[metaKey];
     this.virtual = null;
     this.real = null;
     this.dynamicAncestor = null;
   }
 
-  static hasTrace(virtual: Node): boolean {
-    return virtual.hasOwnProperty(traceKey);
+  static hasMeta(virtual: Node): boolean {
+    return virtual.hasOwnProperty(metaKey);
   }
 
-  static getTrace(virtual: Node): Trace {
-    if (Trace.hasTrace(virtual)) return virtual[traceKey];
+  static getMeta(virtual: Node): Meta {
+    if (Meta.hasMeta(virtual)) return virtual[metaKey];
     return null;
   }
 
-  static getOrAddTrace(virtual: Node): Trace {
-    if (Trace.hasTrace(virtual)) return virtual[traceKey];
+  static getOrAddMeta(virtual: Node): Meta {
+    if (Meta.hasMeta(virtual)) return virtual[metaKey];
     // IE 10/11 workaround, see State.
     if (virtual instanceof Text && utils.msie) {
-      let parentState = Trace.getTrace(virtual.parentNode);
+      let parentState = Meta.getMeta(virtual.parentNode);
       if (!parentState.msieChildTextNodes) parentState.msieChildTextNodes = [];
       parentState.msieChildTextNodes.push(virtual);
     }
-    virtual[traceKey] = new Trace(virtual);
-    return virtual[traceKey];
+    virtual[metaKey] = new Meta(virtual);
+    return virtual[metaKey];
   }
 
-  static addRootTrace(virtual: Element, real: Element): Trace {
-    utils.assert(virtual instanceof Element, `unexpected root trace addition to non-element:`, virtual);
-    utils.assert(real instanceof Element, `unexpected root trace addition to non-element:`, virtual);
-    let trace = new Trace(virtual, real);
-    trace.isRoot = true;
-    trace.markDynamic();
-    virtual[traceKey] = trace;
-    return trace;
+  static addRootMeta(virtual: Element, real: Element): Meta {
+    utils.assert(virtual instanceof Element, `unexpected root meta addition to non-element:`, virtual);
+    utils.assert(real instanceof Element, `unexpected root meta addition to non-element:`, virtual);
+    let meta = new Meta(virtual, real);
+    meta.isRoot = true;
+    meta.markDynamic();
+    virtual[metaKey] = meta;
+    return meta;
   }
 
-  static getDynamicAncestor(virtual: Node): Trace {
-    let trace: Trace;
+  static getDynamicAncestor(virtual: Node): Meta {
+    let meta: Meta;
     while (virtual.parentNode) {
       virtual = virtual.parentNode;
-      trace = Trace.getTrace(virtual);
-      if (trace.dynamic) return trace;
+      meta = Meta.getMeta(virtual);
+      if (meta.dynamic) return meta;
     }
-    return trace || null;
+    return meta || null;
   }
 }
 
@@ -291,11 +291,11 @@ function syncChildNodes(virtual: Node, real: Node): void {
   for (var i = 0, ii = children.length; i < ii; ++i) {
     let virtualChild = children[i];
     let realChild = real.childNodes[i];
-    let trace = Trace.getTrace(virtualChild);
+    let meta = Meta.getMeta(virtualChild);
     // Put the real child in position.
-    if (realChild !== trace.real) {
-      real.insertBefore(trace.real, realChild || null);
-      realChild = trace.real;
+    if (realChild !== meta.real) {
+      real.insertBefore(meta.real, realChild || null);
+      realChild = meta.real;
     }
     // Sync the rest of the tree.
     if (virtualChild instanceof Element && realChild instanceof Element) {

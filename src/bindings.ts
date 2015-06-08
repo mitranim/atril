@@ -1,6 +1,6 @@
 'use strict';
 
-import {Trace} from './tree';
+import {Meta} from './tree';
 
 export class AttributeBinding {
   name: string;
@@ -18,16 +18,16 @@ export class AttributeBinding {
     this.VM = VM;
   }
 
-  refreshState(element: Element, trace: Trace): void {
+  refreshState(element: Element, meta: Meta): void {
     let isNew = this.isNew;
     if (isNew) {
       this.vm = Object.create(this.VM.prototype);
       this.vm.hint = this.hint;
       this.vm.expression = this.expression;
       this.vm.element = element;
-      this.vm.component = trace.vm || null;
+      this.vm.component = meta.vm || null;
     }
-    let scope = trace.getScope();
+    let scope = meta.getScope();
     if (this.vm.scope !== scope) this.vm.scope = scope;
     if (isNew) this.VM.call(this.vm);
   }
