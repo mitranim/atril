@@ -44,6 +44,7 @@ doc-banner {
       position: absolute;
       top: @sf-common-padding;
       right: @sf-common-padding;
+      bottom: @sf-common-padding;
       width: auto;
 
       // Inner layout.
@@ -56,6 +57,16 @@ doc-banner {
 
       // Cosmetic.
       font-size: 2em;
+
+      > iframe {
+        font-size: 1em;
+        max-width: 2em;
+        height: 1em;
+        // Can't be bothered to style the insides of the iframed icon to make it
+        // responsive, so let's just hide it on narrow displays.
+        .sf-xs({display: none});
+        .sf-sm({display: none});
+      }
     }
   }
 }
