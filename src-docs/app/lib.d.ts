@@ -10,6 +10,7 @@ declare module 'atril' {
     load(url: string): Promise;
   };
   export var Meta: any;
+  export function compileExpression(expression: string): Function;
 }
 
 declare module 'highlightjs' {

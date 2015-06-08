@@ -114,26 +114,35 @@ export function isValidIdentifier(expression: string): boolean {
   return /^[$_A-Za-z]+[$_A-Za-z0-9]*$/.test(expression);
 }
 
-export function isValidKebabIdentifier(expression: string): boolean {
-  return /^[$_a-z]+[$_a-z0-9-]*$/.test(expression);
-}
-
 // match[1] -> identifier
 // match[2] -> everything else
 export function matchValidIdentifier(expression: string) {
   return expression.match(/^([$_A-Za-z]+[$_A-Za-z0-9]*)(.*)/);
 }
 
-// match[1] -> identifier
-// match[2] -> everything else
-export function matchValidKebabIdentifier(expression: string) {
-  return expression.match(/^([$_a-z]+[$_a-z0-9-]*)(.*)/);
-}
-
 // Checks if something looks like `blah(.blah.blah)*`.
 // Doesn't support `blah[blah]` or `blah[0]`.
 export function isStaticPathAccessor(expression: string): boolean {
   return /^[$_A-Za-z]+[$_A-Za-z0-9]*(?:\.[$_A-Za-z]+[$_A-Za-z0-9]*)*$/.test(expression);
+}
+
+// TODO forbid consequtive hyphens and trailing hyphen.
+export function isValidKebabIdentifier(expression: string): boolean {
+  return /^[$_a-z]+[$_a-z0-9-]*$/.test(expression);
+}
+
+// match[1] -> identifier
+// match[2] -> everything else
+// TODO forbid consequtive hyphens and trailing hyphen.
+export function matchValidKebabIdentifier(expression: string) {
+  return expression.match(/^([$_a-z]+[$_a-z0-9-]*)(.*)/);
+}
+
+// Checks if something looks like `blah(.blah-blah.blah-blah)*`.
+// Doesn't support `blah[blah]` or `blah[0]`.
+// TODO forbid consequtive hyphens and trailing hyphen.
+export function isKebabStaticPathAccessor(expression: string): boolean {
+  return /^[$_a-z]+[$_a-z0-9-]*(?:\.[$_a-z]+[$_a-z0-9-]*)*$/.test(expression);
 }
 
 let consoleWarnAvailable = typeof console !== 'undefined' && console && typeof console.warn === 'function';
@@ -186,7 +195,4 @@ export const msie = !!(<any>document).documentMode;
 // FF has a tendency to reverse attribute order when parsing HTML into DOM.
 let testDiv = document.createElement('div');
 testDiv.innerHTML = '<template one two></template>';
-let attrs = testDiv.childNodes[0].attributes;
-let reversesAttributes: boolean = false;
-if (attrs[0].name === 'two') reversesAttributes = true;
-export const browserReversesAttributes = reversesAttributes;
+export const browserReversesAttributes = testDiv.childNodes[0].attributes[0].name === 'two';

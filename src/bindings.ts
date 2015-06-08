@@ -1,10 +1,10 @@
 'use strict';
 
+import {compileExpression} from './bindings';
 import {Meta} from './tree';
 
 export class AttributeBinding {
   name: string;
-  value: string;
   hint: string;
   expression: Expression;
   VM: Function;
@@ -12,24 +12,25 @@ export class AttributeBinding {
 
   constructor(attr: Attr, VM: Function) {
     this.name = attr.name;
-    this.value = attr.value;
     this.hint = attr.name.match(/^[a-z-]+\.(.*)/)[1];
     this.expression = compileExpression(attr.value);
     this.VM = VM;
   }
 
   refreshState(element: Element, meta: Meta): void {
-    let isNew = this.isNew;
-    if (isNew) {
-      this.vm = Object.create(this.VM.prototype);
-      this.vm.hint = this.hint;
-      this.vm.expression = this.expression;
-      this.vm.element = element;
-      this.vm.component = meta.vm || null;
-    }
+    if (!this.isNew) return;
+
+    this.vm = Object.create(this.VM.prototype);
+    this.vm.hint = this.hint;
+    this.vm.expression = this.expression;
+
+    this.vm.element = element;
+    this.vm.component = meta.vm || null;
+
     let scope = meta.getScope();
-    if (this.vm.scope !== scope) this.vm.scope = scope;
-    if (isNew) this.VM.call(this.vm);
+    this.vm.scope = scope;
+
+    this.VM.call(this.vm);
   }
 
   // Indicates if the attribute was phased. Used to decide if the mold output

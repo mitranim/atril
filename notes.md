@@ -38,7 +38,7 @@ component views, with the difference that elemends transcluded with
 `<content>` become a part of the local DOM and don't receive references to the
 original parents (because a mold doesn't create a new scope). A potential
 concern is that the view might reference potentially unavailable
-identifiers, or make assumptions about available locals in the scope where it's
+identifiers, making assumptions about locals available in the scope where it's
 used. It's the same problem as `ng-include`. Still thinking this over.
 
 # Planned `<content>` mechanics
@@ -80,17 +80,10 @@ Consider to either (1) debounce reflows (is event propagation sync or async? if
 async, this is a questionable solution), or (2) use a single document-level
 event aggregator as the default way of handling events.
 
-# Expressions
+Consider letting components customise their virtual DOM (without access to the
+transcluded content, when transclusion is implemented) just before the view is
+compiled. It could be an instance lifecycle method, something like `onCompile`.
 
-Considering a custom expression compiler. Will allow us to:
-* Safeguard access to globals.
-* May or may not allow to avoid reinterpreting the expression on each call.
-* Property accessors can be compiled into faster functions than other expressions.
-
-Considering to no longer autocompile expressions. Currently the only place where
-they're used as expressions in the `bind.*` attribute, and the only place where
-they're used as statements is the `on.` attribute. `twoway.` and some other
-attributes actually reparse them as property accessors.
-
-Another problem is that prototypal scope inheritance leaks getters and setters
-from the VM, somtimes leading to unintuitive and difficult to debug errors.
+When interpolating attributes, must sanitise `href`, wiping any `"javascript:"`
+links. Consider if `src` must also be sanitised. Consider if the user can
+unwittingly let dangerous HTML into the view, and in which scenarios.

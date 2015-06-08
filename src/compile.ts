@@ -73,8 +73,8 @@ function compileElement(element: Element): void {
         utils.shimTemplateContent(<Element>child);
         compileMoldsOnTemplate(<Element>child);
       } else {
-        compileAttributeInterpolationsOnElement(<Element>child);
-        let meta = Meta.getMeta(child);
+        let meta = Meta.getOrAddMeta(child);
+        compileAttributeInterpolationsOnRealElement(<Element>child, <Element>meta.real);
         compileAttributeBindingsOnRealElement(<Element>child, <Element>meta.real);
       }
     }
@@ -165,17 +165,21 @@ export function compileAttributeBindingsOnRealElement(virtual: Element, real: El
   }
 }
 
-function compileAttributeInterpolationsOnElement(element: Element): void {
-  let meta = Meta.getOrAddMeta(element);
+function compileAttributeInterpolationsOnRealElement(virtual: Element, real: Element): void {
+  let meta = Meta.getOrAddMeta(virtual);
   if (meta.compiled) return;
 
-  for (let i = 0, ii = element.attributes.length; i < ii; ++i) {
-    let attr = element.attributes[i];
+  for (let i = 0, ii = real.attributes.length; i < ii; ++i) {
+    let attr = real.attributes[i];
     if (utils.looksLikeCustomAttribute(attr.name)) continue;
     if (hasInterpolation(attr.value)) {
       if (!meta.attributeInterpolations) meta.attributeInterpolations = [];
       if (!meta.dynamic) meta.markDynamic();
       meta.attributeInterpolations.push(new AttributeInterpolation(attr));
+      // Wipe the interpolation from the attribute to prevent curlies from
+      // leaking into the view (e.g. via `placeholder` or anything else that
+      // makes attribute content visible).
+      attr.value = '';
     }
   }
 }

@@ -56,7 +56,7 @@ class TwoWay {
   constructor() {
     let attributeName = 'twoway.' + this.hint;
 
-    utils.assert(utils.isStaticPathAccessor(this.hint), `a 'twoway.*' attribute must be of form 'twoway.X(.X)*', where X is a valid JavaScript identifier; got: '${attributeName}'`);
+    utils.assert(utils.isKebabStaticPathAccessor(this.hint), `a 'twoway.*' attribute must be of form 'twoway.X(.X)*', where X is a valid JavaScript identifier in kebab form; got: '${attributeName}'`);
 
     let expression = this.element.getAttribute(attributeName) || '';
 
@@ -315,7 +315,7 @@ class Class {
   // Autoassigned
   element: Element;
   hint: string;
-  expression: Function;
+  expression: Expression;
   scope: any;
 
   onPhase() {

@@ -20,7 +20,7 @@ const queue = {
     // rapidly, TODO improve.
     if (!~queue.metas.indexOf(meta)) queue.metas.push(meta);
   },
-  flush(timestamp: number): void {
+  flush(): void {
     while (queue.metas.length) {
       let meta = queue.metas.shift();
       utils.assert(meta.virtual instanceof Element && (<Element>meta.virtual).tagName !== 'TEMPLATE',
@@ -31,6 +31,8 @@ const queue = {
 }
 
 export function flushQueue(): void {
+  if (!queue.metas.length) return;
+
   // This method is called from within our usual zone, so we need to go into a
   // sibling zone for async DOM manipulation to avoid triggering another reflow.
   // TODO review the zone API to see if this can be done in a simpler way.
@@ -269,11 +271,11 @@ export class Meta {
 
   static getOrAddMeta(virtual: Node): Meta {
     if (Meta.hasMeta(virtual)) return virtual[metaKey];
-    // IE 10/11 workaround, see State.
+    // IE 10/11 workaround, see Meta.
     if (virtual instanceof Text && utils.msie) {
-      let parentState = Meta.getMeta(virtual.parentNode);
-      if (!parentState.msieChildTextNodes) parentState.msieChildTextNodes = [];
-      parentState.msieChildTextNodes.push(virtual);
+      let parentMeta = Meta.getMeta(virtual.parentNode);
+      if (!parentMeta.msieChildTextNodes) parentMeta.msieChildTextNodes = [];
+      parentMeta.msieChildTextNodes.push(virtual);
     }
     virtual[metaKey] = new Meta(virtual);
     return virtual[metaKey];
