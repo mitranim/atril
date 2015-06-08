@@ -25,7 +25,7 @@ function compileTextNode(node: Text): void {
   if (hasInterpolation(node.textContent)) {
     meta.markDynamic();
     meta.textInterpolation = compileInterpolation(node.textContent);
-    // Wipe text content of the real node to prevent curlies from leaking
+    // Wipe the text content of the real node to prevent curlies from leaking
     // into the view.
     meta.real.textContent = '';
   }
@@ -86,7 +86,8 @@ function compileElement(element: Element): void {
 function unpackTemplatesFromMolds(element: Element): Element {
   let outerElem = element;
   let atCapacity: boolean = element.tagName !== 'TEMPLATE';
-  let attributes: Attr[] = [].slice.call(element.attributes);
+  let attributes: Attr[] = [].slice.call(element.attributes, 0);
+  if (utils.browserReversesAttributes) attributes = attributes.reverse();
 
   // Unpack in reverse order.
   for (let i = attributes.length - 1; i >= 0; --i) {
@@ -108,6 +109,7 @@ function unpackTemplatesFromMolds(element: Element): Element {
       }
     }
   }
+
   return outerElem;
 }
 
@@ -170,7 +172,7 @@ function compileAttributeInterpolationsOnElement(element: Element): void {
   for (let i = 0, ii = element.attributes.length; i < ii; ++i) {
     let attr = element.attributes[i];
     if (utils.looksLikeCustomAttribute(attr.name)) continue;
-    if (hasInterpolation(attr.textContent)) {
+    if (hasInterpolation(attr.value)) {
       if (!meta.attributeInterpolations) meta.attributeInterpolations = [];
       if (!meta.dynamic) meta.markDynamic();
       meta.attributeInterpolations.push(new AttributeInterpolation(attr));

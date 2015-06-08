@@ -55,7 +55,7 @@ export class AttributeInterpolation {
   expression: TextExpression;
   constructor(attr: Attr) {
     this.attr = attr;
-    this.expression = compileInterpolation(attr.textContent);
+    this.expression = compileInterpolation(attr.value);
   }
 }
 

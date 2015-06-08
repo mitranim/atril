@@ -25,26 +25,6 @@ export function normalise(name: string): string {
   }).join('');
 }
 
-/**
- * Converts the identifier from kebab case to camelcase (if applicable) or
- * leaves it as-is, if it's already valid.
- */
-export function deKebabibise(name: string): string {
-  name = name.replace(/[^A-Za-z.]+/g, ' ');
-
-  for (var i = 0; i < name.length - 1; i++) {
-    var prefix = name.slice(0, i + 1);
-    var next = name[i + 1];
-
-    if (/[a-z]/.test(name[i]) && /[A-Z]/.test(next)) {
-      next = next.toLowerCase();
-      name = prefix + ' ' + next + name.slice(i + 2);
-    }
-  }
-
-  return name.trim().toLowerCase();
-}
-
 export function looksLikeCustomAttribute(attributeName: string): boolean {
   return /^[a-z-]+\./.test(attributeName);
 }
@@ -60,6 +40,8 @@ export function isArrayLike(value: any): boolean {
 }
 
 export function strictEqual(one: any, other: any): boolean {
+  // NaN is the only value that doesn't equal itself.
+  // For our purposes, NaN === NaN -> true.
   return one === other || typeof one === 'number' && typeof other === 'number';
 }
 
@@ -81,6 +63,8 @@ export function cloneDeep(node: Node): Node {
   return clone;
 }
 
+// For browsers like IE that don't natively support `.content` on <template>
+// elements.
 export function shimTemplateContent(template: TemplateElement): void {
   if (!template.content) {
     let fragment = document.createDocumentFragment();
@@ -195,6 +179,14 @@ export function onload(callback: Function): void {
   }
 }
 
-// User agent sniffing. You're welcome to sniffing the "capability" to randomly
+// User agent sniffing. You're welcome to detecting the "capability" to randomly
 // erase custom properties of Text nodes.
 export const msie = !!(<any>document).documentMode;
+
+// FF has a tendency to reverse attribute order when parsing HTML into DOM.
+let testDiv = document.createElement('div');
+testDiv.innerHTML = '<template one two></template>';
+let attrs = testDiv.childNodes[0].attributes;
+let reversesAttributes: boolean = false;
+if (attrs[0].name === 'two') reversesAttributes = true;
+export const browserReversesAttributes = reversesAttributes;

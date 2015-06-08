@@ -38,8 +38,8 @@ export class Root {
   real: Element = null;
 }
 
-// A State belongs to a virtual node and stores all of our private data relevant
-// to that node. Each node in the virtual DOM receives a State either during
+// A Meta belongs to a virtual node and stores all of our private data relevant
+// to that node. Each node in the virtual DOM receives a Meta either during
 // bootstrap or during compilation.
 export class Meta {
   virtual: Node = null;
