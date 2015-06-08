@@ -1,6 +1,6 @@
 {
   "name": "atril",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.",
   "main": "lib/index",
   "author": "Mitranim",

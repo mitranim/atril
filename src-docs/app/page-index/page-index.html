@@ -390,16 +390,16 @@ Then you can bind that property from the outside:
   </h1>
 
 <template markdown.>
-`atril` maintains a virtual representation of each component's node tree.
-Updates to the viewmodel cause changes in the virtual tree. The framework
-diffs them with the live DOM and carefully updates the view.
+Similarly to ReactJS, `atril` maintains a virtual representation of each
+component's node tree. Updates to the viewmodel cause changes in the virtual
+tree. The framework diffs them with the live DOM and carefully updates the view.
 
 This is primarily an implementation detail, and is done for internal
 consistency. However, this architecture should enable optimisations for high
 rendering performance, similar to ReactJS.
 
-(Note: this page is rendered entirely with `atril`. It also uses third party
-libraries for markdown and code.)
+(Note: this page is rendered with `atril`; it also uses third party libraries
+for markdown and code.)
 </template>
 </sf-article>
 
@@ -414,9 +414,9 @@ multi-page, document-oriented sites with server-side routing and large amounts
 of static content — in other words, the majority of the web.
 
 It's designed to be as light, fast, and non-intrusive as possible. The library
-clocks at 40KB, starts up incredibly quickly, and you can use custom components
-just by including new tags on the page — without any effect on the rest of the
-content, routing, or page rendering.
+clocks at 40KB, starts up quickly, and you can use custom components just by
+including new tags on the page — without any effect on the rest of the content,
+routing, or page rendering.
 
 Big-name next generation frameworks like Angular 2 and Aurelia are targeting a
 wider range of applications, with the primary focus on single-page apps. You can

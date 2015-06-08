@@ -16,8 +16,6 @@ class VM {
       if (this.isActive(node.getAttribute('href'))) node.classList.add('active');
       else node.classList.remove('active');
     }
-    // Expecting no pushstate transitions.
-    this.onPhase = null;
   }
 
   static viewUrl = 'app/doc-sidenav/doc-sidenav.html';

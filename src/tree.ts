@@ -10,9 +10,14 @@ const metaKey = typeof Symbol === 'function' ? Symbol('atrilMeta') : utils.rando
 export const roots: Root[] = [];
 const neutralZone = zone.fork();
 
+// The queue is a list of virtual elements whose child list needs to be synced
+// with the real element. This is done: (1) during the initial render; (2) when
+// an element's child mold modifies its own contents.
 const queue = {
   metas: <Meta[]>[],
   plan(meta: Meta): void {
+    // Duplicate detection potentially slow(ish) when doing large updates
+    // rapidly, TODO improve.
     if (!~queue.metas.indexOf(meta)) queue.metas.push(meta);
   },
   flush(timestamp: number): void {
@@ -26,6 +31,9 @@ const queue = {
 }
 
 export function flushQueue(): void {
+  // This method is called from within our usual zone, so we need to go into a
+  // sibling zone for async DOM manipulation to avoid triggering another reflow.
+  // TODO review the zone API to see if this can be done in a simpler way.
   neutralZone.run(() => {
     window.requestAnimationFrame(queue.flush);
   });
@@ -53,7 +61,8 @@ export class Meta {
   view: View = null;
   // Allows to skip compilation on reflow.
   compiled: boolean = false;
-  // Allows to skip render on reflow.
+  // Allows to skip render on reflow. On repeated renders, signals if the render
+  // needs to be done immediately.
   synced: boolean = false;
   // Set by a mold as a promise to not modify the node or any of its
   // descendants. Allows us to skip recompilation of entire trees during phases.
@@ -170,10 +179,8 @@ export class Meta {
       }
 
       if ((<Element>this.virtual).tagName !== 'TEMPLATE') {
-        if (!this.synced) queue.plan(this);
+        this.syncChildNodes();
       }
-
-      this.synced = true;
     }
 
     if (this.vm && typeof this.vm.onPhase === 'function') this.vm.onPhase();
@@ -214,10 +221,26 @@ export class Meta {
       let node: Node = template;
       while (node = node.parentNode) {
         if (node instanceof Element && node.tagName !== 'TEMPLATE') {
-          queue.plan(Meta.getMeta(node));
+          Meta.getMeta(node).syncChildNodes();
           break;
         }
       }
+    }
+  }
+
+  // Syncs the child nodes for own element either immediately or in the queue.
+  // Immediate sync is required when rendering something for the first time.
+  // This allows us to paint the initial page faster (at the cost of / with the
+  // benefit of blocking the UI thread for a moment), and give components their
+  // child nodes when calling their `onPhase` lifecycle method for the first
+  // time.
+  syncChildNodes(): void {
+    utils.assert(this.virtual instanceof Element && (<Element>this.virtual).tagName !== 'TEMPLATE' && this.real instanceof Element,
+                 `unexpected Meta#syncChildNodes on a meta with a non-Element:`, this.virtual);
+    if (this.synced) queue.plan(this);
+    else {
+      this.synced = true;
+      syncChildNodes(this.virtual, this.real);
     }
   }
 

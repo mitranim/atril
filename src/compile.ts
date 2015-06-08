@@ -21,7 +21,7 @@ export function compileNode(node: Node): void {
 
 function compileTextNode(node: Text): void {
   let meta = Meta.getOrAddMeta(node);
-  if (meta.isDomImmutable && meta.compiled) return;
+  if (meta.compiled) return;
   if (hasInterpolation(node.textContent)) {
     meta.markDynamic();
     meta.textInterpolation = compileInterpolation(node.textContent);
