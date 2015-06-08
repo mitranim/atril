@@ -12,11 +12,24 @@ export function randomString(): string {
 }
 
 /**
- * Normalises a string, converting everything except English letters and dots
- * into singular spaces, inserting spaces into case boundaries, and
- * lowercasing.
+ * Normalises a string, converting everything except symbols valid in
+ * JavaScript identifiers and dots into singular spaces and joining them via
+ * camelcase.
  */
-function normalise(name: string): string {
+export function normalise(name: string): string {
+  name = name.replace(/[^$_A-Za-z0-9.]+/g, ' ');
+
+  return name.split(/\s+/g).map((chunk: string, index) => {
+    if (!index) return chunk;
+    return chunk[0].toUpperCase() + chunk.slice(1);
+  }).join('');
+}
+
+/**
+ * Converts the identifier from kebab case to camelcase (if applicable) or
+ * leaves it as-is, if it's already valid.
+ */
+export function deKebabibise(name: string): string {
   name = name.replace(/[^A-Za-z.]+/g, ' ');
 
   for (var i = 0; i < name.length - 1; i++) {
@@ -30,21 +43,6 @@ function normalise(name: string): string {
   }
 
   return name.trim().toLowerCase();
-}
-
-/**
- * Converts an identifier into kebab case.
- */
-export function kebabCase(name: string): string {
-  return normalise(name).replace(/ /g, '-');
-}
-
-/**
- * Converts an identifier into camelcase.
- */
-export function camelCase(name: string): string {
-  name = normalise(name);
-  return name.replace(/ (.)/g, (m, p1: string) => p1.toUpperCase());
 }
 
 export function looksLikeCustomAttribute(attributeName: string): boolean {
@@ -132,10 +130,20 @@ export function isValidIdentifier(expression: string): boolean {
   return /^[$_A-Za-z]+[$_A-Za-z0-9]*$/.test(expression);
 }
 
+export function isValidKebabIdentifier(expression: string): boolean {
+  return /^[$_a-z]+[$_a-z0-9-]*$/.test(expression);
+}
+
 // match[1] -> identifier
 // match[2] -> everything else
 export function matchValidIdentifier(expression: string) {
   return expression.match(/^([$_A-Za-z]+[$_A-Za-z0-9]*)(.*)/);
+}
+
+// match[1] -> identifier
+// match[2] -> everything else
+export function matchValidKebabIdentifier(expression: string) {
+  return expression.match(/^([$_a-z]+[$_a-z0-9-]*)(.*)/);
 }
 
 // Checks if something looks like `blah(.blah.blah)*`.

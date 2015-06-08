@@ -17,7 +17,8 @@ class VM {
   }
 
   remove(item) {
-    this.items.splice(this.items.indexOf(item), 1);
+    let index = this.items.indexOf(item);
+    this.items.splice(index, !!~index); // strong is the call of the dark side
   }
 
   static viewUrl = 'app/todo-list/todo-list.html';

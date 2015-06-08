@@ -1,4 +1,4 @@
-import {Mold, getOrAddTrace} from 'atril';
+import {Mold, Trace} from 'atril';
 
 @Mold({
   attributeName: 'doc-demo'
@@ -14,10 +14,10 @@ class Ctrl {
 
     // Fork the scope. Useful for avoiding `let` conflicts in demos. Not
     // recommended for other scenarios.
-    let trace = getOrAddTrace(this.element);
+    let trace = Trace.getTrace(this.element);
     if (!this.scope) this.scope = null;
     if (!trace.scope) {
-      trace.scope = Object.create(this.scope);
+      trace.insertScope();
       this.scope = trace.scope;
     }
 

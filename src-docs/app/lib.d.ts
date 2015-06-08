@@ -9,14 +9,7 @@ declare module 'atril' {
     set(url: string, view: string): void;
     load(url: string): Promise;
   };
-  export function getOrAddTrace(node: Node): Trace;
-
-  interface Trace {
-    vm: any;
-    scope: any;
-    compiled: boolean;
-    isDomImmutable: boolean;
-  }
+  export var Trace: any;
 }
 
 declare module 'highlightjs' {

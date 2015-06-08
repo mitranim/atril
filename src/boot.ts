@@ -5,7 +5,7 @@ import 'zone.js';
 import * as utils from './utils';
 import {View} from './view';
 import {compileNode} from './compile';
-import {Root, roots, getTrace, addRootTrace, phaseElements} from './tree';
+import {Root, roots, Trace, flushQueue} from './tree';
 
 const localZone = zone.fork({
   afterTask: function() {
@@ -13,7 +13,10 @@ const localZone = zone.fork({
     // also hides all exceptions after the first during these retries. For us,
     // if a binding consistently throws during a phase, it causes continuous
     // reflows. To avoid that, we have to capture the exception.
-    try {reflow()}
+    try {
+      reflow();
+      flushQueue();
+    }
     catch (err) {utils.error(err)}
   }
 });
@@ -46,12 +49,12 @@ function reflowWithUnlimitedStack(): void {
       roots.splice(i, 1);
       continue;
     }
-    phaseElements(root.virtual, root.real);
+    Trace.getTrace(root.virtual).phase();
   }
 }
 
 function destroy(virtual: Element): void {
-  let trace = getTrace(virtual);
+  let trace = Trace.getTrace(virtual);
   trace.destroy();
   let nodes = virtual.childNodes;
   for (let i = 0, ii = nodes.length; i < ii; ++i) {
@@ -70,8 +73,7 @@ export function bootstrap(): void {
   function boot(element: Element = document.body): void {
     utils.assert(element instanceof Element, `bootstrap expects an Element, got:`, element);
     // Don't register components twice.
-    for (let i = 0, ii = roots.length; i < ii; ++i) {
-      let root = roots[i];
+    for (let root of roots) {
       if (root.real === element) return;
     }
 
@@ -122,7 +124,7 @@ function createRootAt(element: Element, VM?: ComponentClass): Root {
 
   if (VM) {
     let virtual: Element = (<any>element).cloneNode(true);
-    let trace = addRootTrace(virtual, element);
+    let trace = Trace.addRootTrace(virtual, element);
     trace.VM = VM;
     trace.view = new View(VM);
     // view should take care of transclusion
@@ -136,7 +138,7 @@ function createRootAt(element: Element, VM?: ComponentClass): Root {
     while (element.hasChildNodes()) {
       virtual.appendChild(element.removeChild(element.firstChild));
     }
-    addRootTrace(virtual, element);
+    Trace.addRootTrace(virtual, element);
     root.virtual = virtual;
   }
 

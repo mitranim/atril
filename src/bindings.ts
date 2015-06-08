@@ -18,19 +18,22 @@ export class AttributeBinding {
     this.VM = VM;
   }
 
-  refreshState(element: Element, trace: Trace, scope: any): void {
+  refreshState(element: Element, trace: Trace): void {
     let isNew = this.isNew;
     if (isNew) {
       this.vm = Object.create(this.VM.prototype);
       this.vm.hint = this.hint;
       this.vm.expression = this.expression;
+      this.vm.element = element;
+      this.vm.component = trace.vm || null;
     }
-    this.vm.element = element;
-    this.vm.scope = scope;
-    this.vm.component = trace.vm || null;
+    let scope = trace.getScope();
+    if (this.vm.scope !== scope) this.vm.scope = scope;
     if (isNew) this.VM.call(this.vm);
   }
 
+  // Indicates if the attribute was phased. Used to decide if the mold output
+  // needs to be recompiled and/or re-rendered.
   phase(): boolean {
     if (typeof this.vm.onPhase === 'function') {
       return this.vm.onPhase(), true;
@@ -101,8 +104,7 @@ export function compileInterpolation(text: string): TextExpression {
 
   return function(scope: any): string {
     let total = '';
-    for (let i = 0, ii = collection.length; i < ii; ++i) {
-      let item = collection[i];
+    for (let item of collection) {
       total += typeof item === 'string' ? item : (<Expression>item).call(this, scope);
     }
     return total;

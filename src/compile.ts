@@ -1,7 +1,7 @@
 'use strict';
 
 import {registeredComponents, registeredAttributes, registeredMolds} from './boot';
-import {hasTrace, getTrace, getOrAddTrace} from './tree';
+import {Trace} from './tree';
 import {AttributeBinding, AttributeInterpolation, hasInterpolation, compileExpression, compileInterpolation} from './bindings';
 import {View} from './view';
 import * as utils from './utils';
@@ -16,24 +16,24 @@ export function compileNode(node: Node): void {
     return;
   }
   // A trace should always be made available, even for comments.
-  getOrAddTrace(node);
+  Trace.getOrAddTrace(node);
 }
 
 function compileTextNode(node: Text): void {
-  let trace = getOrAddTrace(node);
+  let trace = Trace.getOrAddTrace(node);
   if (trace.isDomImmutable && trace.compiled) return;
   if (hasInterpolation(node.textContent)) {
     trace.markDynamic();
     trace.textInterpolation = compileInterpolation(node.textContent);
-    // Erase the existing text content to prevent curlies from leaking into the
-    // view.
-    node.textContent = '';
+    // Wipe text content of the real node to prevent curlies from leaking
+    // into the view.
+    trace.real.textContent = '';
   }
   trace.compiled = true;
 }
 
 function compileElement(element: Element): void {
-  let trace = getOrAddTrace(element);
+  let trace = Trace.getOrAddTrace(element);
   // Allows us to skip recompilation of nodes returned from molds. Molds are
   // expected to explicitly mark their children as immutable. Child molds can't
   // be considered immutable in the compilation sense because parent molds can't
@@ -74,6 +74,8 @@ function compileElement(element: Element): void {
         compileMoldsOnTemplate(<Element>child);
       } else {
         compileAttributeInterpolationsOnElement(<Element>child);
+        let trace = Trace.getTrace(child);
+        compileAttributeBindingsOnRealElement(<Element>child, <Element>trace.real);
       }
     }
     compileNode(child);
@@ -110,7 +112,7 @@ function unpackTemplatesFromMolds(element: Element): Element {
 }
 
 function compileMoldsOnTemplate(template: Element): void {
-  let trace = getOrAddTrace(template);
+  let trace = Trace.getOrAddTrace(template);
   if (trace.compiled) return;
 
   for (let i = 0, ii = template.attributes.length; i < ii; ++i) {
@@ -139,7 +141,7 @@ function compileMoldsOnTemplate(template: Element): void {
 }
 
 export function compileAttributeBindingsOnRealElement(virtual: Element, real: Element): void {
-  let trace = getOrAddTrace(virtual);
+  let trace = Trace.getOrAddTrace(virtual);
   // Use the presence of the bindings list as an indicator.
   if (trace.attributeBindings) return;
   trace.attributeBindings = [];
@@ -162,7 +164,7 @@ export function compileAttributeBindingsOnRealElement(virtual: Element, real: El
 }
 
 function compileAttributeInterpolationsOnElement(element: Element): void {
-  let trace = getOrAddTrace(element);
+  let trace = Trace.getOrAddTrace(element);
   if (trace.compiled) return;
 
   for (let i = 0, ii = element.attributes.length; i < ii; ++i) {

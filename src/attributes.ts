@@ -1,7 +1,7 @@
 'use strict';
 
 import {Attribute, Mold, scheduleReflow} from './boot';
-import {getOrAddTrace} from './tree';
+import {Trace} from './tree';
 import * as utils from './utils';
 
 @Attribute({attributeName: 'bind'})
@@ -18,7 +18,7 @@ class Bind {
   pathfinder: Pathfinder;
 
   constructor() {
-    this.propertyPath = utils.camelCase(this.hint);
+    this.propertyPath = utils.normalise(this.hint);
     this.pathfinder = new Pathfinder(this.propertyPath);
   }
 
@@ -61,7 +61,7 @@ class TwoWay {
     let expression = this.element.getAttribute(attributeName) || '';
 
     this.ownPathfinder = new Pathfinder(expression);
-    this.targetPropertyPath = utils.camelCase(this.hint);
+    this.targetPropertyPath = utils.normalise(this.hint);
     this.targetPathfinder = new Pathfinder(this.targetPropertyPath);
 
     // Event listeners to trigger phases.
@@ -159,8 +159,8 @@ class Pathfinder {
   read(source: any): void {
     if (this.key) return source[this.key];
     let track = this.track;
-    for (let i = 0, ii = track.length; i < ii; ++i) {
-      source = source[track[i]];
+    for (let item of this.track) {
+      source = source[item];
     }
     return source;
   }
@@ -207,7 +207,7 @@ class If {
     let container = this.element.content;
     while (container.hasChildNodes()) {
       let child = container.removeChild(container.lastChild);
-      getOrAddTrace(child).isDomImmutable = true;
+      Trace.getOrAddTrace(child).isDomImmutable = true;
       this.stash.unshift(child);
     }
   }
@@ -240,11 +240,11 @@ class For {
   constructor() {
     let msg = `the 'for.*' attribute expects a hint in the form of 'X.of', 'X.in', or 'X', where X is a valid JavaScript identifier; received '${this.hint}'`;
 
-    let match = utils.matchValidIdentifier(this.hint);
+    let match = utils.matchValidKebabIdentifier(this.hint);
     utils.assert(!!match, msg);
 
     // Find the variable key.
-    this.key = match[1];
+    this.key = utils.normalise(match[1]);
 
     // Choose the iteration strategy.
     if (!match[2]) this.mode = 'any';
@@ -294,18 +294,18 @@ class For {
     } else {
       nodes = this.originals.map(node => {
         let clone = utils.cloneDeep(node);
-        getOrAddTrace(clone).isDomImmutable = true;
+        Trace.getOrAddTrace(clone).isDomImmutable = true;
         return clone;
       });
     }
 
     while (nodes.length) {
       let node = nodes.shift();
-      getOrAddTrace(node).insertScope({
+      this.element.appendChild(node);
+      Trace.getOrAddTrace(node).insertScope({
         $index: index,
         [this.key]: value[index]
       });
-      this.element.appendChild(node);
     }
   }
 }
@@ -353,23 +353,25 @@ class Let {
   scope: any;
 
   constructor() {
-    utils.assert(utils.isValidIdentifier(this.hint),
-                   `'let.*' expects the hint to be a valid JavaScript identifier, got: '${this.hint}'`);
+    utils.assert(utils.isValidKebabIdentifier(this.hint),
+                   `'let.*' expects the hint to be a valid JavaScript identifier in kebab form, got: '${this.hint}'`);
+
+    let identifier = utils.normalise(this.hint);
 
     // Make sure a scope is available.
     if (!this.scope) {
-      let trace = getOrAddTrace(this.element);
-      trace.scope = Object.create(null);
+      let trace = Trace.getOrAddTrace(this.element);
+      trace.insertScope();
       this.scope = trace.scope;
     }
 
     // The identifier must not be redeclared in the scope. We're being strict to
     // safeguard against elusive errors.
-    utils.assert(!Object.prototype.hasOwnProperty.call(this.scope, this.hint),
-                   `unexpected re-declaration of '${this.hint}'' with 'let'`);
+    utils.assert(!Object.prototype.hasOwnProperty.call(this.scope, identifier),
+                   `unexpected re-declaration of '${identifier}'' with 'let'`);
 
     // Bring the identifier into scope, assigning the given value.
-    this.scope[this.hint] = this.expression.call(this.scope, this.scope);
+    this.scope[identifier] = this.expression.call(this.scope, this.scope);
 
     // Pass through any content.
     let content = this.element.content;

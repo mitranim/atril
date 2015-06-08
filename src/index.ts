@@ -2,6 +2,6 @@
 
 import './attributes';
 export {Attribute, bootstrap, Component, Mold, scheduleReflow} from './boot';
-export {getOrAddTrace} from './tree';
+export {Trace} from './tree';
 export {bindable} from './utils';
 export {viewCache} from './view';
