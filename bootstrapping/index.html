@@ -8,9 +8,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <base href="/atril/">
-    
-      <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300&subset=latin" rel="stylesheet" type="text/css">
-    
     <link rel="stylesheet" type="text/css" href="/atril/css/app.css">
 
     <!-- Block rendering while preparing the document -->
@@ -24,7 +21,27 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
-        <page-index></page-index>
+        <h2 id="bootstrapping">Bootstrapping</h2>
+<p>After registering all custom elements and attributes, you need to tell the
+framework to find and activate them on the page. This is done with the
+<code>bootstrap</code> method.</p>
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">import</span> {bootstrap} from <span class="hljs-string">'atril'</span>;
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">'my-custom-element'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'my-attributes'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'my-molds'</span>;
+
+bootstrap();
+</code></pre>
+<p>If the document is already available, <code>bootstrap</code> is synchronous. Otherwise it
+delays activation until the <code>DOMContentReady</code> event. If your scripts are loaded
+before the content, activation happens before the content is first rendered by
+the browser.</p>
+<p>You can optionally pass a DOM element to limit the scope of the search. By
+default, search starts with <code>document.body</code>.</p>
+<pre><code class="hljs lang-typescript">bootstrap(<span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#limited-section'</span>));
+</code></pre>
+
       </div>
 
       <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>

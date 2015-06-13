@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>atril</title>
+    <meta name="author" content="Mitranim">
+    <meta name="description" content="Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <base href="/atril/">
+    <link rel="stylesheet" type="text/css" href="/atril/css/app.css">
+
+    <!-- Block rendering while preparing the document -->
+    
+      <script src="build.js"></script>
+    
+  </head>
+
+  <body>
+    <doc-banner></doc-banner>
+
+    <div class="flex" style="width: 100%; margin-top: 2rem">
+      <div class="flex-5 space-out-v" style="padding: 0 1rem">
+        <h2 id="databinding">Databinding</h2>
+<p>The framework has one-way and two-way databinding. They&#39;re implemented as custom
+attributes, and you can add your own binding types.</p>
+<h3 id="-bind-"><code>bind.*</code></h3>
+<p>One-way binding. Generally more efficient than <a href="databinding/#-twoway-">two-way</a>
+binding and is therefore recommended for the majority of data bingings outside
+inputs.</p>
+<p>Binds a property of the target element, such as <code>hidden</code>, to an expression
+evaluated against the surrounding scope (usually a <a href="component/">viewmodel</a>). If
+the target element has its own viewmodel (in other words, it&#39;s a custom
+element), its property is also bound. See <a href="databinding/#-bindable-"><code>@bindable</code></a>
+below.</p>
+<p>This works for nested properties like <code>style.background-color</code>. Properties that
+are <code>camelCased</code> in JS must be <code>kebab-cased</code> in the attribute. To sync the value
+in the other direction, use an event handler with the built-in <code>on.*</code> attribute.</p>
+<p>Example:</p>
+<pre highlight.html>
+<!-- Bind a nested property -->
+<p bind.style.background-color="color">My background color is: {{color}}</p>
+<input bind.value="color" on.input="color = this.value">
+</pre>
+
+<template doc-demo. let.color="''">
+  <p bind.style.background-color="color" class="pad-v-05">My background color is: {{color}}</p>
+  <input bind.value="color" on.input="color = this.value" placeholder="try `orange`">
+</template>
+
+<h3 id="-twoway-"><code>twoway.*</code></h3>
+<p>Two-way binding. For known input types, this is equally as efficient as one-way
+binding. Recommended for form inputs.</p>
+<p>Binds a property of the target element, such as <code>hidden</code> or
+<code>style.background-color</code>, to a property in the current scope / current
+viewmodel. Just like <code>bind.*</code>, it also binds the same property of the target
+element&#39;s <a href="component/">viewmodel</a>, if any; see
+<a href="databinding/#-bindable-"><code>@bindable</code></a>. <code>twoway.*</code> automatically syncs these
+properties between each other.</p>
+<pre highlight.html>
+<p>My name is: {{name}}</p>
+<input twoway.value="name">
+</pre>
+
+<template doc-demo. let.name="''">
+  <p>My name is: {{name}}</p>
+  <input twoway.value="name" placeholder="type name here...">
+</template>
+
+<h3 id="-bindable-"><code>@bindable</code></h3>
+<p>Declares a viewmodel property as bindable, so it can be set from the outside
+via <code>bind.*</code> or <code>twoway.*</code>.</p>
+<pre highlight.typescript>
+import {Component, bindable} from 'atril';
+
+@Component({tagName: 'my-element'})
+class ViewModel {
+  @bindable myProperty;
+}
+</pre>
+
+<div>
+  <sf-collapse class="info">
+    <input id="es5-example" type="checkbox">
+    <label for="es5-example" class="pad">
+      <sf-icon svg-icon.="question-circle" class="inline text-info"></sf-icon>
+      Click for ES5 example.
+    </label>
+<pre highlight.javascript>
+var Component = require(&#39;atril&#39;).Component;
+
+Component({tagName: &#39;my-element&#39;})(ViewModel);
+
+function ViewModel() {}
+
+ViewModel.bindable = [&#39;myProperty&#39;];
+</pre>
+  </sf-collapse>
+</div>
+
+<p>Then you can bind that property from the outside:</p>
+<pre highlight.html>
+<my-element bind.my-property="outerProperty"></my-element>
+</pre>
+
+      </div>
+
+      <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>
+    </div>
+
+    <sf-footer></sf-footer>
+  </body>
+
+  <noscript>
+    <doc-noscript>
+  <doc-noscript-content class="narrow-inverse">
+    <h2>Hello! :)</h2>
+    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a web UI framework. For demo purposes, it's mostly rendered with JavaScript.</p>
+    <p>Please enable JavaScript in your browser. Thank you!</p>
+  </doc-noscript-content>
+</doc-noscript>
+
+  </noscript>
+</html>

@@ -8,9 +8,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <base href="/atril/">
-    
-      <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300&subset=latin" rel="stylesheet" type="text/css">
-    
     <link rel="stylesheet" type="text/css" href="/atril/css/app.css">
 
     <!-- Block rendering while preparing the document -->
@@ -24,7 +21,179 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
-        <page-index></page-index>
+        <h2 id="attribute">Attribute</h2>
+<div class="info pad decorate-links">
+  <p>Quicklinks:</p>
+  <ul>
+    <li><a href="attribute/#basics">Basics</a></li>
+    <li><a href="attribute/#contextual-dependencies">Contextual Dependencies</a></li>
+    <li><a href="attribute/#lifecycle">Lifecycle</a></li>
+  </ul>
+</div>
+
+<p>A custom attribute changes how the element behaves in the real DOM.</p>
+<p>Attributes are powerful. One- and two-way databinding in <code>atril</code> is implemented
+entirely with attributes, with no special treatment from the core engine.</p>
+<p>When using a custom attribute, you have to &quot;opt in&quot; by adding a dot to the name.
+You can also add an optional <em>hint</em> after the dot to customise its behaviour,
+like <code>value</code> in <code>bind.value</code>. Most built-ins support various hints. This makes
+custom attributes very flexible and ensures no conflict with other attributes.</p>
+<h3 id="basics">Basics</h3>
+<p>Here&#39;s an example attribute. This is the entire implementation of the built-in
+<code>class.*</code> binding.</p>
+<div class="code-pair">
+<pre highlight.typescript>
+import {Attribute, assign} from &#39;atril&#39;;
+
+@Attribute({attributeName: &#39;class&#39;})
+class Ctrl {
+  // Autoassigned by the framework.
+  @assign element: Element;
+  @assign hint: string;
+  @assign expression: Function;
+  @assign scope: any;
+
+  onPhase() {
+    let result = this.expression(this.scope);
+    if (result) this.element.classList.add(this.hint);
+    else this.element.classList.remove(this.hint);
+  }
+}
+</pre>
+
+<pre highlight.html>
+<div let.checked="true">
+  <!-- Set class `info` when `checked` is true
+       and `error` otherwise. -->
+  <label class.info="checked" class.error="!checked">
+
+    <input twoway.checked="checked" type="checkbox">
+
+    <span>I&#39;m checked: {{checked}}</span>
+
+  </label>
+</div>
+</pre>
+</div>
+
+<template doc-demo. let.checked="true">
+  <div class="pad-v">
+    <label class="pad" class.info="checked" class.error="!checked">
+      <input twoway.checked="checked" type="checkbox">
+      <span>I&#39;m checked: {{checked}}</span>
+    </label>
+  </div>
+</template>
+
+<h3 id="contextual-dependencies">Contextual Dependencies</h3>
+<p>The framework uses a variant of dependency injection — <em>dependency assignment</em> —
+to give you contextual dependencies for each attribute controller. To get hold
+of them, use the <code>@assign</code> decorator (ES7/TypeScript) or the static <code>assign</code>
+property on the constructor function (ES5).</p>
+<p>A custom attribute has the following contextual dependencies:</p>
+<ul>
+<li><code>element</code> — the real DOM element;</li>
+<li><code>attribute</code> — the associated
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Attr" target="_blank"><code>Attr</code></a> object on the
+DOM element;</li>
+<li><code>hint</code> — the part in the attribute name after the dot;</li>
+<li><code>expression</code> — the expression automatically compiled from the attribute value;</li>
+<li><code>scope</code> — the abstract data context in which to execute the expression (<code>null</code>
+if the attribute is not inside a custom element&#39;s view);</li>
+<li><code>vm</code> — the viewmodel of the custom element hosting the attribute (<code>null</code> if
+the element is not custom).</li>
+</ul>
+<p>Example:</p>
+<div class="code-pair">
+<pre highlight.typescript>
+import {Attribute, assign} from &#39;atril&#39;;
+
+@Attribute({attributeName: &#39;my-attr&#39;})
+class Ctrl {
+  @assign element: Element;
+  @assign attribute: Attr;
+  @assign hint: string;
+  @assign expression: Function;
+  @assign scope: any;
+  @assign vm: any;
+
+  constructor() {
+    // <hello-world my-attr.calc="2 + 2"></hello-world>
+    console.log(element);
+    // my-attr.calc=&quot;2 + 2&quot;
+    console.log(attribute);
+    // &#39;calc&#39;
+    console.log(hint);
+    // function that returns 4
+    console.log(expression);
+    // outer viewmodel or null
+    console.log(scope);
+    // hello-world&#39;s viewmodel
+    console.log(vm);
+  }
+}
+</pre>
+
+<pre highlight.html>
+<hello-world my-attr.calc="2 + 2"></hello-world>
+</pre>
+</div>
+
+<div>
+  <sf-collapse class="info">
+    <input id="assign-es5" type="checkbox">
+    <label for="assign-es5" class="pad">
+      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+      Click for ES5 version.
+    </label>
+<pre highlight.javascript>
+var Attribute = require(&#39;atril&#39;).Attribute;
+
+Attribute({attributeName: &#39;my-attr&#39;})(function() {
+  function Ctrl() {}
+
+  // Property names to the left, dependency tokens to the right.
+  Ctrl.assign = {
+    element: &#39;element&#39;,
+    attribute: &#39;attribute&#39;,
+    hint: &#39;hint&#39;,
+    expression: &#39;expression&#39;,
+    scope: &#39;scope&#39;,
+    vm: &#39;vm&#39;
+  };
+
+  return Ctrl;
+}());
+</pre>
+  </sf-collapse>
+</div>
+
+<h3 id="lifecycle">Lifecycle</h3>
+<p>An attribute&#39;s life begins with a <code>constructor</code> call. In addition, it can define
+two lifecycle methods: <code>onPhase</code> and <code>onDestroy</code>.</p>
+<ul>
+<li><code>onPhase</code></li>
+</ul>
+<p>This is called whenever the framework reflows the tree of components and
+bindings in response to user activity. For an example, see the
+<a href="attribute/#basics"><code>class.*</code></a> implementation above.</p>
+<ul>
+<li><code>onDestroy</code></li>
+</ul>
+<p>When the root of this virtual DOM branch is irrevocably removed from the
+hierarchy, this method is invoked on all components, attributes, and molds. You
+can use this as a chance to free memory or perform other cleanup tasks. Example:</p>
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">class</span> Ctrl {
+  <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>() </span>{
+    createWastefulResource();
+  }
+
+  onDestroy() {
+    deleteWastefulResource();
+  }
+}
+</code></pre>
+
       </div>
 
       <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>

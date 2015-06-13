@@ -8,9 +8,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <base href="/atril/">
-    
-      <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300&subset=latin" rel="stylesheet" type="text/css">
-    
     <link rel="stylesheet" type="text/css" href="/atril/css/app.css">
 
     <!-- Block rendering while preparing the document -->
@@ -24,19 +21,410 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
-        <h1 id="mold">Mold</h1>
-<p>A mold provides &quot;admin access&quot; to that part of the virtual DOM. In return, it&#39;s
-not allowed to touch the real DOM. It has access to the surrounding scope (the
-viewmodel), but doesn&#39;t create its own.</p>
-<pre><code class="hljs lang-typescript"><span class="hljs-keyword">import</span> {Mold} from <span class="hljs-string">'atril'</span>;
+        <template markdown.>
+## Mold
 
-@Mold({attributeName: <span class="hljs-string">'highlight'</span>})
-<span class="hljs-keyword">class</span> Highlight {
-  <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>() </span>{
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.element);
+<div class="info pad decorate-links">
+  <p>Quicklinks:</p>
+  <ul>
+    <li><a href="mold/#basics">Basics</a></li>
+    <li><a href="mold/#mutation">Mutation</a></li>
+    <li><a href="mold/#optimisation">Optimisation</a></li>
+    <li><a href="mold/#contextual-dependencies">Contextual Dependencies</a></li>
+    <li><a href="mold/#lifecycle">Lifecycle</a></li>
+  </ul>
+</div>
+
+Molds let you modulate the structure of the virtual DOM. They fill the  role
+between custom elements that can only _define_ the view, and custom attributes
+that can only modify _existing_ DOM nodes.
+
+In essense, a mold gives you "admin access" to the part of the virtual DOM
+enclosed by it. Example:
+</template>
+
+<pre highlight.html>
+<label>
+  <input twoway.checked="checked" type="checkbox">
+  <span>Toggle</span>
+</label>
+
+<!-- Conditional rendering -->
+<template if.="checked">
+  <p>I'm included into the DOM conditionally.</p>
+</template>
+</pre>
+
+<template doc-demo.>
+<div>
+  <label>
+    <input twoway.checked="checked" type="checkbox">
+    <span>Toggle</span>
+  </label>
+</div>
+<template if.="checked">
+  <p>I'm included into the DOM conditionally.</p>
+</template>
+</template>
+
+<template markdown.>
+The mold (in this case, the controller of the [`if.`](if/) attribute) decides
+what to with the content caught inside the template tag (in this case, the
+`<p>`). It could ignore the content, clone and multiply it, or replace it with
+something else entirely.
+
+In this case, the `if.` attribute simply includes the content when the condition
+is met, and removes it when not.
+
+### Basics
+
+Let's implement a mold that compiles and outputs markdown. Using the demo
+project from [Quickstart](quickstart/), create a file `src/app/molds/to-
+markdown.ts` with the following.
+</template>
+
+<sf-collapse class="info">
+  <input id="static-id-1" type="checkbox">
+  <label for="static-id-1" class="pad">
+    <sf-icon svg-icon.="question-circle" class="inline text-info"></sf-icon>
+    Expand code.
+  </label>
+<pre highlight.typescript>
+import {Mold, assign} from 'atril';
+import marked from 'marked';
+
+@Mold({
+  attributeName: 'to-markdown'
+})
+class Ctrl {
+  @assign element: HTMLTemplateElement;
+  @assign expression: Function;
+  @assign scope: any;
+
+  buffer: HTMLElement;
+  lastValue: string;
+
+  constructor() {
+    this.buffer = document.createElement('div');
+    this.rewrite();
+  }
+
+  onPhase() {
+    this.rewrite();
+  }
+
+  rewrite() {
+    let value = this.expression(this.scope) || '' + '';
+    if (value === this.lastValue) return;
+    this.buffer.innerHTML = marked(value);
+
+    // Remove existing content.
+    while (this.element.hasChildNodes()) {
+      this.element.removeChild(this.element.firstChild);
+    }
+
+    // Add new content.
+    while (this.buffer.hasChildNodes()) {
+      this.element.appendChild(this.buffer.removeChild(this.buffer.firstChild));
+    }
+
+    this.lastValue = value;
   }
 }
-</code></pre>
+</pre>
+</sf-collapse>
+
+Then use it in your view like so:
+
+<pre highlight.html>
+<textarea twoway.value="myContent"></textarea>
+<template to-markdown.="myContent"></template>
+</pre>
+
+<template doc-demo.>
+  <div class="flex space-out-h">
+<textarea twoway.value="value" class="flex-1 text-monospace">
+## Mold
+
+Molds let you modulate the structure of the virtual DOM. They fill the role between custom elements that can only _define_ the view, and custom attributes that can only modify _existing_ DOM nodes.
+
+In essense, a mold gives you "admin access" to the part of the virtual DOM enclosed by it. Example:
+
+```html
+<template if.="true">
+  <p>I'm included into the DOM conditionally.</p>
+</template>
+```
+</textarea>
+    <sf-article class="flex-1">
+      <template to-markdown.="value"></template>
+    </sf-article>
+  </div>
+</template>
+
+<template markdown.>
+Why go through all this fiddly DOM manipulation? Wouldn't it be easier to just
+keep one element in the DOM and replace its `innerHTML` with the compiled
+results?
+
+For plain markdown, it would be. However, there's more to it:
+* A mold may have any number of children, including zero, and its output is
+  automatically included into the correct place in the DOM.
+* The mold output is not inert HTML. It's automatically compiled and activated.
+
+Let's see what happens if our markdown contains `atril` markup.
+</template>
+
+<template doc-demo.>
+  <div class="flex space-out-h">
+<textarea twoway.value="value" class="flex-1 text-monospace" rows="8">
+<label>
+  <input twoway.value="text"
+         placeholder="write something...">
+</label>
+
+{{text}}
+</textarea>
+    <sf-article class="flex-1">
+      <template to-markdown.="value"></template>
+    </sf-article>
+  </div>
+</template>
+
+<template markdown.>
+The contents of the `template` tag were automatically compiled by the framework
+and activated just like a normal part of the view.
+
+### Mutation
+
+More often you want to use a mold to modify _existing_ virtual markup. In the
+previous example, we used a separate input to generate the markdown. Now let's
+put it directly into the template.
+
+Here's the implementation:
+</template>
+
+<sf-collapse class="info">
+  <input id="static-id-2" type="checkbox">
+  <label for="static-id-2" class="pad">
+    <sf-icon svg-icon.="question-circle" class="inline text-info"></sf-icon>
+    Expand code.
+  </label>
+<pre highlight.typescript>
+import {Mold, assign} from 'atril';
+import marked from 'marked';
+
+@Mold({
+  attributeName: 'markdown'
+})
+class Ctrl {
+  @assign element: HTMLTemplateElement;
+
+  constructor() {
+    let content = this.element.content;
+
+    // Convert existing content into text.
+    let buffer = document.createElement('div');
+    while (content.hasChildNodes()) {
+      buffer.appendChild(content.firstChild);
+    }
+
+    // Render into markdown.
+    let result = marked(buffer.innerHTML);
+    buffer.innerHTML = result;
+
+    while (buffer.hasChildNodes()) {
+      this.element.appendChild(buffer.removeChild(buffer.firstChild));
+    }
+  }
+}
+</pre>
+</sf-collapse>
+
+<p>Use it in HTML like so:</p>
+
+<pre highlight.html>
+<template markdown.>
+## Header
+
+* list item
+* list item
+</template>
+</pre>
+
+<p>The mold automatically converts its content into markdown, and here's the result:</p>
+
+<template doc-demo.>
+<template markdown.>
+## Header
+
+* list item
+* list item
+</template>
+</template>
+
+<template markdown.>
+### Optimisation
+
+By default, the framework automatically recompiles the mold's output (the
+contents of the `template` tag). If you create new parts of the virtual DOM
+that use `atril` features like custom elements, they will work automatically.
+
+However, this has a performance cost. Because the framework doesn't know which
+parts of the virtual DOM you could have modified, it has to scan the entire
+subtree. If your mold reuses some parts of its virtual DOM, leaving them
+unchanged between phases, you can "hint" the framework not to rescan them.
+
+Excerpt from the `if.` implementation:
+</template>
+
+<pre highlight.typescript>
+import {Mold, assign, Meta} from './atril';
+
+@Mold({attributeName: 'if'})
+class If {
+  @assign element: TemplateElement;
+
+  constructor() {
+    let container = this.element.content;
+    while (container.hasChildNodes()) {
+      let child = container.removeChild(container.lastChild);
+      Meta.getOrAddMeta(child).isDomImmutable = true;  // ⟸
+      /* ... */
+    }
+  }
+
+  onPhase(): void {
+    /* ... */
+  }
+}
+</pre>
+
+<template markdown.>
+The `Meta` object is a metadata container associated with each node in the
+virtual DOM tree. The framework adds them automatically when compiling nodes,
+but you can also add a meta to a newly created node.
+
+If a node is marked as `isDomImmutable` in its metadata, the framework will
+only compile it once, and skip on subsequent reflows. "Immutability" refers
+to the inner DOM structure of that virtual element, and doesn't prevent DOM
+updates like text interpolations.
+
+By hinting which mold children won't change, you conserve a considerable amount
+of performance.
+</template>
+
+<template markdown.>
+### Contextual Dependencies
+
+The framework uses a variant of dependency injection — _dependency assignment_ —
+to give you contextual dependencies for each mold controller. To get hold of
+them, use the `@assign` decorator (ES7/TypeScript) or the static `assign`
+property on the constructor function (ES5).
+
+A mold has the following contextual dependencies:
+* `element` — the virtual `template` element;
+* `attribute` — the associated
+  [`Attr`](https://developer.mozilla.org/en-US/docs/Web/API/Attr) object on the
+  template element;
+* `hint` — the part in the attribute name after the dot;
+* `expression` — the expression automatically compiled from the attribute value;
+* `scope` — the abstract data context in which to execute the expression (`null`
+  if the mold is not inside a custom element's view).
+
+Example:
+</template>
+
+<div class="code-pair">
+<pre highlight.typescript>
+import {Mold, assign} from 'atril';
+
+@Mold({attributeName: 'my-mold'})
+class Ctrl {
+  @assign element: HTMLTemplateElement;
+  @assign attribute: Attr;
+  @assign hint: string;
+  @assign expression: Function;
+  @assign scope: any;
+
+  constructor() {
+    // <template my-mold.calc="2 + 2"></template>
+    console.log(element);
+    // my-mold.calc="2 + 2"
+    console.log(attribute);
+    // 'calc'
+    console.log(hint);
+    // function that returns 4
+    console.log(expression);
+    // outer viewmodel or null
+    console.log(scope);
+  }
+}
+</pre>
+
+<pre highlight.html>
+<div my-mold.calc="2 + 2"></div>
+</pre>
+</div>
+
+<div>
+  <sf-collapse class="info">
+    <input id="assign-es5" type="checkbox">
+    <label for="assign-es5" class="pad">
+      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+      Click for ES5 version.
+    </label>
+<pre highlight.javascript>
+var Mold = require('atril').Mold;
+
+Mold({attributeName: 'my-mold'})(function() {
+  function Ctrl() {}
+
+  // Property names to the left, dependency tokens to the right.
+  Ctrl.assign = {
+    element: 'element',
+    attribute: 'attribute',
+    hint: 'hint',
+    expression: 'expression',
+    scope: 'scope'
+  };
+
+  return Ctrl;
+}());
+</pre>
+  </sf-collapse>
+</div>
+
+<template markdown.>
+### Lifecycle
+
+A mold's life begins with a `constructor` call. In addition, it can define two
+lifecycle methods: `onPhase` and `onDestroy`.
+
+* `onPhase`
+
+This is called whenever the framework reflows the tree of components and
+bindings in response to user activity. For an example, see the
+[`to-markdown.*`](mold/#basics) implementation above.
+
+* `onDestroy`
+
+When the root of this virtual DOM branch is irrevocably removed from the
+hierarchy, this method is invoked on all components, attributes, and molds. You
+can use this as a chance to free memory or perform other cleanup tasks. Example:
+
+```typescript
+class Ctrl {
+  constructor() {
+    createWastefulResource();
+  }
+
+  onDestroy() {
+    deleteWastefulResource();
+  }
+}
+```
+</template>
 
       </div>
 

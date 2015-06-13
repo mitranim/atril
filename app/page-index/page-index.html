@@ -22,46 +22,57 @@
     <sf-icon svg-icon.="sitemap"></sf-icon>
   </a>
   <a href="#light" class="text-warning">
-    <div>Lightweight (40 KB)</div>
+    <div>Lightweight (47KB)</div>
     <sf-icon svg-icon.="paper-plane-o"></sf-icon>
   </a>
 </doc-features>
 
-<div class="doc-demo">
-  <p>
-    <sf-icon svg-icon.="info-circle" class="inline"></sf-icon>
-    <strong>Note:</strong> this documentation is very much a
-    <strong>work in progress</strong>.
-  </p>
-</div>
-
-<sf-article class="pad">
-  <h1 id="elements-and-attributes">
-    <sf-icon svg-icon.="cubes" class="inline"></sf-icon>
-    Elements and Attributes
-  </h1>
-
-<template markdown.>
-The framework has three types of building blocks.
-* [`Component`](#component): provides a viewmodel and a view.
-* [`Attribute`](#attribute): operates on the viewmodel and the real DOM.
-* [`Mold`](#mold): mutates a part of the virtual DOM in response to the viewmodel changes.
-
 <p class="info pad">
   <strong>Note:</strong> this documentation shows features from
-  EcmaScript 6/7, but they're <strong>not</strong> required. You can use
+  EcmaScript 6/7, but they're completely <strong>optional</strong>. You can use
   <code>atril</code> with plain ES5 and any module system. The docs
   include some ES5 examples as well.
 </p>
 
-## Component
+<sf-article class="pad">
+  <h1 id="elements-and-attributes">
+    <sf-icon svg-icon.="cubes" class="inline"></sf-icon>
+    Custom Elements and Attributes
+  </h1>
+
+<template markdown.>
+The framework has three types of building blocks.
+
+* [`Component`](component/): provides a viewmodel and a view.
+
+<pre highlight.html>
+<my-custom-element></my-custom-element>
+</pre>
+
+* [`Attribute`](attribute/): operates on the viewmodel and the real DOM.
+
+<pre highlight.html>
+<input bind.disabled="isDisabled">
+</pre>
+
+* [`Mold`](mold/): mutates a part of the virtual DOM in response to the viewmodel changes.
+
+<div class="code-pair">
+<pre highlight.html>
+<template if.="allowed">
+  <button>submit</button>
+</template>
+</pre>
+<pre highlight.html>
+<button if.="allowed">submit</button>
+</pre>
+</div>
+
+## Example Component
 
 A custom element (usually called _component_) is a combination of a _view model_
 (data and logic) with a _view_ (a template). `atril` renders the view and
-automatically updates it whenever the data changes. It also supports two-way
-databinding.
-
-Example custom element:
+automatically updates it whenever the data changes.
 </template>
 
 <div class="code-pair">
@@ -82,22 +93,30 @@ class ViewModel {
 <pre highlight.html>
 <!-- Template. -->
 
-<div>
-  <!-- Updates automatically -->
-  <h1>Hello, {{name}}!</h1>
+<!-- Updates automatically -->
+<h1>Hello, {{name}}!</h1>
 
-  <!-- Two-way databinding -->
-  <input twoway.value="name">
+<!-- Two-way databinding -->
+<input twoway.value="name">
 
-  <!-- One-way databinding with manual feedback -->
-  <input bind.value="name" on.input="name = this.value">
+<!-- One-way databinding with manual feedback -->
+<input bind.value="name" on.input="name = this.value">
 
-  <!-- One-way databinding with no feedback;
-       on.input is needed to detect user activity -->
-  <input bind.value="name" on.input>
-</div>
+<!-- One-way databinding with no feedback;
+     on.input is needed to detect user activity -->
+<input bind.value="name" on.input>
 </pre>
 </div>
+
+<pre highlight.html>
+<!-- Usage in HTML -->
+
+<hello-world></hello-world>
+</pre>
+
+<template doc-demo.>
+  <hello-world></hello-world>
+</template>
 
 <sf-collapse class="info">
   <input id="es5-example" type="checkbox">
@@ -121,138 +140,21 @@ ViewModel.viewUrl = 'app/hello-world/hello-world.html';
 </pre>
 
 <pre highlight.html>
-<div>
-  <!-- Updates automatically -->
-  <h1>Hello, {{name}}!</h1>
+<!-- Updates automatically -->
+<h1>Hello, {{name}}!</h1>
 
-  <!-- Two-way databinding -->
-  <input twoway.value="name">
+<!-- Two-way databinding -->
+<input twoway.value="name">
 
-  <!-- One-way databinding with manual feedback -->
-  <input bind.value="name" on.input="name = this.value">
+<!-- One-way databinding with manual feedback -->
+<input bind.value="name" on.input="name = this.value">
 
-  <!-- One-way databinding with no feedback;
-       on.input is needed to detect user activity -->
-  <input bind.value="name" on.input>
-</div>
+<!-- One-way databinding with no feedback;
+     on.input is needed to detect user activity -->
+<input bind.value="name" on.input>
 </pre>
 </div>
 </sf-collapse>
-
-<template doc-demo.>
-  <hello-world></hello-world>
-</template>
-
-<template markdown.>
-## Attribute
-
-A custom attribute changes how the element behaves in the real DOM.
-
-Attributes are powerful. One- and two-way databinding in `atril` is implemented
-entirely with attributes, with no special treatment from the core engine.
-
-When using a custom attribute, you have to "opt in" by adding a dot to the name.
-You can also add an optional _hint_ after the dot to customise its behaviour.
-Most built-ins support various hints. This makes custom attributes very flexible
-and ensures no conflict with other attributes.
-
-Here's an example attribute. This is the entire implementation of the built-in
-`class.*` bindings.
-</template>
-
-<div class="code-pair">
-<pre highlight.typescript>
-@Attribute({attributeName: 'class'})
-class Ctrl {
-  // Autoassigned by the framework.
-  element: Element;
-  hint: string;
-  expression: Function;
-  scope: any;
-
-  phase() {
-    let result = this.expression(this.scope);
-    if (result) this.element.classList.add(this.hint);
-    else this.element.classList.remove(this.hint);
-  }
-}
-</pre>
-
-<pre highlight.html>
-<div let.checked="true">
-  <!-- Set class `info` when `checked` is true
-       and `error` otherwise. -->
-  <label class.info="checked" class.error="!checked">
-
-    <input twoway.checked="checked" type="checkbox">
-
-    <span>I'm checked: {{checked}}</span>
-
-  </label>
-</div>
-</pre>
-</div>
-
-<template doc-demo. let.checked="true">
-  <div class="pad-v">
-    <label class="pad" class.info="checked" class.error="!checked">
-      <input twoway.checked="checked" type="checkbox">
-      <span>I'm checked: {{checked}}</span>
-    </label>
-  </div>
-</template>
-
-<template markdown.>
-## Mold
-
-You often want to do fiddly things with the DOM, like adding or removing nodes
-in response to the changing viewmodel. `atril` has you covered!
-
-_Molds_ give you direct access to the [virtual DOM](#virtual-dom). A mold is a
-`template` tag with some initial content that serves as a blueprint. When
-`atril` performs a reflow, the mold controller can modify it in response to the
-changes in the viewmodel. You can clone or completely remove the nodes, and
-later add them back. The framework takes care of syncing all that to the real
-DOM with minimal repaints.
-
-The built-in special attributes [`if.`](if/) and [`for.*`](for/) are implemented
-as molds. Here's an example of something custom (see this site's source for a
-more complete implementation).
-</template>
-
-<div class="code-pair">
-<pre highlight.typescript>
-import {Mold, viewCache} from 'atril';
-
-@Mold({
-  attributeName: 'svg-icon'
-})
-class Ctrl {
-  // Autoassigned by the framework.
-  element: HTMLElement; // template
-
-  constructor() {
-    let iconName = this.element.getAttribute('svg-icon.');
-    let path = 'app/svg/' + iconName + '.svg';
-    // .content is where the initial content of a template element is stored.
-    let content = this.element.content;
-    this.element.appendChild(content.firstChild);
-    this.element.firstChild.innerHTML = viewCache.get(path) || '';
-  }
-}
-</pre>
-
-<pre highlight.html>
-<!-- Default usage -->
-<template svg-icon.="paper-plane-o">
-  <span></span>
-</template>
-
-<!-- Shorthand usage.
-     This gets expanded into the form shown above. -->
-<span svg-icon.="paper-plane-o"></span>
-</pre>
-</div>
 </sf-article>
 
 <sf-article class="pad">
@@ -280,106 +182,11 @@ than just properties. See databinding for details.
     Databinding
   </h1>
 <template markdown.>
-The framework has one-way and two-way databinding. They're implemented as
-custom attributes. You can add your own custom binding types in a similar
-fashion.
+The framework has one-way and two-way databinding. It lets you automatically
+sync values to the view and vice versa. This includes properties of native DOM
+elements, and other custom elements in the view.
 
-## `bind.*`
-
-One-way binding. This is the default. It binds an expression evaluated against
-the current viewmodel to a property of the target element. If the target element
-happens to be an `atril` component, and if the component declares this property
-as `@bindable`, it's also bound.
-
-To sync the value in the other direction, use an event handler with the built-in
-`on.*` attribute. Example:
-
-<pre highlight.html>
-<!-- Bind a property -->
-<p>My name is: {{name}}</p>
-<input bind.value="name" on.input="name = this.value" placeholder="type name here...">
-
-<!-- Bind to a nested property -->
-<p bind.style.color="color">My color is: {{color}}</p>
-<input bind.value="color" on.input="color = this.value" placeholder="try `blue`">
-</pre>
-</template>
-
-<template doc-demo. let.name="''" let.color="''">
-  <p>My name is: {{name}}</p>
-  <input bind.value="name" on.input="name = this.value" placeholder="type name here...">
-
-  <p bind.style.color="color">My color is: {{color}}</p>
-  <input bind.value="color" on.input="color = this.value" placeholder="try `blue`">
-</template>
-
-<template markdown.>
-## `twoway.*`
-
-Binds a property of the current viewmodel to a property of the target element.
-Just like `bind.*`, if the target element is an `atril` component (has a
-viewmodel), and if that viewmodel declares the property as `@bindable`, its
-property is also bound. Any changes are synced both ways.
-
-Example:
-
-<pre highlight.html>
-<!-- Bind a property -->
-<p>My name is: {{name}}</p>
-<input twoway.value="name" placeholder="type name here...">
-
-<!-- Bind a nested property -->
-<p bind.style.color="color">My color is: {{color}}</p>
-<input twoway.value="color" placeholder="try `blue`">
-</pre>
-</template>
-
-<template doc-demo. let.name="''" let.color="''">
-  <p>My name is: {{name}}</p>
-  <input twoway.value="name" placeholder="type name here...">
-
-  <p bind.style.color="color">My color is: {{color}}</p>
-  <input twoway.value="color" placeholder="try `blue`">
-</template>
-
-<template markdown.>
-## `@bindable`
-
-Declares a viewmodel property as bindable, so it can be set from the outside
-via `bind.*` or `twoway.*`.
-
-Usage with ES6/7:
-
-<pre highlight.typescript>
-import {Component, bindable} from 'atril';
-
-@Component({
-  tagName: 'inner-component'
-})
-class ViewModel {
-  @bindable myProperty;
-}
-</pre>
-
-Usage with ES5:
-
-<pre highlight.typescript>
-var Component = require('atril').Component;
-
-Component({tagName: 'inner-component'})(ViewModel);
-
-function ViewModel() {}
-
-ViewModel.bindable = ['myProperty'];
-</pre>
-
-Then you can bind that property from the outside:
-
-<pre highlight.html>
-<div>
-  <inner-component twoway.my-property="outerProperty"></inner-component>
-</div>
-</pre>
+See [Databinding](databinding/) for details.
 </template>
 </sf-article>
 
@@ -414,7 +221,7 @@ multi-page, document-oriented sites with server-side routing and large amounts
 of static content — in other words, the majority of the web.
 
 It's designed to be as light, fast, and non-intrusive as possible. The library
-clocks at 40KB, starts up quickly, and you can use custom components just by
+clocks at 47KB, starts up quickly, and you can use custom components just by
 including new tags on the page — without any effect on the rest of the content,
 routing, or page rendering.
 
@@ -433,7 +240,7 @@ Make a comparison and pick the right tool for the given use case.
     Lightweight
   </h1>
 <template markdown.>
-Despite its power, `atril` is simple at its core. The entire library is 40KB
+Despite its power, `atril` is simple at its core. The entire library is 47KB
 minified with dependencies. This includes 14KB of `zone.js`, which comes with
 a `Promise` polyfill. The framework has no other ES6 dependencies.
 

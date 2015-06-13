@@ -8,9 +8,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <base href="/atril/">
-    
-      <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300&subset=latin" rel="stylesheet" type="text/css">
-    
     <link rel="stylesheet" type="text/css" href="/atril/css/app.css">
 
     <!-- Block rendering while preparing the document -->
@@ -137,15 +134,12 @@ class VM {
 </div>
 
 <div>
-  <sf-collapse class="info pad-ch">
+  <sf-collapse class="info">
     <input id="quickstart-es5" type="checkbox">
-    <label for="quickstart-es5">
+    <label for="quickstart-es5" class="pad">
       <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
       Click for ES5 version.
     </label>
-    <div class="space-out-v">
-      <p>Same component in plain old EcmaScript 5.</p>
-
 <pre highlight.javascript>
 var Component = require(&#39;atril&#39;).Component;
 
@@ -173,8 +167,6 @@ Component({tagName: &#39;todo-list&#39;})(function() {
   return VM;
 }());
 </pre>
-
-    </div>
   </sf-collapse>
 </div>
 
@@ -185,16 +177,16 @@ yet. Let&#39;s create it.</p>
 <pre highlight.typescript>
 // src/app/todo-item/todo-item.ts
 
-import {Component, bindable} from &#39;atril&#39;;
+import {Component, assign, bindable} from &#39;atril&#39;;
 
 @Component({
   tagName: &#39;todo-item&#39;
 })
 class VM {
+  @assign element: HTMLElement;
+
   @bindable item = null;
   @bindable isNew = false;
-
-  element: HTMLElement;
 
   add() {
     this.element.dispatchEvent(new CustomEvent(&#39;add&#39;));
@@ -225,15 +217,12 @@ class VM {
 </div>
 
 <div>
-  <sf-collapse class="info pad-ch">
+  <sf-collapse class="info">
     <input id="quickstart-es5-todo-item" type="checkbox">
-    <label for="quickstart-es5-todo-item">
+    <label for="quickstart-es5-todo-item" class="pad">
       <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
       Click for ES5 version.
     </label>
-    <div class="space-out-v">
-      <p>Same component in plain old EcmaScript 5.</p>
-
 <pre highlight.javascript>
 var Component = require(&#39;atril&#39;).Component;
 
@@ -243,8 +232,6 @@ Component({tagName: &#39;todo-item&#39;})(function() {
     this.isNew = false;
   }
 
-  VM.bindable = [&#39;item&#39;, &#39;isNew&#39;];
-
   VM.prototype.add = function() {
     this.element.dispatchEvent(new CustomEvent(&#39;add&#39;));
   };
@@ -253,13 +240,15 @@ Component({tagName: &#39;todo-item&#39;})(function() {
     this.element.dispatchEvent(new CustomEvent(&#39;remove&#39;));
   };
 
+  VM.assign = {element: &#39;element&#39;};
+
+  VM.bindable = [&#39;item&#39;, &#39;isNew&#39;];
+
   VM.viewUrl = &#39;app/todo-item/todo-item.html&#39;;
 
   return VM;
 }());
 </pre>
-
-    </div>
   </sf-collapse>
 </div>
 
@@ -325,9 +314,9 @@ bindable. The <code>list-item</code> example shows how to do this with the <code
 decorator or in plain ES5.</p>
 <hr>
 <p>That&#39;s it! In a few lines, you have an interactive, data driven micro
-application built out of reusable elements (<a href="todo/">demo</a>). Check the
-site&#39;s source for more examples, and stay tuned for documentation on custom
-attributes and molds.</p>
+application built out of reusable elements (<a href="todo/">demo</a>). Check the site&#39;s
+source for more examples. If you have any questions, hop into the
+<a href="https://gitter.im/Mitranim/atril" target="_blank">Gitter</a> channel!</p>
 
       </div>
 

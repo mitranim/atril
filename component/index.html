@@ -8,9 +8,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <base href="/atril/">
-    
-      <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300&subset=latin" rel="stylesheet" type="text/css">
-    
     <link rel="stylesheet" type="text/css" href="/atril/css/app.css">
 
     <!-- Block rendering while preparing the document -->
@@ -24,19 +21,197 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
-        <h1 id="component">Component</h1>
-<p>A component is an overloaded term, much like a class in general OOP.</p>
+        <h2 id="component">Component</h2>
+<div class="info pad decorate-links">
+  <p>Quicklinks:</p>
+  <ul>
+    <li><a href="component/#basics">Basics</a></li>
+    <li><a href="component/#contextual-dependencies">Contextual Dependencies</a></li>
+    <li><a href="component/#lifecycle">Lifecycle</a></li>
+  </ul>
+</div>
+
+<p>Synonymous with <em>custom element</em>. Combines a <em>view model</em> (a data layer) with a
+<em>view</em> (an HTML template used for every such element).</p>
+<p>The viewmodel class describes how to create a viewmodel object (VM for short)
+for each new element of this type. The VM stores arbitrary data and has methods
+that may be called from the view. Its acts as its view&#39;s local scope — a feature
+missing from the native DOM API.</p>
+<p>A custom element is registered under a new tag name, and activated during
+<a href="bootstrapping/">bootstrapping</a>. Afterwards, <code>atril</code> manages the element,
+automatically updating the view whenever the data changes.</p>
+<h3 id="basics">Basics</h3>
+<p>Example custom element:</p>
+<div class="code-pair">
+<pre highlight.typescript>
+// Viewmodel.
+
+import {Component} from &#39;atril&#39;;
+
+@Component({
+  tagName: &#39;hello-world&#39;
+})
+class ViewModel {
+  name = &#39;world&#39;;
+  static viewUrl = &#39;app/hello-world/hello-world.html&#39;;
+}
+</pre>
+
+<pre highlight.html>
+<!-- Template. -->
+
+<!-- Updates automatically -->
+<h1>Hello, {{name}}!</h1>
+
+<!-- Two-way databinding -->
+<input twoway.value="name">
+
+<!-- One-way databinding with manual feedback -->
+<input bind.value="name" on.input="name = this.value">
+
+<!-- One-way databinding with no feedback;
+     on.input is needed to detect user activity -->
+<input bind.value="name" on.input>
+</pre>
+</div>
+
+<pre highlight.html>
+<!-- Usage in HTML -->
+
+<hello-world></hello-world>
+</pre>
+
+<template doc-demo.>
+  <hello-world></hello-world>
+</template>
+
+<div>
+  <sf-collapse class="info">
+    <input id="es5-example" type="checkbox">
+    <label for="es5-example" class="pad">
+      <sf-icon svg-icon.="question-circle" class="inline text-info"></sf-icon>
+      Click to see example with EcmaScript 5 and CommonJS.
+    </label>
+    <div class="code-pair">
+<pre highlight.javascript>
+var Component = require(&#39;atril&#39;).Component;
+
+Component({
+  tagName: &#39;hello-world&#39;
+})(ViewModel);
+
+function ViewModel() {
+  this.name = &#39;world&#39;;
+}
+
+ViewModel.viewUrl = &#39;app/hello-world/hello-world.html&#39;;
+</pre>
+
+<pre highlight.html>
+<!-- Updates automatically -->
+<h1>Hello, {{name}}!</h1>
+
+<!-- Two-way databinding -->
+<input twoway.value="name">
+
+<!-- One-way databinding with manual feedback -->
+<input bind.value="name" on.input="name = this.value">
+
+<!-- One-way databinding with no feedback;
+     on.input is needed to detect user activity -->
+<input bind.value="name" on.input>
+</pre>
+    </div>
+  </sf-collapse>
+</div>
+
+<h3 id="contextual-dependencies">Contextual Dependencies</h3>
+<p>The framework uses a variant of dependency injection — <em>dependency assignment</em>
+— to give you contextual dependencies for each viewmodel. To get hold of them,
+use the <code>@assign</code> decorator (ES7/TypeScript) or the static <code>assign</code> property
+on the constructor function (ES5).</p>
+<p>The component viewmodel has just one dependency: <code>element</code>.</p>
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">import</span> {Component, assign} from <span class="hljs-string">'atril'</span>;
+
+@Component({tagName: <span class="hljs-string">'my-element'</span>})
+<span class="hljs-keyword">class</span> VM {
+  @assign element: Element;
+  <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>() </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.element);
+  }
+}
+</code></pre>
+<p>You can also use a different property name:</p>
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">import</span> {Component, assign} from <span class="hljs-string">'atril'</span>;
+
+@Component({tagName: <span class="hljs-string">'my-element'</span>})
+<span class="hljs-keyword">class</span> VM {
+  @assign(<span class="hljs-string">'element'</span>) elem: Element;
+  <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>() </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.elem);
+  }
+}
+</code></pre>
+<div>
+  <sf-collapse class="info">
+    <input id="assign-es5" type="checkbox">
+    <label for="assign-es5" class="pad">
+      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+      Click for ES5 version.
+    </label>
+<pre highlight.javascript>
+var Component = require(&#39;atril&#39;).Component;
+
+Component({tagName: &#39;my-element&#39;})(function() {
+  function VM() {
+    console.log(this.elem);
+  }
+
+  VM.assign = {elem: &#39;element&#39;};
+
+  return VM;
+}());
+</pre>
+  </sf-collapse>
+</div>
+
+<h3 id="lifecycle">Lifecycle</h3>
+<p>A component&#39;s life begins with a <code>constructor</code> call. In addition, it can define
+two lifecycle methods: <code>onPhase</code> and <code>onDestroy</code>.</p>
 <ul>
-<li><p>It&#39;s a <em>view model</em> (a state) isolated from its surroundings. In essense,
-it provides a <em>local scope</em> for that part of the DOM, something that the
-DOM API natively doesn&#39;t have.</p>
-</li>
-<li><p>It describes a <em>view</em> (a template) with bindings for the viewmodel data.</p>
-</li>
-<li><p>The viewmodel has data and methods. Data is automatically rendered into
-the view, and methods may be used by custom attributes in the view.</p>
-</li>
+<li><code>onPhase</code></li>
 </ul>
+<p>This is called whenever the framework reflows the tree of components and
+bindings in response to user activity. Example usage:</p>
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">class</span> VM {
+  @assign element: Element;
+
+  onPhase() {
+    <span class="hljs-keyword">let</span> anchor = <span class="hljs-keyword">this</span>.element.querySelector(<span class="hljs-string">'a'</span>);
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.isActive(anchor, location.pathname)) {
+      anchor.classList.add(<span class="hljs-string">'active'</span>);
+    } <span class="hljs-keyword">else</span> {
+      anchor.classList.remove(<span class="hljs-string">'active'</span>);
+    }
+  }
+}
+</code></pre>
+<ul>
+<li><code>onDestroy</code></li>
+</ul>
+<p>When a root of the component hierarchy is removed from the real DOM, this is
+called for each descendant component and the root itself. You can use this as a
+chance to free memory or perform other cleanup tasks. Example:</p>
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">class</span> VM {
+  <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>() </span>{
+    createWastefulResource();
+  }
+
+  onDestroy() {
+    deleteWastefulResource();
+  }
+}
+</code></pre>
 
       </div>
 
