@@ -64,7 +64,7 @@ class TwoWay {
     if (this.element.tagName === 'INPUT' || this.element.tagName === 'TEXTAREA') {
       let elem = <HTMLInputElement|HTMLTextAreaElement>this.element;
       if (elem.type === 'checkbox') {
-        elem.addEventListener('change', () => {this.syncBottomUp(<any>elem.checked)});
+        elem.addEventListener('change', () => {this.syncBottomUp((<any>elem).checked)});
       } else {
         elem.addEventListener('input', () => {this.syncBottomUp(elem.value)});
       }
