@@ -1,25 +1,11 @@
-import {Mold} from 'atril';
+import {Mold, assign} from 'atril';
 import marked from 'marked';
-import hjs from 'highlightjs';
-
-marked.setOptions({
-  gfm:         true,
-  tables:      true,
-  breaks:      false,
-  sanitize:    false,
-  smartypants: false,
-  pedantic:    false,
-  highlight: (code, lang) => {
-    if (lang) return hjs.highlight(lang, code).value;
-    return hjs.highlightAuto(code).value;
-  }
-});
 
 @Mold({
   attributeName: 'markdown'
 })
 class Ctrl {
-  element: HTMLTemplateElement;
+  @assign element: HTMLTemplateElement;
 
   constructor() {
     let content = this.element.content;

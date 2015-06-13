@@ -1,12 +1,12 @@
 'use strict';
 
 import {View} from './view';
-import {registeredComponents} from './boot';
+import {registeredComponents} from './decorators';
 import {compileNode} from './compile';
 import {AttributeBinding, AttributeInterpolation} from './bindings';
 import * as utils from './utils';
 
-const metaKey = typeof Symbol === 'function' ? Symbol('atrilMeta') : utils.randomString();
+const metaKey = utils.uniqueKey('atrilMeta');
 export const roots: Root[] = [];
 const neutralZone = zone.fork();
 
@@ -23,8 +23,9 @@ const queue = {
   flush(): void {
     while (queue.metas.length) {
       let meta = queue.metas.shift();
-      utils.assert(meta.virtual instanceof Element && (<Element>meta.virtual).tagName !== 'TEMPLATE',
-                   `unexpected non-Element meta in queue:`, meta.virtual);
+      // It's possible for a meta to be destroyed in the interval before the
+      // flush.
+      if (!meta.virtual) continue;
       syncChildNodes(<Element>meta.virtual, <Element>meta.real);
     }
   }
@@ -159,9 +160,7 @@ export class Meta {
         this.view = null;
         // The vm must be created before phasing its child nodes in order to provide
         // the viewmodel.
-        this.vm = Object.create(this.VM.prototype);
-        this.vm.element = <Element>this.real;
-        this.VM.call(this.vm);
+        this.vm = utils.instantiate(this.VM, {element: this.real});
       }
 
       // Only phase attributes and molds on elements that belong to other
@@ -205,8 +204,7 @@ export class Meta {
     if (!this.attributeBindings.length) return;
     let scope = this.getScope();
     for (let binding of this.attributeBindings) {
-      binding.refreshState(<Element>this.real, this);
-      binding.phase();
+      binding.refreshAndPhase(<Element>this.real, this);
     }
   }
 
@@ -214,10 +212,12 @@ export class Meta {
     let template = <TemplateElement>this.virtual;
     // Whether the mold needs recompilation and resync into the live DOM.
     let needsResync = !this.moldBinding || this.moldBinding.isNew;
-    this.moldBinding.refreshState(template, this);
-    if (this.moldBinding.phase()) needsResync = true;
+    if (this.moldBinding) {
+      if (this.moldBinding.refreshAndPhase(template, this)) needsResync = true;
+    }
 
     if (needsResync) {
+      this.destroyDetachedMetas();
       compileNode(template);
       // Schedule child node sync on the first non-template ancestor element.
       let node: Node = template;
@@ -251,13 +251,46 @@ export class Meta {
     if (this.attributeBindings) {
       for (let binding of this.attributeBindings) binding.destroy();
     }
+
+    // Remove other descendants, if any.
+    if (this.dynamicDescendants) {
+      while (this.dynamicDescendants.length) {
+        this.dynamicDescendants.shift().destroy();
+      }
+    }
+
     if (this.vm && typeof this.vm.onDestroy === 'function') {
       this.vm.onDestroy();
     }
+
     delete this.virtual[metaKey];
     this.virtual = null;
     this.real = null;
     this.dynamicAncestor = null;
+  }
+
+  // Checks if the template's meta has any descendants whose elements are no
+  // longer included into the virtual DOM, and destroys them.
+  destroyDetachedMetas(): void {
+    let descendants = this.dynamicDescendants;
+    if (!descendants || !descendants.length) return;
+
+    for (let i = 0; i < descendants.length; ++i) {
+      let meta = descendants[i];
+      let node = meta.virtual;
+      let detached: boolean = true;
+      while (node = node.parentNode) {
+        if (node === this.virtual) {
+          detached = false;
+          break;
+        }
+      }
+      if (detached) {
+        meta.destroy();
+        descendants.splice(i, 1);
+        i--;
+      }
+    }
   }
 
   static hasMeta(virtual: Node): boolean {

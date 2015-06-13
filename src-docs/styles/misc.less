@@ -57,6 +57,37 @@ body::before {
   z-index: @sf-z-index-navbar + 1;
 }
 
+.space-out-h {
+  > *:not(:last-child) {
+    margin-right: @sf-common-margin / 2;
+  }
+  > *:not(:first-child) {
+    margin-left: @sf-common-margin / 2;
+  }
+}
+.space-out-h-05 {
+  > *:not(:last-child) {
+    margin-right: @sf-common-margin / 4;
+  }
+  > *:not(:first-child) {
+    margin-left: @sf-common-margin / 4;
+  }
+}
+
+// Checkbox offset.
+label > input[type=checkbox] {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: -0.08em;
+  &:not(:first-child) {
+    margin-left: @sf-common-margin / 5;
+  }
+  &:not(:last-child) {
+    margin-right: @sf-common-margin / 5;
+  }
+}
+
 /**
  * Misc components.
  */

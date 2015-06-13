@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * Requires gulp 4.0:
+ *   "gulp": "git://github.com/gulpjs/gulp#4.0"
+ */
+
 /******************************* Dependencies ********************************/
 
 var $       = require('gulp-load-plugins')();
@@ -49,6 +54,18 @@ function prod() {
 function reload(done) {
   bsync.reload();
   done();
+}
+
+/***************************** Template Imports ******************************/
+
+/**
+ * Utility methods for templates.
+ */
+var imports = {
+  lastId: 0,
+  uniqId: function() {return 'static-id-' + ++imports.lastId},
+  lastUniqId: function() {return 'static-id-' + imports.lastId},
+  prod: prod
 }
 
 /********************************** Config ***********************************/
@@ -227,7 +244,7 @@ gulp.task('docs:html:compile', function() {
     // Render all html.
     .pipe($.statil({
       relativeDir: src.html,
-      imports: {prod: prod}
+      imports: imports
     }))
     // Change each `<filename>` into `<filename>/index.html`.
     .pipe($.rename(function(path) {
@@ -324,7 +341,8 @@ gulp.task('server', function() {
     online: false,
     ui: false,
     files: false,
-    ghostMode: false
+    ghostMode: false,
+    notify: false
   });
 });
 

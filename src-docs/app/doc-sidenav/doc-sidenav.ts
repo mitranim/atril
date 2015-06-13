@@ -1,8 +1,8 @@
-import {Component} from 'atril';
+import {Component, assign} from 'atril';
 
 @Component({tagName: 'doc-sidenav'})
 class VM {
-  element: HTMLElement;
+  @assign element: HTMLElement;
 
   isActive(link: string): boolean {
     return ~location.pathname.indexOf(link) && !~location.pathname.indexOf(link + '/') ||

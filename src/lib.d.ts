@@ -25,6 +25,11 @@ interface Promise {
   catch: (callback: Function) => any;
 }
 
+interface Object {
+  hasOwnProperty(key: symbol): boolean;
+  hasOwnProperty(key: symbol|string): boolean;
+}
+
 declare var Promise: {
   prototype: Promise;
   new(callback: Function): Promise;
@@ -38,14 +43,18 @@ interface ComponentConfig {
   tagName: string;
 }
 
-interface ComponentClass extends Function {
+interface InjectableClass extends Function {
+  assign?: {[propertyName: string]: string};
+}
+
+interface ComponentClass extends InjectableClass {
   view?: string|Function;
   viewUrl?: string|Function;
   bindable?: string[];
 }
 
 interface ComponentVM {
-  element: Element;
+  element?: Element;
   onPhase?(): void;
   onDestroy?(): void;
 }
@@ -54,12 +63,14 @@ interface AttributeConfig {
   attributeName: string;
 }
 
+interface AttributeClass extends InjectableClass {}
+
 interface AttributeCtrl {
-  element: Element;
-  hint: string;
-  expression: Expression;
-  scope: any;
-  component: any;
+  element?: Element;
+  hint?: string;
+  expression?: Expression;
+  scope?: any;
+  vm?: any;
   onPhase?(): void;
   onDestroy?(): void;
 }

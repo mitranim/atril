@@ -1,4 +1,4 @@
-import {Mold, viewCache} from 'atril';
+import {Mold, assign, viewCache} from 'atril';
 
 /**
  * SVG icon helper with optional async loading.
@@ -7,19 +7,15 @@ import {Mold, viewCache} from 'atril';
   attributeName: 'svg-icon'
 })
 class Ctrl {
-  // Autoassigned
-  element: HTMLTemplateElement;
-  hint: string;
+  @assign attribute: Attr;
+  @assign hint: string;
+  @assign element: HTMLTemplateElement;
 
-  // Custom
-  attrName: string;
   content: DocumentFragment;
 
   constructor() {
-    this.attrName = 'svg-icon.' + this.hint;
     this.content = this.element.content;
-    let iconName = this.element.getAttribute(this.attrName);
-    let path = 'app/svg/' + iconName + '.svg';
+    let path = 'app/svg/' + this.attribute.value + '.svg';
 
     let view = viewCache.get(path);
     if (typeof view === 'string') this.commit(view);

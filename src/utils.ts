@@ -1,13 +1,11 @@
 'use strict';
 
-export function bindable(target: any, propertyName: string): void {
-  if (!target) return;
-  let VM = <ComponentClass>(target.constructor);
-  if (!(VM.bindable instanceof Array)) VM.bindable = [];
-  if (!~VM.bindable.indexOf(propertyName)) VM.bindable.push(propertyName);
+export function uniqueKey(hint: string): string|symbol {
+  if (typeof Symbol === 'function') return Symbol(hint);
+  return hint + '_' + randomString();
 }
 
-export function randomString(): string {
+function randomString(): string {
   return (Math.random() * Math.pow(10, 16)).toString(16);
 }
 
@@ -196,3 +194,55 @@ export const msie = !!(<any>document).documentMode;
 let testDiv = document.createElement('div');
 testDiv.innerHTML = '<template one two></template>';
 export const browserReversesAttributes = testDiv.childNodes[0].attributes[0].name === 'two';
+
+// Dependency resolver. Takes a class and a context that defines dependencies,
+// creates an instance, and assigns dependencies before calling the instance's
+// constructor. Returns the complete instance.
+export function instantiate(constructor: InjectableClass, context: {[token: string]: any}): any {
+  assert(typeof constructor === 'function', `can't instantiate a non-function:`, constructor);
+  assert(!!context, `can't instantiate with no context`);
+
+  let instance = Object.create(constructor.prototype);
+  let tokenMap = constructor.assign;
+
+  if (tokenMap != null && typeof tokenMap === 'object') {
+    // Expecting a hash table.
+    for (let propertyName in tokenMap) {
+      let token = tokenMap[propertyName];
+      assert(token in context, `value '${token}' is not defined in the current context`);
+      instance[propertyName] = context[token];
+    }
+  }
+
+  // Instantiate.
+  constructor.call(instance);
+  return instance;
+}
+
+export class Pathfinder {
+  private key: string;
+  private track: string[];
+
+  constructor(path: string) {
+    this.track = path.split('.');
+    if (this.track.length === 1) this.key = path;
+  }
+
+  read(source: any): void {
+    if (this.key) return source[this.key];
+    let track = this.track;
+    for (let item of this.track) {
+      source = source[item];
+    }
+    return source;
+  }
+
+  assign(target: any, value: any): void {
+    if (this.key) target[this.key] = value;
+    let track = this.track;
+    for (var i = 0, ii = track.length - 1; i < ii; ++i) {
+      target = target[track[i]];
+    }
+    target[track[i]] = value;
+  }
+}

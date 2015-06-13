@@ -5,15 +5,21 @@ import 'zone.js';
 import * as utils from './utils';
 import {View} from './view';
 import {compileNode} from './compile';
+import {registeredComponents, registeredAttributes} from './decorators';
 import {Root, roots, Meta, flushQueue} from './tree';
+
+let reflowStackDepth = 0;
+const maxRecursiveReflows = 10;
+let reflowScheduled: boolean = false;
 
 const localZone = zone.fork({
   afterTask: function() {
     // zone.js automatically reruns a task after ≈1 s if the task throws. It
     // also hides all exceptions after the first during these retries. For us,
-    // if a binding consistently throws during a phase, it causes continuous
-    // reflows. To avoid that, we have to capture the exception.
+    // if a binding or component consistently throws during a phase, it causes
+    // continuous reflows. To avoid that, we have to capture the exception.
     try {
+      reflowStackDepth = 0;
       reflow();
       flushQueue();
     }
@@ -21,24 +27,20 @@ const localZone = zone.fork({
   }
 });
 
-let reflowScheduled: boolean = false;
 export function scheduleReflow(): void {
   reflowScheduled = true;
 }
 
-let reflowStackDepth = 0;
-const maxReflowStackDepth = 10;
 function reflow() {
   reflowStackDepth++;
-  if (reflowStackDepth >= maxReflowStackDepth) {
-    throw new Error(`reached ${maxReflowStackDepth} recursive reflow phases, aborting`);
+  if (reflowStackDepth >= maxRecursiveReflows) {
+    throw new Error(`reached ${maxRecursiveReflows} recursive reflow phases, aborting`);
   }
   reflowWithUnlimitedStack();
   if (reflowScheduled) {
     reflowScheduled = false;
     reflow();
   }
-  reflowStackDepth--;
 }
 
 function reflowWithUnlimitedStack(): void {
@@ -62,10 +64,6 @@ function destroy(virtual: Element): void {
     if (node instanceof Element) destroy(node);
   }
 }
-
-export const registeredComponents: {[tagName: string]: ComponentClass} = Object.create(null);
-export const registeredAttributes: {[attributeName: string]: Function} = Object.create(null);
-export const registeredMolds: {[attributeName: string]: boolean} = Object.create(null);
 
 export function bootstrap(): void {
   // IE10 compat: doesn't support `apply` for function expressions. Have to
@@ -143,43 +141,4 @@ function createRootAt(element: Element, VM?: ComponentClass): Root {
   }
 
   return root;
-}
-
-export function Component(config: ComponentConfig) {
-  let tagRegex = /^[a-z][a-z-]*[a-z]$/;
-
-  // Type checks.
-  utils.assert(typeof config.tagName === 'string', `expected a string tagname, got:`, config.tagName);
-  utils.assert(tagRegex.test(config.tagName), `the tagname must match regex ${tagRegex}, got:`, config.tagName);
-
-  return function(VM: ComponentClass) {
-    utils.assert(typeof VM === 'function', `expected a component class, got:`, VM);
-    utils.assert(!registeredComponents[config.tagName],
-                 `unexpected redefinition of component with tagname ${config.tagName}`);
-    registeredComponents[config.tagName] = VM;
-  };
-}
-
-export function Attribute(config: AttributeConfig) {
-  let nameRegex = /^[a-z][a-z-]*[a-z]$/;
-
-  // Type checks.
-  utils.assert(typeof config.attributeName === 'string',
-                 `expected a string attribute name, got:`, config.attributeName);
-  utils.assert(nameRegex.test(config.attributeName),
-                 `the attribute name must match regex ${nameRegex}, got:`, config.attributeName);
-  utils.assert(!registeredAttributes[config.attributeName],
-                 `unexpected redefinition of attribute ${config.attributeName}`);
-
-  return function(VM: Function) {
-    utils.assert(typeof VM === 'function', `expected an attribute class, got:`, VM);
-    registeredAttributes[config.attributeName] = VM;
-  };
-}
-
-export function Mold(config: AttributeConfig) {
-  return function(VM: Function) {
-    Attribute(config)(VM);
-    registeredMolds[config.attributeName] = true;
-  };
 }

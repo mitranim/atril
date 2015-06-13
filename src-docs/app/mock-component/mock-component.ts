@@ -1,9 +1,9 @@
-import {Component} from 'atril';
+import {Component, assign} from 'atril';
 import {testUrl, ajax, randomString} from 'utils/utils';
 
 @Component({tagName: 'mock-component'})
 class VM {
-  element: HTMLElement;
+  @assign element: HTMLElement;
 
   value = 'world';
   color = 'blue';

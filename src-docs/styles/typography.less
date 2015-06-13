@@ -2,4 +2,13 @@ html {
   font-weight: 300;
 }
 
-.text-monospace {font-family: @sf-font-family-monospace}
+.text-monospace {
+  font-family: @sf-font-family-monospace;
+  // Normalise monospace font size.
+  &:not(.size-initial) {font-size: 14/16em}
+  // Prevent further reduction inside other monospace blocks.
+  tt, code, kbd, pre, samp {
+    & {font-size: 1em}
+  }
+  & & {font-size: 1em}
+}

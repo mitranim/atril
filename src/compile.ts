@@ -1,8 +1,8 @@
 'use strict';
 
-import {registeredComponents, registeredAttributes, registeredMolds} from './boot';
+import {registeredComponents, registeredAttributes, registeredMolds} from './decorators';
 import {Meta} from './tree';
-import {AttributeBinding, AttributeInterpolation, hasInterpolation, compileExpression, compileInterpolation} from './bindings';
+import {AttributeBinding, AttributeInterpolation, hasInterpolation, compileInterpolation} from './bindings';
 import {View} from './view';
 import * as utils from './utils';
 
@@ -22,6 +22,11 @@ export function compileNode(node: Node): void {
 function compileTextNode(node: Text): void {
   let meta = Meta.getOrAddMeta(node);
   if (meta.compiled) return;
+
+  // Special exception for <textarea> content. The content of <textarea> is a
+  // Text node, but interpolating it makes no sense.
+  if (node.parentNode && node.parentNode instanceof HTMLTextAreaElement) return;
+
   if (hasInterpolation(node.textContent)) {
     meta.markDynamic();
     meta.textInterpolation = compileInterpolation(node.textContent);
@@ -148,8 +153,10 @@ export function compileAttributeBindingsOnRealElement(virtual: Element, real: El
   if (meta.attributeBindings) return;
   meta.attributeBindings = [];
 
-  for (let i = 0, ii = real.attributes.length; i < ii; ++i) {
-    let attr = real.attributes[i];
+  let attributes: Attr[] = [].slice.call(real.attributes, 0);
+  if (utils.browserReversesAttributes) attributes = attributes.reverse();
+
+  for (let attr of attributes) {
     if (utils.looksLikeCustomAttribute(attr.name)) {
       let partialName = utils.customAttributeName(attr.name);
 

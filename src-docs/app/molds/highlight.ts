@@ -1,13 +1,13 @@
-import {Mold} from 'atril';
+import {Mold, assign} from 'atril';
 import hjs from 'highlightjs';
 
 @Mold({
   attributeName: 'highlight'
 })
 class Ctrl {
-  element: HTMLTemplateElement;
+  @assign element: HTMLTemplateElement;
   // Language.
-  hint: string;
+  @assign hint: string;
 
   constructor() {
     let content = this.element.content;

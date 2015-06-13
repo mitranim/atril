@@ -1,13 +1,13 @@
-import {Component, bindable, Meta} from 'atril';
+import {Component, assign, bindable, Meta} from 'atril';
 
 @Component({
   tagName: 'todo-item'
 })
 class VM {
+  @assign element: HTMLElement;
+
   @bindable item = null;
   @bindable isNew = false;
-
-  element: HTMLElement;
 
   add() {
     this.element.dispatchEvent(new CustomEvent('add'));

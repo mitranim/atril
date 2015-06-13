@@ -1,5 +1,6 @@
 import {bootstrap} from 'atril';
 
+import 'config';
 import 'views';
 import 'molds/all';
 import 'doc-banner/doc-banner';

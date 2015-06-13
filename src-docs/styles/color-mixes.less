@@ -4,7 +4,9 @@ a, :link {
 }
 
 // Special link decoration in paragraphs.
-p a, p :link {.sf-common-link-decorations()}
+p, .decorate-links {
+  a, :link {.sf-common-link-decorations()}
+}
 
 // Versions of colour themes that only affect text colour.
 .text-brown      {.color-text(@color-brown)}

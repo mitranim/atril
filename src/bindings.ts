@@ -2,39 +2,38 @@
 
 import {compileExpression} from './bindings';
 import {Meta} from './tree';
+import * as utils from './utils';
 
 export class AttributeBinding {
-  name: string;
-  hint: string;
-  expression: Expression;
+  attr: Attr;
   VM: Function;
   vm: AttributeCtrl;
 
   constructor(attr: Attr, VM: Function) {
-    this.name = attr.name;
-    this.hint = attr.name.match(/^[a-z-]+\.(.*)/)[1];
-    this.expression = compileExpression(attr.value);
+    this.attr = attr;
     this.VM = VM;
+  }
+
+  refreshAndPhase(element: Element, meta: Meta): boolean {
+    this.refreshState(element, meta);
+    return this.phase();
   }
 
   refreshState(element: Element, meta: Meta): void {
     if (!this.isNew) return;
-
-    this.vm = Object.create(this.VM.prototype);
-    this.vm.hint = this.hint;
-    this.vm.expression = this.expression;
-
-    this.vm.element = element;
-    this.vm.component = meta.vm || null;
-
-    let scope = meta.getScope();
-    this.vm.scope = scope;
-
-    this.VM.call(this.vm);
+    let attr = this.attr;
+    this.vm = utils.instantiate(this.VM, {
+      attribute: attr,
+      element: element,
+      get expression() {return compileExpression(attr.value)},
+      get scope() {return meta.getScope()},
+      get hint() {return attr.name.match(/^[a-z-]+\.(.*)/)[1]},
+      vm: meta.vm
+    });
   }
 
-  // Indicates if the attribute was phased. Used to decide if the mold output
-  // needs to be recompiled and/or re-rendered.
+  // The return value indicates if the attribute was phased. Used to decide if
+  // the mold output needs to be recompiled and/or re-rendered.
   phase(): boolean {
     if (typeof this.vm.onPhase === 'function') {
       return this.vm.onPhase(), true;
@@ -43,9 +42,11 @@ export class AttributeBinding {
   }
 
   destroy(): void {
+    utils.assert(!!this.vm, `unexpected destroy() call on binding without vm:`, this);
     if (typeof this.vm.onDestroy === 'function') {
       this.vm.onDestroy();
     }
+    this.vm = null;
   }
 
   get isNew(): boolean {return !this.vm}
@@ -106,7 +107,11 @@ export function compileInterpolation(text: string): TextExpression {
   return function(scope: any): string {
     let total = '';
     for (let item of collection) {
-      total += typeof item === 'string' ? item : (<Expression>item).call(this, scope);
+      if (typeof item === 'string') total += item;
+      else {
+        let result = (<Expression>item).call(this, scope);
+        if (result != null) total += result;
+      }
     }
     return total;
   };

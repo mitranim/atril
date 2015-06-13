@@ -143,15 +143,12 @@ class VM {
 </div>
 
 <div>
-  <sf-collapse class="info pad-ch">
+  <sf-collapse class="info">
     <input id="quickstart-es5" type="checkbox">
-    <label for="quickstart-es5">
+    <label for="quickstart-es5" class="pad">
       <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
       Click for ES5 version.
     </label>
-    <div class="space-out-v">
-      <p>Same component in plain old EcmaScript 5.</p>
-
 <pre highlight.javascript>
 var Component = require('atril').Component;
 
@@ -179,8 +176,6 @@ Component({tagName: 'todo-list'})(function() {
   return VM;
 }());
 </pre>
-
-    </div>
   </sf-collapse>
 </div>
 
@@ -193,16 +188,16 @@ Make `src/app/todo-item/` with the following:
 <pre highlight.typescript>
 // src/app/todo-item/todo-item.ts
 
-import {Component, bindable} from 'atril';
+import {Component, assign, bindable} from 'atril';
 
 @Component({
   tagName: 'todo-item'
 })
 class VM {
+  @assign element: HTMLElement;
+
   @bindable item = null;
   @bindable isNew = false;
-
-  element: HTMLElement;
 
   add() {
     this.element.dispatchEvent(new CustomEvent('add'));
@@ -233,15 +228,12 @@ class VM {
 </div>
 
 <div>
-  <sf-collapse class="info pad-ch">
+  <sf-collapse class="info">
     <input id="quickstart-es5-todo-item" type="checkbox">
-    <label for="quickstart-es5-todo-item">
+    <label for="quickstart-es5-todo-item" class="pad">
       <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
       Click for ES5 version.
     </label>
-    <div class="space-out-v">
-      <p>Same component in plain old EcmaScript 5.</p>
-
 <pre highlight.javascript>
 var Component = require('atril').Component;
 
@@ -251,8 +243,6 @@ Component({tagName: 'todo-item'})(function() {
     this.isNew = false;
   }
 
-  VM.bindable = ['item', 'isNew'];
-
   VM.prototype.add = function() {
     this.element.dispatchEvent(new CustomEvent('add'));
   };
@@ -261,13 +251,15 @@ Component({tagName: 'todo-item'})(function() {
     this.element.dispatchEvent(new CustomEvent('remove'));
   };
 
+  VM.assign = {element: 'element'};
+
+  VM.bindable = ['item', 'isNew'];
+
   VM.viewUrl = 'app/todo-item/todo-item.html';
 
   return VM;
 }());
 </pre>
-
-    </div>
   </sf-collapse>
 </div>
 
@@ -346,6 +338,6 @@ decorator or in plain ES5.
 ----
 
 That's it! In a few lines, you have an interactive, data driven micro
-application built out of reusable elements ([demo](todo/)). Check the
-site's source for more examples, and stay tuned for documentation on custom
-attributes and molds.
+application built out of reusable elements ([demo](todo/)). Check the site's
+source for more examples. If you have any questions, hop into the
+[Gitter](https://gitter.im/Mitranim/atril) channel!

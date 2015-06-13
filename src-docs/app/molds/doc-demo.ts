@@ -1,13 +1,12 @@
-import {Mold, Meta} from 'atril';
+import {Mold, Meta, assign} from 'atril';
 
 @Mold({
   attributeName: 'doc-demo'
 })
 class Ctrl {
-  // Autoassigned
-  element: HTMLTemplateElement;
-  hint: string;
-  scope: any;
+  @assign element: HTMLTemplateElement;
+  @assign hint: string;
+  @assign scope: any;
 
   constructor() {
     console.assert(!this.hint, `'doc-demo.' doesn't expect any hints, got: ${this.hint}`);
