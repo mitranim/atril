@@ -28,7 +28,7 @@ To hide multiple nodes at once, use it on a `template` tag:
 <div let.visible="true">
   <button on.click="visible = !visible">Toggle both!</button>
   <template if.="visible">
-    <div >I'm first!</div>
+    <div>I'm first!</div>
     <div>I'm second!</div>
   </template>
 </div>

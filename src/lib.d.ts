@@ -43,11 +43,11 @@ interface ComponentConfig {
   tagName: string;
 }
 
-interface InjectableClass extends Function {
+interface AssignableClass extends Function {
   assign?: {[propertyName: string]: string};
 }
 
-interface ComponentClass extends InjectableClass {
+interface ComponentClass extends AssignableClass {
   view?: string|Function;
   viewUrl?: string|Function;
   bindable?: string[];
@@ -63,7 +63,7 @@ interface AttributeConfig {
   attributeName: string;
 }
 
-interface AttributeClass extends InjectableClass {}
+interface AttributeClass extends AssignableClass {}
 
 interface AttributeCtrl {
   element?: Element;

@@ -198,7 +198,7 @@ export const browserReversesAttributes = testDiv.childNodes[0].attributes[0].nam
 // Dependency resolver. Takes a class and a context that defines dependencies,
 // creates an instance, and assigns dependencies before calling the instance's
 // constructor. Returns the complete instance.
-export function instantiate(constructor: InjectableClass, context: {[token: string]: any}): any {
+export function instantiate(constructor: AssignableClass, context: {[token: string]: any}): any {
   assert(typeof constructor === 'function', `can't instantiate a non-function:`, constructor);
   assert(!!context, `can't instantiate with no context`);
 
