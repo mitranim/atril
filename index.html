@@ -17,17 +17,273 @@
   </head>
 
   <body>
-    <doc-banner></doc-banner>
+    <div class="doc-banner">
+  <h1 class="text-monospace size-initial">atril</h1>
+
+  <h3>Experimental web UI framework</h3>
+
+  <p style="font-size: 1rem">Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple</p>
+
+  <div class="link-section">
+    <a href="https://github.com/Mitranim/atril" target="_blank">
+      <sf-icon class="github-light pop"></sf-icon>
+    </a>
+    <a href="http://mitranim.com/#contacts" target="_blank">
+      <sf-icon class="external-link pop" style="font-size: 0.8em"></sf-icon>
+    </a>
+    <!-- https://github.com/Mitranim/atril&text=Star&data.style=mega&data.icon=octicon-star&aria.label=Star -->
+    <iframe allowtransparency="true" scrolling="no" frameborder="0" style="border: none" src="https://buttons.github.io/buttons.html#href%3Dhttps%3A%2F%2Fgithub.com%2FMitranim%2Fatril%26text%3DStar%26data.style%3Dmega%26data.icon%3Docticon-star%26aria.label%3DStar"></iframe>
+  </div>
+</div>
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
-        <page-index></page-index>
+        <div class="space-out-v">
+  <doc-features>
+    <a href="#elements-and-attributes" class="text-darkorange">
+      <div>Custom elements and attributes</div>
+      <sf-icon svg-icon.="cubes"></sf-icon>
+    </a>
+    <a href="#change-detection" class="text-brown">
+      <div>Automatic change detection</div>
+      <sf-icon svg-icon.="magic"></sf-icon>
+    </a>
+    <a href="#databinding" class="text-darkred">
+      <div>Two-way and one-way databinding</div>
+      <sf-icon svg-icon.="arrows-h"></sf-icon>
+    </a>
+  </doc-features>
+  <doc-features>
+    <a href="#virtual-dom" class="text-yellow">
+      <div>Fast rendering with the virtual DOM</div>
+      <sf-icon svg-icon.="bolt"></sf-icon>
+    </a>
+    <a href="#mpa" class="text-info">
+      <div>Multi-page application friendly</div>
+      <sf-icon svg-icon.="sitemap"></sf-icon>
+    </a>
+    <a href="#light" class="text-warning">
+      <div>Lightweight (47KB)</div>
+      <sf-icon svg-icon.="paper-plane-o"></sf-icon>
+    </a>
+  </doc-features>
+</div>
+
+<p class="info pad">
+  <strong>Note:</strong> this documentation shows features from
+  EcmaScript 6/7, but they&#39;re completely <strong>optional</strong>. You can use
+  <code>atril</code> with plain ES5 and any module system. The docs
+  include some ES5 examples as well.
+</p>
+
+<h1 id="elements-and-attributes">
+  <sf-icon svg-icon.="cubes" class="inline"></sf-icon>
+  <span>Custom Elements and Attributes</span>
+</h1>
+
+<p>The framework has three types of building blocks.</p>
+<ul>
+<li><a href="component/"><code>Component</code></a>: provides a viewmodel and a view.</li>
+</ul>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">my-custom-element</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">my-custom-element</span>&gt;</span>
+</code></pre>
+<ul>
+<li><a href="attribute/"><code>Attribute</code></a>: operates on the viewmodel and the real DOM.</li>
+</ul>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">bind.disabled</span>=<span class="hljs-value">"isDisabled"</span>&gt;</span>
+</code></pre>
+<ul>
+<li><a href="mold/"><code>Mold</code></a>: mutates a part of the virtual DOM in response to the viewmodel changes.</li>
+</ul>
+ <div class="code-pair"> 
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">template</span> <span class="hljs-attribute">if.</span>=<span class="hljs-value">"allowed"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">button</span>&gt;</span>submit<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">template</span>&gt;</span>
+</code></pre>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">if.</span>=<span class="hljs-value">"allowed"</span>&gt;</span>submit<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+</code></pre>
+ </div> 
+<h2 id="example-component">Example Component</h2>
+<p>A custom element (usually called <em>component</em>) is a combination of a <em>view model</em>
+(data and logic) with a <em>view</em> (a template). <code>atril</code> renders the view and
+automatically updates it whenever the data changes.</p>
+ <div class="code-pair"> 
+<pre><code class="hljs lang-typescript"><span class="hljs-comment">// Viewmodel.</span>
+
+<span class="hljs-keyword">import</span> {Component} from <span class="hljs-string">'atril'</span>;
+
+@Component({
+  tagName: <span class="hljs-string">'hello-world'</span>
+})
+<span class="hljs-keyword">class</span> ViewModel {
+  name = <span class="hljs-string">'world'</span>;
+  static viewUrl = <span class="hljs-string">'app/hello-world/hello-world.html'</span>;
+}
+</code></pre>
+<pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- Template. --&gt;</span>
+
+<span class="hljs-comment">&lt;!-- Updates automatically --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">h1</span>&gt;</span>Hello, {{<span>name</span>}}!<span class="hljs-tag">&lt;/<span class="hljs-title">h1</span>&gt;</span>
+
+<span class="hljs-comment">&lt;!-- Two-way databinding --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">twoway.value</span>=<span class="hljs-value">"name"</span>&gt;</span>
+
+<span class="hljs-comment">&lt;!-- One-way databinding with manual feedback --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">bind.value</span>=<span class="hljs-value">"name"</span> <span class="hljs-attribute">on.input</span>=<span class="hljs-value">"name = this.value"</span>&gt;</span>
+
+<span class="hljs-comment">&lt;!-- One-way databinding with no feedback;
+     on.input is needed to detect user activity --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">bind.value</span>=<span class="hljs-value">"name"</span> <span class="hljs-attribute">on.input</span>&gt;</span>
+</code></pre>
+ </div> 
+<pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- Usage in HTML --&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">hello-world</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">hello-world</span>&gt;</span>
+</code></pre>
+<template doc-demo.>
+  <hello-world></hello-world>
+</template>
+
+ <sf-collapse class="info">
+  <input id="es5-example" type="checkbox">
+  <label for="es5-example" class="pad">
+    <sf-icon svg-icon.="question-circle" class="inline text-info"></sf-icon>
+    Click to see example with EcmaScript 5 and CommonJS.
+  </label>
+  <div class="code-pair"> 
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">var</span> Component = <span class="hljs-built_in">require</span>(<span class="hljs-string">'atril'</span>).Component;
+
+Component({
+  tagName: <span class="hljs-string">'hello-world'</span>
+})(ViewModel);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ViewModel</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">this</span>.name = <span class="hljs-string">'world'</span>;
+}
+
+ViewModel.viewUrl = <span class="hljs-string">'app/hello-world/hello-world.html'</span>;
+</code></pre>
+<pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- Updates automatically --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">h1</span>&gt;</span>Hello, {{<span>name</span>}}!<span class="hljs-tag">&lt;/<span class="hljs-title">h1</span>&gt;</span>
+
+<span class="hljs-comment">&lt;!-- Two-way databinding --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">twoway.value</span>=<span class="hljs-value">"name"</span>&gt;</span>
+
+<span class="hljs-comment">&lt;!-- One-way databinding with manual feedback --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">bind.value</span>=<span class="hljs-value">"name"</span> <span class="hljs-attribute">on.input</span>=<span class="hljs-value">"name = this.value"</span>&gt;</span>
+
+<span class="hljs-comment">&lt;!-- One-way databinding with no feedback;
+     on.input is needed to detect user activity --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">bind.value</span>=<span class="hljs-value">"name"</span> <span class="hljs-attribute">on.input</span>&gt;</span>
+</code></pre>
+   </div>
+</sf-collapse> 
+<h1 id="change-detection">
+  <sf-icon svg-icon.="magic" class="inline"></sf-icon>
+  <span>Automatic Change Detection</span>
+</h1>
+
+<p>Much like Angular 2, <code>atril</code> uses <a href="https://github.com/angular/zone.js"
+target="_blank"><code>zone.js</code></a> to automatically detect relevant
+events. When something happens, the framework reflows the virtual DOM, updating
+it with the new data, and carefully updates the view.</p>
+<p>Forget about event subscriptions, manual re-renders (ReactJS), digest cycles
+(Angular) or observables (Polymer, Aurelia). In <code>atril</code>, it just works.</p>
+<p>As a side benefit, this architecture allows you to bind to <em>expressions</em> rather
+than just properties. See databinding for details.</p>
+<h1 id="databinding">
+  <sf-icon svg-icon.="arrows-h" class="inline"></sf-icon>
+  <span>Databinding</span>
+</h1>
+
+<p>The framework has one-way and two-way databinding. It lets you automatically
+sync values to the view and vice versa. This includes properties of native DOM
+elements, and other custom elements in the view.</p>
+<p>See <a href="databinding/">Databinding</a> for details.</p>
+<h1 id="virtual-dom">
+  <sf-icon svg-icon.="bolt" class="inline"></sf-icon>
+  <span>Virtual DOM</span>
+</h1>
+
+<p><code>atril</code> maintains a virtual representation of each component&#39;s node tree.
+Updates to the viewmodel cause changes in the virtual tree. The framework diffs
+them with the live DOM and carefully updates the view.</p>
+<p>This is primarily an implementation detail, and is done for internal
+consistency. However, this architecture should enable optimisations for high
+rendering performance, similar to ReactJS.</p>
+<h1 id="mpa">
+  <sf-icon svg-icon.="sitemap" class="inline"></sf-icon>
+  <span>Multi-page Application Friendly</span>
+</h1>
+
+<p>This framework is targeting websites over web applications. It&#39;s aimed at
+multi-page, document-oriented sites with server-side routing and large amounts
+of static content — in other words, the majority of the web.</p>
+<p>It&#39;s designed to be as light, fast, and non-intrusive as possible. The library
+clocks at 47KB, starts up quickly, and you can use custom components just by
+including new tags on the page — without any effect on the rest of the content,
+routing, or page rendering.</p>
+<p>Big-name next generation frameworks like Angular 2 and Aurelia are targeting a
+wider range of applications, with the primary focus on single-page apps. You can
+certainly use them for any website, but at the moment of writing, they incur a
+significant performance and mental overhead for an MPA.</p>
+<p>Make a comparison and pick the right tool for the given use case.</p>
+<h1 id="light">
+  <sf-icon svg-icon.="paper-plane-o" class="inline"></sf-icon>
+  <span>Lightweight</span>
+</h1>
+
+<p>Despite its power, <code>atril</code> is simple at its core. The entire library is 47KB
+minified with dependencies. This includes 14KB of <code>zone.js</code>, which comes with
+a <code>Promise</code> polyfill. The framework has no other ES6 dependencies.</p>
+<p>Browser support: standards-compliant browsers; IE10 and above.</p>
+
       </div>
 
-      <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>
+      <div href-active.active class="doc-sidenav" class="flex-1" style="min-width: 8em">
+        <a href>Overview</a>
+<a href="quickstart/">Quickstart</a>
+<a href="component/">Component</a>
+<a href="attribute/">Attribute</a>
+<a href="mold/">Mold</a>
+<a href="databinding/">Databinding</a>
+<a href="bootstrapping/">Bootstrapping</a>
+<a href="if/"><code>if</code></a>
+<a href="for/"><code>for</code></a>
+<a href="let/"><code>let</code></a>
+<a href="on/"><code>on</code></a>
+<a href="class/"><code>class</code></a>
+<a href="ref/"><code>ref</code></a>
+<a href="todo/">demo</a>
+<!-- TODO section on component interoperation -->
+<!-- TODO separate section on dependency assignment -->
+<a href="https://gitter.im/Mitranim/atril?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge" target="_blank">
+  <img src="https://badges.gitter.im/Join%20Chat.svg">
+</a>
+
+      </div>
     </div>
 
-    <sf-footer></sf-footer>
+    <sf-footer>
+  <sf-footer-body>
+    <div class="flex-1 flex flex-column items-start">
+      <span>
+        2015
+        <a href="http://mitranim.com" target="_blank">Mitranim</a>
+        (<a href="https://github.com/Mitranim/atril/blob/master/LICENSE" target="_blank">MIT licensed</a>)
+      </span>
+    </div>
+    <div class="flex-1 flex flex-column items-center">
+      <a class="flex items-center" href="https://github.com/Mitranim/atril" target="_blank">
+        <sf-icon class="github-blue" style="font-size: 2em"></sf-icon>
+        Source at GitHub
+      </a>
+    </div>
+    <div class="flex-1 flex flex-column items-end">
+      <sf-icon class="arrow-up pointer fade" onclick="scrollTo(0, 0)"></sf-icon>
+    </div>
+  </sf-footer-body>
+</sf-footer>
   </body>
 
   <noscript>

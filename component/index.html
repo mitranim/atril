@@ -17,15 +17,33 @@
   </head>
 
   <body>
-    <doc-banner></doc-banner>
+    <div class="doc-banner">
+  <h1 class="text-monospace size-initial">atril</h1>
+
+  <h3>Experimental web UI framework</h3>
+
+  <p style="font-size: 1rem">Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple</p>
+
+  <div class="link-section">
+    <a href="https://github.com/Mitranim/atril" target="_blank">
+      <sf-icon class="github-light pop"></sf-icon>
+    </a>
+    <a href="http://mitranim.com/#contacts" target="_blank">
+      <sf-icon class="external-link pop" style="font-size: 0.8em"></sf-icon>
+    </a>
+    <!-- https://github.com/Mitranim/atril&text=Star&data.style=mega&data.icon=octicon-star&aria.label=Star -->
+    <iframe allowtransparency="true" scrolling="no" frameborder="0" style="border: none" src="https://buttons.github.io/buttons.html#href%3Dhttps%3A%2F%2Fgithub.com%2FMitranim%2Fatril%26text%3DStar%26data.style%3Dmega%26data.icon%3Docticon-star%26aria.label%3DStar"></iframe>
+  </div>
+</div>
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
         <h2 id="component">Component</h2>
 <div class="info pad decorate-links">
-  <p>Quicklinks:</p>
+  <p>Quicklinks</p>
   <ul>
     <li><a href="component/#basics">Basics</a></li>
+    <li><a href="component/#view">View</a></li>
     <li><a href="component/#contextual-dependencies">Contextual Dependencies</a></li>
     <li><a href="component/#lifecycle">Lifecycle</a></li>
   </ul>
@@ -34,97 +52,144 @@
 <p>Synonymous with <em>custom element</em>. Combines a <em>view model</em> (a data layer) with a
 <em>view</em> (an HTML template used for every such element).</p>
 <p>The viewmodel class describes how to create a viewmodel object (VM for short)
-for each new element of this type. The VM stores arbitrary data and has methods
-that may be called from the view. Its acts as its view&#39;s local scope — a feature
-missing from the native DOM API.</p>
+for each of these elements. The VM&#39;s data and methods are available in the view.
+It acts as the view&#39;s local scope — a feature missing from the native DOM API.</p>
 <p>A custom element is registered under a new tag name, and activated during
 <a href="bootstrapping/">bootstrapping</a>. Afterwards, <code>atril</code> manages the element,
 automatically updating the view whenever the data changes.</p>
 <h3 id="basics">Basics</h3>
 <p>Example custom element:</p>
-<div class="code-pair">
-<pre highlight.typescript>
-// Viewmodel.
+ <div class="code-pair"> 
+<pre><code class="hljs lang-typescript"><span class="hljs-comment">// Viewmodel.</span>
 
-import {Component} from &#39;atril&#39;;
+<span class="hljs-keyword">import</span> {Component} from <span class="hljs-string">'atril'</span>;
 
 @Component({
-  tagName: &#39;hello-world&#39;
+  tagName: <span class="hljs-string">'hello-world'</span>
 })
-class ViewModel {
-  name = &#39;world&#39;;
-  static viewUrl = &#39;app/hello-world/hello-world.html&#39;;
+<span class="hljs-keyword">class</span> ViewModel {
+  name = <span class="hljs-string">'world'</span>;
+  static viewUrl = <span class="hljs-string">'app/hello-world/hello-world.html'</span>;
 }
-</pre>
+</code></pre>
+<pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- Template. --&gt;</span>
 
-<pre highlight.html>
-<!-- Template. -->
+<span class="hljs-comment">&lt;!-- Updates automatically --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">h1</span>&gt;</span>Hello, {{<span>name</span>}}!<span class="hljs-tag">&lt;/<span class="hljs-title">h1</span>&gt;</span>
 
-<!-- Updates automatically -->
-<h1>Hello, {{name}}!</h1>
+<span class="hljs-comment">&lt;!-- Two-way databinding --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">twoway.value</span>=<span class="hljs-value">"name"</span>&gt;</span>
 
-<!-- Two-way databinding -->
-<input twoway.value="name">
+<span class="hljs-comment">&lt;!-- One-way databinding with manual feedback --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">bind.value</span>=<span class="hljs-value">"name"</span> <span class="hljs-attribute">on.input</span>=<span class="hljs-value">"name = this.value"</span>&gt;</span>
 
-<!-- One-way databinding with manual feedback -->
-<input bind.value="name" on.input="name = this.value">
+<span class="hljs-comment">&lt;!-- One-way databinding with no feedback;
+     on.input is needed to detect user activity --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">bind.value</span>=<span class="hljs-value">"name"</span> <span class="hljs-attribute">on.input</span>&gt;</span>
+</code></pre>
+ </div> 
+<pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- Usage in HTML --&gt;</span>
 
-<!-- One-way databinding with no feedback;
-     on.input is needed to detect user activity -->
-<input bind.value="name" on.input>
-</pre>
-</div>
-
-<pre highlight.html>
-<!-- Usage in HTML -->
-
-<hello-world></hello-world>
-</pre>
-
+<span class="hljs-tag">&lt;<span class="hljs-title">hello-world</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">hello-world</span>&gt;</span>
+</code></pre>
 <template doc-demo.>
   <hello-world></hello-world>
 </template>
 
-<div>
+ <div>
   <sf-collapse class="info">
     <input id="es5-example" type="checkbox">
     <label for="es5-example" class="pad">
       <sf-icon svg-icon.="question-circle" class="inline text-info"></sf-icon>
       Click to see example with EcmaScript 5 and CommonJS.
     </label>
-    <div class="code-pair">
-<pre highlight.javascript>
-var Component = require(&#39;atril&#39;).Component;
+    <div class="code-pair"> 
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">var</span> Component = <span class="hljs-built_in">require</span>(<span class="hljs-string">'atril'</span>).Component;
 
 Component({
-  tagName: &#39;hello-world&#39;
+  tagName: <span class="hljs-string">'hello-world'</span>
 })(ViewModel);
 
-function ViewModel() {
-  this.name = &#39;world&#39;;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ViewModel</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">this</span>.name = <span class="hljs-string">'world'</span>;
 }
 
-ViewModel.viewUrl = &#39;app/hello-world/hello-world.html&#39;;
-</pre>
+ViewModel.viewUrl = <span class="hljs-string">'app/hello-world/hello-world.html'</span>;
+</code></pre>
+<pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- Updates automatically --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">h1</span>&gt;</span>Hello, {{<span>name</span>}}!<span class="hljs-tag">&lt;/<span class="hljs-title">h1</span>&gt;</span>
 
-<pre highlight.html>
-<!-- Updates automatically -->
-<h1>Hello, {{name}}!</h1>
+<span class="hljs-comment">&lt;!-- Two-way databinding --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">twoway.value</span>=<span class="hljs-value">"name"</span>&gt;</span>
 
-<!-- Two-way databinding -->
-<input twoway.value="name">
+<span class="hljs-comment">&lt;!-- One-way databinding with manual feedback --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">bind.value</span>=<span class="hljs-value">"name"</span> <span class="hljs-attribute">on.input</span>=<span class="hljs-value">"name = this.value"</span>&gt;</span>
 
-<!-- One-way databinding with manual feedback -->
-<input bind.value="name" on.input="name = this.value">
-
-<!-- One-way databinding with no feedback;
-     on.input is needed to detect user activity -->
-<input bind.value="name" on.input>
-</pre>
-    </div>
+<span class="hljs-comment">&lt;!-- One-way databinding with no feedback;
+     on.input is needed to detect user activity --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">bind.value</span>=<span class="hljs-value">"name"</span> <span class="hljs-attribute">on.input</span>&gt;</span>
+</code></pre>
+     </div>
   </sf-collapse>
-</div>
+</div> 
+<h3 id="view">View</h3>
+<p>Each custom element has an optional <em>view</em>, an HTML template. Given a component
+class <code>X</code>, the view can be provided in the following ways:</p>
+<ul>
+<li><code>X.view =&gt; string</code></li>
+<li><code>X.viewUrl =&gt; string</code></li>
+<li><code>X.view =&gt; Promise =&gt; string</code></li>
+</ul>
+<h4 id="-x-view-string-"><code>X.view =&gt; string</code></h4>
+<pre><code class="hljs lang-typescript">@Component({tagName: <span class="hljs-string">'my-element'</span>})
+<span class="hljs-keyword">class</span> X {
+  static view = `
+    &lt;p&gt;Hello {{<span>name</span>}}!<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">twoway.value</span>=<span class="hljs-value">"name"</span>&gt;</span>
+  `;
+}</span>
+</code></pre>
+<p>This works well when importing views through the SystemJS <a href="https://github.com/systemjs/plugin-text" target="_blank">text
+plugin</a>:</p>
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">import</span> view from <span class="hljs-string">'./my-element.html!text'</span>;
 
+@Component({tagName: <span class="hljs-string">'my-element'</span>})
+<span class="hljs-keyword">class</span> X {
+  static view = view;
+}
+</code></pre>
+<h4 id="-x-viewurl-string-"><code>X.viewUrl =&gt; string</code></h4>
+<p>Primary method of view loading. The framework automatically loads the view by
+the given URL, then activates the component once the view is available.</p>
+<pre><code class="hljs lang-typescript">@Component({tagName: <span class="hljs-string">'my-element'</span>})
+<span class="hljs-keyword">class</span> X {
+  static viewUrl = <span class="hljs-string">'app/my-element/my-element.html'</span>;
+}
+</code></pre>
+<p>Loaded views are synchronously available through the <code>viewCache</code> utility exposed
+by the framework. It can also load a hitherto unavailable view, or set a view
+by the given URL without loading it over the network. For production, views
+should be converted to JS and precached in the <code>viewCache</code>. If you&#39;re building
+with <code>gulp</code>, use
+<a href="https://github.com/Mitranim/gulp-atril-html2js" target="_blank"><code>gulp-atril-html2js</code></a> to do
+this for you.</p>
+<p>The build system for this documentation site includes view preprocessing;
+you&#39;re welcome to use it as an example.
+(<a href="https://github.com/Mitranim/atril/blob/master/gulpfile.js" target="_blank">[1]</a>)</p>
+<h4 id="-x-view-promise-string-"><code>X.view =&gt; Promise =&gt; string</code></h4>
+<p>You can return a promise that resolves to a view. Example using
+<a href="https://github.com/github/fetch" target="_blank">fetch</a>:</p>
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">let</span> viewPromise = <span class="hljs-literal">null</span>;
+
+@Component({tagName: <span class="hljs-string">'my-element'</span>})
+<span class="hljs-keyword">class</span> X {
+  static <span class="hljs-keyword">get</span> view() {
+    <span class="hljs-keyword">return</span> viewPromise || fetch(<span class="hljs-string">'/my-secret-view-url'</span>)
+      .then(response =&gt; viewPromise = response.text());
+  }
+}
+</code></pre>
+<p>This lets you load views asynchronously through custom means.</p>
 <h3 id="contextual-dependencies">Contextual Dependencies</h3>
 <p>The framework uses a variant of dependency injection — <em>dependency assignment</em>
 — to give you contextual dependencies for each viewmodel. To get hold of them,
@@ -152,29 +217,27 @@ on the constructor function (ES5).</p>
   }
 }
 </code></pre>
-<div>
+ <div>
   <sf-collapse class="info">
     <input id="assign-es5" type="checkbox">
     <label for="assign-es5" class="pad">
       <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
       Click for ES5 version.
-    </label>
-<pre highlight.javascript>
-var Component = require(&#39;atril&#39;).Component;
+    </label> 
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">var</span> Component = <span class="hljs-built_in">require</span>(<span class="hljs-string">'atril'</span>).Component;
 
-Component({tagName: &#39;my-element&#39;})(function() {
-  function VM() {
-    console.log(this.elem);
+Component({tagName: <span class="hljs-string">'my-element'</span>})(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">VM</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.elem);
   }
 
-  VM.assign = {elem: &#39;element&#39;};
+  VM.assign = {elem: <span class="hljs-string">'element'</span>};
 
-  return VM;
+  <span class="hljs-keyword">return</span> VM;
 }());
-</pre>
-  </sf-collapse>
-</div>
-
+</code></pre>
+   </sf-collapse>
+</div> 
 <h3 id="lifecycle">Lifecycle</h3>
 <p>A component&#39;s life begins with a <code>constructor</code> call. In addition, it can define
 two lifecycle methods: <code>onPhase</code> and <code>onDestroy</code>.</p>
@@ -215,10 +278,50 @@ chance to free memory or perform other cleanup tasks. Example:</p>
 
       </div>
 
-      <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>
+      <div href-active.active class="doc-sidenav" class="flex-1" style="min-width: 8em">
+        <a href>Overview</a>
+<a href="quickstart/">Quickstart</a>
+<a href="component/">Component</a>
+<a href="attribute/">Attribute</a>
+<a href="mold/">Mold</a>
+<a href="databinding/">Databinding</a>
+<a href="bootstrapping/">Bootstrapping</a>
+<a href="if/"><code>if</code></a>
+<a href="for/"><code>for</code></a>
+<a href="let/"><code>let</code></a>
+<a href="on/"><code>on</code></a>
+<a href="class/"><code>class</code></a>
+<a href="ref/"><code>ref</code></a>
+<a href="todo/">demo</a>
+<!-- TODO section on component interoperation -->
+<!-- TODO separate section on dependency assignment -->
+<a href="https://gitter.im/Mitranim/atril?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge" target="_blank">
+  <img src="https://badges.gitter.im/Join%20Chat.svg">
+</a>
+
+      </div>
     </div>
 
-    <sf-footer></sf-footer>
+    <sf-footer>
+  <sf-footer-body>
+    <div class="flex-1 flex flex-column items-start">
+      <span>
+        2015
+        <a href="http://mitranim.com" target="_blank">Mitranim</a>
+        (<a href="https://github.com/Mitranim/atril/blob/master/LICENSE" target="_blank">MIT licensed</a>)
+      </span>
+    </div>
+    <div class="flex-1 flex flex-column items-center">
+      <a class="flex items-center" href="https://github.com/Mitranim/atril" target="_blank">
+        <sf-icon class="github-blue" style="font-size: 2em"></sf-icon>
+        Source at GitHub
+      </a>
+    </div>
+    <div class="flex-1 flex flex-column items-end">
+      <sf-icon class="arrow-up pointer fade" onclick="scrollTo(0, 0)"></sf-icon>
+    </div>
+  </sf-footer-body>
+</sf-footer>
   </body>
 
   <noscript>

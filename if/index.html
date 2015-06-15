@@ -17,7 +17,24 @@
   </head>
 
   <body>
-    <doc-banner></doc-banner>
+    <div class="doc-banner">
+  <h1 class="text-monospace size-initial">atril</h1>
+
+  <h3>Experimental web UI framework</h3>
+
+  <p style="font-size: 1rem">Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple</p>
+
+  <div class="link-section">
+    <a href="https://github.com/Mitranim/atril" target="_blank">
+      <sf-icon class="github-light pop"></sf-icon>
+    </a>
+    <a href="http://mitranim.com/#contacts" target="_blank">
+      <sf-icon class="external-link pop" style="font-size: 0.8em"></sf-icon>
+    </a>
+    <!-- https://github.com/Mitranim/atril&text=Star&data.style=mega&data.icon=octicon-star&aria.label=Star -->
+    <iframe allowtransparency="true" scrolling="no" frameborder="0" style="border: none" src="https://buttons.github.io/buttons.html#href%3Dhttps%3A%2F%2Fgithub.com%2FMitranim%2Fatril%26text%3DStar%26data.style%3Dmega%26data.icon%3Docticon-star%26aria.label%3DStar"></iframe>
+  </div>
+</div>
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
@@ -78,10 +95,50 @@ very cheap.</p>
 
       </div>
 
-      <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>
+      <div href-active.active class="doc-sidenav" class="flex-1" style="min-width: 8em">
+        <a href>Overview</a>
+<a href="quickstart/">Quickstart</a>
+<a href="component/">Component</a>
+<a href="attribute/">Attribute</a>
+<a href="mold/">Mold</a>
+<a href="databinding/">Databinding</a>
+<a href="bootstrapping/">Bootstrapping</a>
+<a href="if/"><code>if</code></a>
+<a href="for/"><code>for</code></a>
+<a href="let/"><code>let</code></a>
+<a href="on/"><code>on</code></a>
+<a href="class/"><code>class</code></a>
+<a href="ref/"><code>ref</code></a>
+<a href="todo/">demo</a>
+<!-- TODO section on component interoperation -->
+<!-- TODO separate section on dependency assignment -->
+<a href="https://gitter.im/Mitranim/atril?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge" target="_blank">
+  <img src="https://badges.gitter.im/Join%20Chat.svg">
+</a>
+
+      </div>
     </div>
 
-    <sf-footer></sf-footer>
+    <sf-footer>
+  <sf-footer-body>
+    <div class="flex-1 flex flex-column items-start">
+      <span>
+        2015
+        <a href="http://mitranim.com" target="_blank">Mitranim</a>
+        (<a href="https://github.com/Mitranim/atril/blob/master/LICENSE" target="_blank">MIT licensed</a>)
+      </span>
+    </div>
+    <div class="flex-1 flex flex-column items-center">
+      <a class="flex items-center" href="https://github.com/Mitranim/atril" target="_blank">
+        <sf-icon class="github-blue" style="font-size: 2em"></sf-icon>
+        Source at GitHub
+      </a>
+    </div>
+    <div class="flex-1 flex flex-column items-end">
+      <sf-icon class="arrow-up pointer fade" onclick="scrollTo(0, 0)"></sf-icon>
+    </div>
+  </sf-footer-body>
+</sf-footer>
   </body>
 
   <noscript>

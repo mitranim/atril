@@ -17,7 +17,24 @@
   </head>
 
   <body>
-    <doc-banner></doc-banner>
+    <div class="doc-banner">
+  <h1 class="text-monospace size-initial">atril</h1>
+
+  <h3>Experimental web UI framework</h3>
+
+  <p style="font-size: 1rem">Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple</p>
+
+  <div class="link-section">
+    <a href="https://github.com/Mitranim/atril" target="_blank">
+      <sf-icon class="github-light pop"></sf-icon>
+    </a>
+    <a href="http://mitranim.com/#contacts" target="_blank">
+      <sf-icon class="external-link pop" style="font-size: 0.8em"></sf-icon>
+    </a>
+    <!-- https://github.com/Mitranim/atril&text=Star&data.style=mega&data.icon=octicon-star&aria.label=Star -->
+    <iframe allowtransparency="true" scrolling="no" frameborder="0" style="border: none" src="https://buttons.github.io/buttons.html#href%3Dhttps%3A%2F%2Fgithub.com%2FMitranim%2Fatril%26text%3DStar%26data.style%3Dmega%26data.icon%3Docticon-star%26aria.label%3DStar"></iframe>
+  </div>
+</div>
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
@@ -94,164 +111,151 @@ following content:</p>
 </code></pre>
 <p>Navigate to this page in your browser.</p>
 <p>Create <code>src/app/todo-list/</code> with the following:</p>
-<div class="code-pair">
-<pre highlight.typescript>
-// src/app/todo-list/todo-list.ts
+ <div class="code-pair"> 
+<pre><code class="hljs lang-typescript"><span class="hljs-comment">// src/app/todo-list/todo-list.ts</span>
 
-import {Component} from &#39;atril&#39;;
+<span class="hljs-keyword">import</span> {Component} from <span class="hljs-string">'atril'</span>;
 
 @Component({
-  tagName: &#39;todo-list&#39;
+  tagName: <span class="hljs-string">'todo-list'</span>
 })
-class VM {
-  text = &#39;&#39;;
+<span class="hljs-keyword">class</span> VM {
+  text = <span class="hljs-string">''</span>;
   items = [
-    {text: &#39;Learn a new framework&#39;, completed: true},
-    {text: &#39;Be awesome&#39;}
+    {text: <span class="hljs-string">'Learn a new framework'</span>, completed: <span class="hljs-literal">true</span>},
+    {text: <span class="hljs-string">'Be awesome'</span>}
   ];
-  newItem = {text: &#39;&#39;, completed: false};
+  newItem = {text: <span class="hljs-string">''</span>, completed: <span class="hljs-literal">false</span>};
 
   add() {
-    this.items.unshift(this.newItem);
-    this.newItem = {text: &#39;&#39;, completed: false};
+    <span class="hljs-keyword">this</span>.items.unshift(<span class="hljs-keyword">this</span>.newItem);
+    <span class="hljs-keyword">this</span>.newItem = {text: <span class="hljs-string">''</span>, completed: <span class="hljs-literal">false</span>};
   }
 
   remove(item) {
-    this.items.splice(this.items.indexOf(item), 1);
+    <span class="hljs-keyword">this</span>.items.splice(<span class="hljs-keyword">this</span>.items.indexOf(item), <span class="hljs-number">1</span>);
   }
 
-  static viewUrl = &#39;app/todo-list/todo-list.html&#39;;
+  static viewUrl = <span class="hljs-string">'app/todo-list/todo-list.html'</span>;
 }
-</pre>
+</code></pre>
+<pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- src/app/<span class="hljs-doctag"><span class="hljs-keyword">todo</span></span>-list/<span class="hljs-doctag"><span class="hljs-keyword">todo</span></span>-list.html --&gt;</span>
 
-<pre highlight.html>
-<!-- src/app/todo-list/todo-list.html -->
+<span class="hljs-tag">&lt;<span class="hljs-title">todo-item</span> <span class="hljs-attribute">bind.item</span>=<span class="hljs-value">"newItem"</span> <span class="hljs-attribute">bind.is-new</span>=<span class="hljs-value">"true"</span>
+           <span class="hljs-attribute">on.add</span>=<span class="hljs-value">"add()"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">todo-item</span>&gt;</span>
 
-<todo-item bind.item="newItem" bind.is-new="true" on.add="add()"></todo-item>
+<span class="hljs-tag">&lt;<span class="hljs-title">todo-item</span> <span class="hljs-attribute">for.item.of</span>=<span class="hljs-value">"items"</span> <span class="hljs-attribute">bind.item</span>=<span class="hljs-value">"item"</span>
+           <span class="hljs-attribute">on.remove</span>=<span class="hljs-value">"remove(item)"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">todo-item</span>&gt;</span>
+</code></pre>
+ </div> 
+ <sf-collapse class="info">
+  <input id="quickstart-es5" type="checkbox">
+  <label for="quickstart-es5" class="pad">
+    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+    Click for ES5 version.
+  </label> 
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">var</span> Component = <span class="hljs-built_in">require</span>(<span class="hljs-string">'atril'</span>).Component;
 
-<todo-item for.item.of="items" bind.item="item" on.remove="remove(item)"></todo-item>
-</pre>
-</div>
-
-<div>
-  <sf-collapse class="info">
-    <input id="quickstart-es5" type="checkbox">
-    <label for="quickstart-es5" class="pad">
-      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-      Click for ES5 version.
-    </label>
-<pre highlight.javascript>
-var Component = require(&#39;atril&#39;).Component;
-
-Component({tagName: &#39;todo-list&#39;})(function() {
-  function VM() {
-    this.text = &#39;&#39;;
-    this.items = [
-      {text: &#39;Learn a new framework&#39;, completed: true},
-      {text: &#39;Be awesome&#39;}
+Component({tagName: <span class="hljs-string">'todo-list'</span>})(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">VM</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">this</span>.text = <span class="hljs-string">''</span>;
+    <span class="hljs-keyword">this</span>.items = [
+      {text: <span class="hljs-string">'Learn a new framework'</span>, completed: <span class="hljs-literal">true</span>},
+      {text: <span class="hljs-string">'Be awesome'</span>}
     ];
-    this.newItem = {text: &#39;&#39;, completed: false}
+    <span class="hljs-keyword">this</span>.newItem = {text: <span class="hljs-string">''</span>, completed: <span class="hljs-literal">false</span>}
   }
 
-  VM.prototype.add = function() {
-    this.items.unshift(this.newItem);
-    this.newItem = {text: &#39;&#39;, completed: false}
+  VM.prototype.add = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">this</span>.items.unshift(<span class="hljs-keyword">this</span>.newItem);
+    <span class="hljs-keyword">this</span>.newItem = {text: <span class="hljs-string">''</span>, completed: <span class="hljs-literal">false</span>}
   };
 
-  VM.prototype.remove = function(item) {
-    this.items.splice(this.items.indexOf(item), 1);
+  VM.prototype.remove = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">item</span>) </span>{
+    <span class="hljs-keyword">this</span>.items.splice(<span class="hljs-keyword">this</span>.items.indexOf(item), <span class="hljs-number">1</span>);
   };
 
-  VM.viewUrl = &#39;app/todo-list/todo-list.html&#39;;
+  VM.viewUrl = <span class="hljs-string">'app/todo-list/todo-list.html'</span>;
 
-  return VM;
+  <span class="hljs-keyword">return</span> VM;
 }());
-</pre>
-  </sf-collapse>
-</div>
-
+</code></pre>
+ </sf-collapse> 
 <p>This will display nothing, because we don&#39;t have a custom <code>todo-item</code> element
 yet. Let&#39;s create it.</p>
 <p>Make <code>src/app/todo-item/</code> with the following:</p>
-<div class="code-pair">
-<pre highlight.typescript>
-// src/app/todo-item/todo-item.ts
+ <div class="code-pair"> 
+<pre><code class="hljs lang-typescript"><span class="hljs-comment">// src/app/todo-item/todo-item.ts</span>
 
-import {Component, assign, bindable} from &#39;atril&#39;;
+<span class="hljs-keyword">import</span> {Component, assign, bindable} from <span class="hljs-string">'atril'</span>;
 
 @Component({
-  tagName: &#39;todo-item&#39;
+  tagName: <span class="hljs-string">'todo-item'</span>
 })
-class VM {
+<span class="hljs-keyword">class</span> VM {
   @assign element: HTMLElement;
 
-  @bindable item = null;
-  @bindable isNew = false;
+  @bindable item = <span class="hljs-literal">null</span>;
+  @bindable isNew = <span class="hljs-literal">false</span>;
 
   add() {
-    this.element.dispatchEvent(new CustomEvent(&#39;add&#39;));
+    <span class="hljs-keyword">this</span>.element.dispatchEvent(<span class="hljs-keyword">new</span> CustomEvent(<span class="hljs-string">'add'</span>));
   }
 
   remove() {
-    this.element.dispatchEvent(new CustomEvent(&#39;remove&#39;));
+    <span class="hljs-keyword">this</span>.element.dispatchEvent(<span class="hljs-keyword">new</span> CustomEvent(<span class="hljs-string">'remove'</span>));
   }
 
-  static viewUrl = &#39;app/todo-item/todo-item.html&#39;;
+  static viewUrl = <span class="hljs-string">'app/todo-item/todo-item.html'</span>;
 }
-</pre>
-<pre highlight.html>
-<!-- src/app/todo-item/todo-item.html -->
+</code></pre>
+<pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- src/app/<span class="hljs-doctag"><span class="hljs-keyword">todo</span></span>-item/<span class="hljs-doctag"><span class="hljs-keyword">todo</span></span>-item.html --&gt;</span>
 
-<div class.success="item.completed" class.strikethrough="item.completed"
-     class.info="!item.completed" class.orange="isNew">
-  <label if.="!isNew">
-    <input twoway.checked="item.completed" type="checkbox">
-  </label>
-  <form on.submit="add()" onsubmit="return false">
-    <input twoway.value="item.text" bind.disabled="item.completed" required>
-    <button if.="isNew" svg-icon.="plus"></button>
-  </form>
-  <button on.click="remove()" if.="!isNew" svg-icon.="times"></button>
-</div>
-</pre>
-</div>
+<span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class.success</span>=<span class="hljs-value">"item.completed"</span> <span class="hljs-attribute">class.strikethrough</span>=<span class="hljs-value">"item.completed"</span>
+     <span class="hljs-attribute">class.info</span>=<span class="hljs-value">"!item.completed"</span> <span class="hljs-attribute">class.orange</span>=<span class="hljs-value">"isNew"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">label</span> <span class="hljs-attribute">if.</span>=<span class="hljs-value">"!isNew"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">twoway.checked</span>=<span class="hljs-value">"item.completed"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"checkbox"</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">label</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">form</span> <span class="hljs-attribute">on.submit</span>=<span class="hljs-value">"add()"</span> <span class="hljs-attribute">onsubmit</span>=<span class="hljs-value">"return false"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">twoway.value</span>=<span class="hljs-value">"item.text"</span> <span class="hljs-attribute">bind.disabled</span>=<span class="hljs-value">"item.completed"</span> <span class="hljs-attribute">required</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">if.</span>=<span class="hljs-value">"isNew"</span> <span class="hljs-attribute">svg-icon.</span>=<span class="hljs-value">"plus"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">form</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">on.click</span>=<span class="hljs-value">"remove()"</span> <span class="hljs-attribute">if.</span>=<span class="hljs-value">"!isNew"</span> <span class="hljs-attribute">svg-icon.</span>=<span class="hljs-value">"times"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+ </div> 
+ <sf-collapse class="info">
+  <input id="quickstart-es5-todo-item" type="checkbox">
+  <label for="quickstart-es5-todo-item" class="pad">
+    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+    Click for ES5 version.
+  </label> 
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">var</span> Component = <span class="hljs-built_in">require</span>(<span class="hljs-string">'atril'</span>).Component;
 
-<div>
-  <sf-collapse class="info">
-    <input id="quickstart-es5-todo-item" type="checkbox">
-    <label for="quickstart-es5-todo-item" class="pad">
-      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-      Click for ES5 version.
-    </label>
-<pre highlight.javascript>
-var Component = require(&#39;atril&#39;).Component;
-
-Component({tagName: &#39;todo-item&#39;})(function() {
-  function VM() {
-    this.item = null;
-    this.isNew = false;
+Component({tagName: <span class="hljs-string">'todo-item'</span>})(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">VM</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">this</span>.item = <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">this</span>.isNew = <span class="hljs-literal">false</span>;
   }
 
-  VM.prototype.add = function() {
-    this.element.dispatchEvent(new CustomEvent(&#39;add&#39;));
+  VM.prototype.add = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">this</span>.element.dispatchEvent(<span class="hljs-keyword">new</span> CustomEvent(<span class="hljs-string">'add'</span>));
   };
 
-  VM.prototype.remove = function() {
-    this.element.dispatchEvent(new CustomEvent(&#39;remove&#39;));
+  VM.prototype.remove = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">this</span>.element.dispatchEvent(<span class="hljs-keyword">new</span> CustomEvent(<span class="hljs-string">'remove'</span>));
   };
 
-  VM.assign = {element: &#39;element&#39;};
+  VM.assign = {element: <span class="hljs-string">'element'</span>};
 
-  VM.bindable = [&#39;item&#39;, &#39;isNew&#39;];
+  VM.bindable = [<span class="hljs-string">'item'</span>, <span class="hljs-string">'isNew'</span>];
 
-  VM.viewUrl = &#39;app/todo-item/todo-item.html&#39;;
+  VM.viewUrl = <span class="hljs-string">'app/todo-item/todo-item.html'</span>;
 
-  return VM;
+  <span class="hljs-keyword">return</span> VM;
 }());
-</pre>
-  </sf-collapse>
-</div>
-
+</code></pre>
+ </sf-collapse> 
 <div>
   <sf-collapse class="info pad-ch">
     <input id="quickstart-views" type="checkbox">
@@ -285,7 +289,7 @@ atril.bootstrap();
 </code></pre>
 <p>If the document isn&#39;t yet available, the framework will defer bootstrapping
 until it&#39;s loaded.</p>
-<p>Now open the page and see the component in action.</p>
+<p>Now open the page and see the component in action: <a href="todo/">demo</a>.</p>
 <h2 id="data-flow">Data Flow</h2>
 <p>A few notes on the data flow. Components generally interoperate in three ways.</p>
 <ol>
@@ -320,10 +324,50 @@ source for more examples. If you have any questions, hop into the
 
       </div>
 
-      <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>
+      <div href-active.active class="doc-sidenav" class="flex-1" style="min-width: 8em">
+        <a href>Overview</a>
+<a href="quickstart/">Quickstart</a>
+<a href="component/">Component</a>
+<a href="attribute/">Attribute</a>
+<a href="mold/">Mold</a>
+<a href="databinding/">Databinding</a>
+<a href="bootstrapping/">Bootstrapping</a>
+<a href="if/"><code>if</code></a>
+<a href="for/"><code>for</code></a>
+<a href="let/"><code>let</code></a>
+<a href="on/"><code>on</code></a>
+<a href="class/"><code>class</code></a>
+<a href="ref/"><code>ref</code></a>
+<a href="todo/">demo</a>
+<!-- TODO section on component interoperation -->
+<!-- TODO separate section on dependency assignment -->
+<a href="https://gitter.im/Mitranim/atril?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge" target="_blank">
+  <img src="https://badges.gitter.im/Join%20Chat.svg">
+</a>
+
+      </div>
     </div>
 
-    <sf-footer></sf-footer>
+    <sf-footer>
+  <sf-footer-body>
+    <div class="flex-1 flex flex-column items-start">
+      <span>
+        2015
+        <a href="http://mitranim.com" target="_blank">Mitranim</a>
+        (<a href="https://github.com/Mitranim/atril/blob/master/LICENSE" target="_blank">MIT licensed</a>)
+      </span>
+    </div>
+    <div class="flex-1 flex flex-column items-center">
+      <a class="flex items-center" href="https://github.com/Mitranim/atril" target="_blank">
+        <sf-icon class="github-blue" style="font-size: 2em"></sf-icon>
+        Source at GitHub
+      </a>
+    </div>
+    <div class="flex-1 flex flex-column items-end">
+      <sf-icon class="arrow-up pointer fade" onclick="scrollTo(0, 0)"></sf-icon>
+    </div>
+  </sf-footer-body>
+</sf-footer>
   </body>
 
   <noscript>

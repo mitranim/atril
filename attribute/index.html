@@ -17,13 +17,30 @@
   </head>
 
   <body>
-    <doc-banner></doc-banner>
+    <div class="doc-banner">
+  <h1 class="text-monospace size-initial">atril</h1>
+
+  <h3>Experimental web UI framework</h3>
+
+  <p style="font-size: 1rem">Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple</p>
+
+  <div class="link-section">
+    <a href="https://github.com/Mitranim/atril" target="_blank">
+      <sf-icon class="github-light pop"></sf-icon>
+    </a>
+    <a href="http://mitranim.com/#contacts" target="_blank">
+      <sf-icon class="external-link pop" style="font-size: 0.8em"></sf-icon>
+    </a>
+    <!-- https://github.com/Mitranim/atril&text=Star&data.style=mega&data.icon=octicon-star&aria.label=Star -->
+    <iframe allowtransparency="true" scrolling="no" frameborder="0" style="border: none" src="https://buttons.github.io/buttons.html#href%3Dhttps%3A%2F%2Fgithub.com%2FMitranim%2Fatril%26text%3DStar%26data.style%3Dmega%26data.icon%3Docticon-star%26aria.label%3DStar"></iframe>
+  </div>
+</div>
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
         <h2 id="attribute">Attribute</h2>
 <div class="info pad decorate-links">
-  <p>Quicklinks:</p>
+  <p>Quicklinks</p>
   <ul>
     <li><a href="attribute/#basics">Basics</a></li>
     <li><a href="attribute/#contextual-dependencies">Contextual Dependencies</a></li>
@@ -41,41 +58,37 @@ custom attributes very flexible and ensures no conflict with other attributes.</
 <h3 id="basics">Basics</h3>
 <p>Here&#39;s an example attribute. This is the entire implementation of the built-in
 <code>class.*</code> binding.</p>
-<div class="code-pair">
-<pre highlight.typescript>
-import {Attribute, assign} from &#39;atril&#39;;
+ <div class="code-pair"> 
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">import</span> {Attribute, assign} from <span class="hljs-string">'atril'</span>;
 
-@Attribute({attributeName: &#39;class&#39;})
-class Ctrl {
-  // Autoassigned by the framework.
+@Attribute({attributeName: <span class="hljs-string">'class'</span>})
+<span class="hljs-keyword">class</span> Ctrl {
+  <span class="hljs-comment">// Autoassigned by the framework.</span>
   @assign element: Element;
-  @assign hint: string;
-  @assign expression: Function;
-  @assign scope: any;
+  @assign hint: <span class="hljs-built_in">string</span>;
+  @assign expression: <span class="hljs-built_in">Function</span>;
+  @assign scope: <span class="hljs-built_in">any</span>;
 
   onPhase() {
-    let result = this.expression(this.scope);
-    if (result) this.element.classList.add(this.hint);
-    else this.element.classList.remove(this.hint);
+    <span class="hljs-keyword">let</span> result = <span class="hljs-keyword">this</span>.expression(<span class="hljs-keyword">this</span>.scope);
+    <span class="hljs-keyword">if</span> (result) <span class="hljs-keyword">this</span>.element.classList.add(<span class="hljs-keyword">this</span>.hint);
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">this</span>.element.classList.remove(<span class="hljs-keyword">this</span>.hint);
   }
 }
-</pre>
+</code></pre>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">let.checked</span>=<span class="hljs-value">"true"</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- Set class `info` when `checked` is true
+       and `error` otherwise. --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">label</span> <span class="hljs-attribute">class.info</span>=<span class="hljs-value">"checked"</span> <span class="hljs-attribute">class.error</span>=<span class="hljs-value">"!checked"</span>&gt;</span>
 
-<pre highlight.html>
-<div let.checked="true">
-  <!-- Set class `info` when `checked` is true
-       and `error` otherwise. -->
-  <label class.info="checked" class.error="!checked">
+    <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">twoway.checked</span>=<span class="hljs-value">"checked"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"checkbox"</span>&gt;</span>
 
-    <input twoway.checked="checked" type="checkbox">
+    <span class="hljs-tag">&lt;<span class="hljs-title">span</span>&gt;</span>I'm checked: {{<span>checked</span>}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
 
-    <span>I&#39;m checked: {{checked}}</span>
-
-  </label>
-</div>
-</pre>
-</div>
-
+  <span class="hljs-tag">&lt;/<span class="hljs-title">label</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+ </div> 
 <template doc-demo. let.checked="true">
   <div class="pad-v">
     <label class="pad" class.info="checked" class.error="!checked">
@@ -104,70 +117,62 @@ if the attribute is not inside a custom element&#39;s view);</li>
 the element is not custom).</li>
 </ul>
 <p>Example:</p>
-<div class="code-pair">
-<pre highlight.typescript>
-import {Attribute, assign} from &#39;atril&#39;;
+ <div class="code-pair"> 
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">import</span> {Attribute, assign} from <span class="hljs-string">'atril'</span>;
 
-@Attribute({attributeName: &#39;my-attr&#39;})
-class Ctrl {
+@Attribute({attributeName: <span class="hljs-string">'my-attr'</span>})
+<span class="hljs-keyword">class</span> Ctrl {
   @assign element: Element;
   @assign attribute: Attr;
-  @assign hint: string;
-  @assign expression: Function;
-  @assign scope: any;
-  @assign vm: any;
+  @assign hint: <span class="hljs-built_in">string</span>;
+  @assign expression: <span class="hljs-built_in">Function</span>;
+  @assign scope: <span class="hljs-built_in">any</span>;
+  @assign vm: <span class="hljs-built_in">any</span>;
 
-  constructor() {
-    // <hello-world my-attr.calc="2 + 2"></hello-world>
-    console.log(element);
-    // my-attr.calc=&quot;2 + 2&quot;
-    console.log(attribute);
-    // &#39;calc&#39;
-    console.log(hint);
-    // function that returns 4
-    console.log(expression);
-    // outer viewmodel or null
-    console.log(scope);
-    // hello-world&#39;s viewmodel
-    console.log(vm);
+  <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>() </span>{
+    <span class="hljs-comment">// &lt;hello-world my-attr.calc="2 + 2"&gt;&lt;/hello-world&gt;</span>
+    <span class="hljs-built_in">console</span>.log(element);
+    <span class="hljs-comment">// my-attr.calc="2 + 2"</span>
+    <span class="hljs-built_in">console</span>.log(attribute);
+    <span class="hljs-comment">// 'calc'</span>
+    <span class="hljs-built_in">console</span>.log(hint);
+    <span class="hljs-comment">// function that returns 4</span>
+    <span class="hljs-built_in">console</span>.log(expression);
+    <span class="hljs-comment">// outer viewmodel or null</span>
+    <span class="hljs-built_in">console</span>.log(scope);
+    <span class="hljs-comment">// hello-world's viewmodel</span>
+    <span class="hljs-built_in">console</span>.log(vm);
   }
 }
-</pre>
+</code></pre>
+<pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">hello-world</span> <span class="hljs-attribute">my-attr.calc</span>=<span class="hljs-value">"2 + 2"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">hello-world</span>&gt;</span>
+</code></pre>
+ </div> 
+ <sf-collapse class="info">
+  <input id="assign-es5" type="checkbox">
+  <label for="assign-es5" class="pad">
+    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+    Click for ES5 version.
+  </label> 
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">var</span> Attribute = <span class="hljs-built_in">require</span>(<span class="hljs-string">'atril'</span>).Attribute;
 
-<pre highlight.html>
-<hello-world my-attr.calc="2 + 2"></hello-world>
-</pre>
-</div>
+Attribute({attributeName: <span class="hljs-string">'my-attr'</span>})(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Ctrl</span>(<span class="hljs-params"></span>) </span>{}
 
-<div>
-  <sf-collapse class="info">
-    <input id="assign-es5" type="checkbox">
-    <label for="assign-es5" class="pad">
-      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-      Click for ES5 version.
-    </label>
-<pre highlight.javascript>
-var Attribute = require(&#39;atril&#39;).Attribute;
-
-Attribute({attributeName: &#39;my-attr&#39;})(function() {
-  function Ctrl() {}
-
-  // Property names to the left, dependency tokens to the right.
+  <span class="hljs-comment">// Property names to the left, dependency tokens to the right.</span>
   Ctrl.assign = {
-    element: &#39;element&#39;,
-    attribute: &#39;attribute&#39;,
-    hint: &#39;hint&#39;,
-    expression: &#39;expression&#39;,
-    scope: &#39;scope&#39;,
-    vm: &#39;vm&#39;
+    element: <span class="hljs-string">'element'</span>,
+    attribute: <span class="hljs-string">'attribute'</span>,
+    hint: <span class="hljs-string">'hint'</span>,
+    expression: <span class="hljs-string">'expression'</span>,
+    scope: <span class="hljs-string">'scope'</span>,
+    vm: <span class="hljs-string">'vm'</span>
   };
 
-  return Ctrl;
+  <span class="hljs-keyword">return</span> Ctrl;
 }());
-</pre>
-  </sf-collapse>
-</div>
-
+</code></pre>
+ </sf-collapse> 
 <h3 id="lifecycle">Lifecycle</h3>
 <p>An attribute&#39;s life begins with a <code>constructor</code> call. In addition, it can define
 two lifecycle methods: <code>onPhase</code> and <code>onDestroy</code>.</p>
@@ -196,10 +201,50 @@ can use this as a chance to free memory or perform other cleanup tasks. Example:
 
       </div>
 
-      <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>
+      <div href-active.active class="doc-sidenav" class="flex-1" style="min-width: 8em">
+        <a href>Overview</a>
+<a href="quickstart/">Quickstart</a>
+<a href="component/">Component</a>
+<a href="attribute/">Attribute</a>
+<a href="mold/">Mold</a>
+<a href="databinding/">Databinding</a>
+<a href="bootstrapping/">Bootstrapping</a>
+<a href="if/"><code>if</code></a>
+<a href="for/"><code>for</code></a>
+<a href="let/"><code>let</code></a>
+<a href="on/"><code>on</code></a>
+<a href="class/"><code>class</code></a>
+<a href="ref/"><code>ref</code></a>
+<a href="todo/">demo</a>
+<!-- TODO section on component interoperation -->
+<!-- TODO separate section on dependency assignment -->
+<a href="https://gitter.im/Mitranim/atril?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge" target="_blank">
+  <img src="https://badges.gitter.im/Join%20Chat.svg">
+</a>
+
+      </div>
     </div>
 
-    <sf-footer></sf-footer>
+    <sf-footer>
+  <sf-footer-body>
+    <div class="flex-1 flex flex-column items-start">
+      <span>
+        2015
+        <a href="http://mitranim.com" target="_blank">Mitranim</a>
+        (<a href="https://github.com/Mitranim/atril/blob/master/LICENSE" target="_blank">MIT licensed</a>)
+      </span>
+    </div>
+    <div class="flex-1 flex flex-column items-center">
+      <a class="flex items-center" href="https://github.com/Mitranim/atril" target="_blank">
+        <sf-icon class="github-blue" style="font-size: 2em"></sf-icon>
+        Source at GitHub
+      </a>
+    </div>
+    <div class="flex-1 flex flex-column items-end">
+      <sf-icon class="arrow-up pointer fade" onclick="scrollTo(0, 0)"></sf-icon>
+    </div>
+  </sf-footer-body>
+</sf-footer>
   </body>
 
   <noscript>
