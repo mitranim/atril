@@ -1,7 +1,7 @@
 ## Attribute
 
 <div class="info pad decorate-links">
-  <p>Quicklinks:</p>
+  <p>Quicklinks</p>
   <ul>
     <li><a href="attribute/#basics">Basics</a></li>
     <li><a href="attribute/#contextual-dependencies">Contextual Dependencies</a></li>
@@ -24,8 +24,8 @@ custom attributes very flexible and ensures no conflict with other attributes.
 Here's an example attribute. This is the entire implementation of the built-in
 `class.*` binding.
 
-<div class="code-pair">
-<pre highlight.typescript>
+<!--: <div class="code-pair"> :-->
+```typescript
 import {Attribute, assign} from 'atril';
 
 @Attribute({attributeName: 'class'})
@@ -42,9 +42,9 @@ class Ctrl {
     else this.element.classList.remove(this.hint);
   }
 }
-</pre>
+```
 
-<pre highlight.html>
+```html
 <div let.checked="true">
   <!-- Set class `info` when `checked` is true
        and `error` otherwise. -->
@@ -56,8 +56,8 @@ class Ctrl {
 
   </label>
 </div>
-</pre>
-</div>
+```
+<!--: </div> :-->
 
 <template doc-demo. let.checked="true">
   <div class="pad-v">
@@ -89,8 +89,8 @@ A custom attribute has the following contextual dependencies:
 
 Example:
 
-<div class="code-pair">
-<pre highlight.typescript>
+<!--: <div class="code-pair"> :-->
+```typescript
 import {Attribute, assign} from 'atril';
 
 @Attribute({attributeName: 'my-attr'})
@@ -117,21 +117,20 @@ class Ctrl {
     console.log(vm);
   }
 }
-</pre>
+```
 
-<pre highlight.html>
+```html
 <hello-world my-attr.calc="2 + 2"></hello-world>
-</pre>
-</div>
+```
+<!--: </div> :-->
 
-<div>
-  <sf-collapse class="info">
-    <input id="assign-es5" type="checkbox">
-    <label for="assign-es5" class="pad">
-      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-      Click for ES5 version.
-    </label>
-<pre highlight.javascript>
+<!--: <sf-collapse class="info">
+  <input id="assign-es5" type="checkbox">
+  <label for="assign-es5" class="pad">
+    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+    Click for ES5 version.
+  </label> :-->
+```javascript
 var Attribute = require('atril').Attribute;
 
 Attribute({attributeName: 'my-attr'})(function() {
@@ -149,9 +148,8 @@ Attribute({attributeName: 'my-attr'})(function() {
 
   return Ctrl;
 }());
-</pre>
-  </sf-collapse>
-</div>
+```
+<!--: </sf-collapse> :-->
 
 ### Lifecycle
 

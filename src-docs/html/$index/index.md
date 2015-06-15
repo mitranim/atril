@@ -1,31 +1,33 @@
-<doc-features>
-  <a href="#elements-and-attributes" class="text-darkorange">
-    <div>Custom elements and attributes</div>
-    <sf-icon svg-icon.="cubes"></sf-icon>
-  </a>
-  <a href="#change-detection" class="text-brown">
-    <div>Automatic change detection</div>
-    <sf-icon svg-icon.="magic"></sf-icon>
-  </a>
-  <a href="#databinding" class="text-darkred">
-    <div>Two-way and one-way databinding</div>
-    <sf-icon svg-icon.="arrows-h"></sf-icon>
-  </a>
-</doc-features>
-<doc-features>
-  <a href="#virtual-dom" class="text-yellow">
-    <div>Fast rendering with the virtual DOM</div>
-    <sf-icon svg-icon.="bolt"></sf-icon>
-  </a>
-  <a href="#mpa" class="text-info">
-    <div>Multi-page application friendly</div>
-    <sf-icon svg-icon.="sitemap"></sf-icon>
-  </a>
-  <a href="#light" class="text-warning">
-    <div>Lightweight (47KB)</div>
-    <sf-icon svg-icon.="paper-plane-o"></sf-icon>
-  </a>
-</doc-features>
+<div class="space-out-v">
+  <doc-features>
+    <a href="#elements-and-attributes" class="text-darkorange">
+      <div>Custom elements and attributes</div>
+      <sf-icon svg-icon.="cubes"></sf-icon>
+    </a>
+    <a href="#change-detection" class="text-brown">
+      <div>Automatic change detection</div>
+      <sf-icon svg-icon.="magic"></sf-icon>
+    </a>
+    <a href="#databinding" class="text-darkred">
+      <div>Two-way and one-way databinding</div>
+      <sf-icon svg-icon.="arrows-h"></sf-icon>
+    </a>
+  </doc-features>
+  <doc-features>
+    <a href="#virtual-dom" class="text-yellow">
+      <div>Fast rendering with the virtual DOM</div>
+      <sf-icon svg-icon.="bolt"></sf-icon>
+    </a>
+    <a href="#mpa" class="text-info">
+      <div>Multi-page application friendly</div>
+      <sf-icon svg-icon.="sitemap"></sf-icon>
+    </a>
+    <a href="#light" class="text-warning">
+      <div>Lightweight (47KB)</div>
+      <sf-icon svg-icon.="paper-plane-o"></sf-icon>
+    </a>
+  </doc-features>
+</div>
 
 <p class="info pad">
   <strong>Note:</strong> this documentation shows features from
@@ -34,49 +36,47 @@
   include some ES5 examples as well.
 </p>
 
-<sf-article class="pad">
-  <h1 id="elements-and-attributes">
-    <sf-icon svg-icon.="cubes" class="inline"></sf-icon>
-    Custom Elements and Attributes
-  </h1>
+<h1 id="elements-and-attributes">
+  <sf-icon svg-icon.="cubes" class="inline"></sf-icon>
+  <span>Custom Elements and Attributes</span>
+</h1>
 
-<template markdown.>
 The framework has three types of building blocks.
 
 * [`Component`](component/): provides a viewmodel and a view.
 
-<pre highlight.html>
+```html
 <my-custom-element></my-custom-element>
-</pre>
+```
 
 * [`Attribute`](attribute/): operates on the viewmodel and the real DOM.
 
-<pre highlight.html>
+```html
 <input bind.disabled="isDisabled">
-</pre>
+```
 
 * [`Mold`](mold/): mutates a part of the virtual DOM in response to the viewmodel changes.
 
-<div class="code-pair">
-<pre highlight.html>
+<!--: <div class="code-pair"> :-->
+```html
 <template if.="allowed">
   <button>submit</button>
 </template>
-</pre>
-<pre highlight.html>
+```
+
+```html
 <button if.="allowed">submit</button>
-</pre>
-</div>
+```
+<!--: </div> :-->
 
 ## Example Component
 
 A custom element (usually called _component_) is a combination of a _view model_
 (data and logic) with a _view_ (a template). `atril` renders the view and
 automatically updates it whenever the data changes.
-</template>
 
-<div class="code-pair">
-<pre highlight.typescript>
+<!--: <div class="code-pair"> :-->
+```typescript
 // Viewmodel.
 
 import {Component} from 'atril';
@@ -88,9 +88,9 @@ class ViewModel {
   name = 'world';
   static viewUrl = 'app/hello-world/hello-world.html';
 }
-</pre>
+```
 
-<pre highlight.html>
+```html
 <!-- Template. -->
 
 <!-- Updates automatically -->
@@ -105,27 +105,27 @@ class ViewModel {
 <!-- One-way databinding with no feedback;
      on.input is needed to detect user activity -->
 <input bind.value="name" on.input>
-</pre>
-</div>
+```
+<!--: </div> :-->
 
-<pre highlight.html>
+```html
 <!-- Usage in HTML -->
 
 <hello-world></hello-world>
-</pre>
+```
 
 <template doc-demo.>
   <hello-world></hello-world>
 </template>
 
-<sf-collapse class="info">
+<!--: <sf-collapse class="info">
   <input id="es5-example" type="checkbox">
   <label for="es5-example" class="pad">
     <sf-icon svg-icon.="question-circle" class="inline text-info"></sf-icon>
     Click to see example with EcmaScript 5 and CommonJS.
   </label>
-<div class="code-pair">
-<pre highlight.javascript>
+  <div class="code-pair"> :-->
+```javascript
 var Component = require('atril').Component;
 
 Component({
@@ -137,9 +137,9 @@ function ViewModel() {
 }
 
 ViewModel.viewUrl = 'app/hello-world/hello-world.html';
-</pre>
+```
 
-<pre highlight.html>
+```html
 <!-- Updates automatically -->
 <h1>Hello, {{name}}!</h1>
 
@@ -152,17 +152,15 @@ ViewModel.viewUrl = 'app/hello-world/hello-world.html';
 <!-- One-way databinding with no feedback;
      on.input is needed to detect user activity -->
 <input bind.value="name" on.input>
-</pre>
-</div>
-</sf-collapse>
-</sf-article>
+```
+  <!--: </div>
+</sf-collapse> :-->
 
-<sf-article class="pad">
-  <h1 id="change-detection">
-    <sf-icon svg-icon.="magic" class="inline"></sf-icon>
-    Automatic Change Detection
-  </h1>
-<template markdown.>
+<h1 id="change-detection">
+  <sf-icon svg-icon.="magic" class="inline"></sf-icon>
+  <span>Automatic Change Detection</span>
+</h1>
+
 Much like Angular 2, `atril` uses <a href="https://github.com/angular/zone.js"
 target="_blank"><code>zone.js</code></a> to automatically detect relevant
 events. When something happens, the framework reflows the virtual DOM, updating
@@ -173,49 +171,36 @@ Forget about event subscriptions, manual re-renders (ReactJS), digest cycles
 
 As a side benefit, this architecture allows you to bind to _expressions_ rather
 than just properties. See databinding for details.
-</template>
-</sf-article>
 
-<sf-article class="pad">
-  <h1 id="databinding">
-    <sf-icon svg-icon.="arrows-h" class="inline"></sf-icon>
-    Databinding
-  </h1>
-<template markdown.>
+<h1 id="databinding">
+  <sf-icon svg-icon.="arrows-h" class="inline"></sf-icon>
+  <span>Databinding</span>
+</h1>
+
 The framework has one-way and two-way databinding. It lets you automatically
 sync values to the view and vice versa. This includes properties of native DOM
 elements, and other custom elements in the view.
 
 See [Databinding](databinding/) for details.
-</template>
-</sf-article>
 
-<sf-article class="pad">
-  <h1 id="virtual-dom">
-    <sf-icon svg-icon.="bolt" class="inline"></sf-icon>
-    Virtual DOM
-  </h1>
+<h1 id="virtual-dom">
+  <sf-icon svg-icon.="bolt" class="inline"></sf-icon>
+  <span>Virtual DOM</span>
+</h1>
 
-<template markdown.>
-Similarly to ReactJS, `atril` maintains a virtual representation of each
-component's node tree. Updates to the viewmodel cause changes in the virtual
-tree. The framework diffs them with the live DOM and carefully updates the view.
+`atril` maintains a virtual representation of each component's node tree.
+Updates to the viewmodel cause changes in the virtual tree. The framework diffs
+them with the live DOM and carefully updates the view.
 
 This is primarily an implementation detail, and is done for internal
 consistency. However, this architecture should enable optimisations for high
 rendering performance, similar to ReactJS.
 
-(Note: this page is rendered with `atril`; it also uses third party libraries
-for markdown and code.)
-</template>
-</sf-article>
+<h1 id="mpa">
+  <sf-icon svg-icon.="sitemap" class="inline"></sf-icon>
+  <span>Multi-page Application Friendly</span>
+</h1>
 
-<sf-article class="pad">
-  <h1 id="mpa">
-    <sf-icon svg-icon.="sitemap" class="inline"></sf-icon>
-    Multi-page Application Friendly
-  </h1>
-<template markdown.>
 This framework is targeting websites over web applications. It's aimed at
 multi-page, document-oriented sites with server-side routing and large amounts
 of static content — in other words, the majority of the web.
@@ -231,19 +216,14 @@ certainly use them for any website, but at the moment of writing, they incur a
 significant performance and mental overhead for an MPA.
 
 Make a comparison and pick the right tool for the given use case.
-</template>
-</sf-article>
 
-<sf-article class="pad">
-  <h1 id="light">
-    <sf-icon svg-icon.="paper-plane-o" class="inline"></sf-icon>
-    Lightweight
-  </h1>
-<template markdown.>
+<h1 id="light">
+  <sf-icon svg-icon.="paper-plane-o" class="inline"></sf-icon>
+  <span>Lightweight</span>
+</h1>
+
 Despite its power, `atril` is simple at its core. The entire library is 47KB
 minified with dependencies. This includes 14KB of `zone.js`, which comes with
 a `Promise` polyfill. The framework has no other ES6 dependencies.
 
 Browser support: standards-compliant browsers; IE10 and above.
-</template>
-</sf-article>

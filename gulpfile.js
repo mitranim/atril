@@ -241,6 +241,8 @@ gulp.task('docs:html:compile', function() {
                     '<pre><code class="hljs $1">'))
     // Return the other files.
     .pipe(filterMd.restore())
+    // Unpack commented HTML parts.
+    .pipe($.replace(/<!--\s*:((?:[^:]|:(?!\s*-->))*):\s*-->/g, '$1'))
     // Render all html.
     .pipe($.statil({
       relativeDir: src.html,

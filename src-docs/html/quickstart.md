@@ -103,8 +103,8 @@ Navigate to this page in your browser.
 
 Create `src/app/todo-list/` with the following:
 
-<div class="code-pair">
-<pre highlight.typescript>
+<!--: <div class="code-pair"> :-->
+```typescript
 // src/app/todo-list/todo-list.ts
 
 import {Component} from 'atril';
@@ -131,25 +131,26 @@ class VM {
 
   static viewUrl = 'app/todo-list/todo-list.html';
 }
-</pre>
+```
 
-<pre highlight.html>
+```html
 <!-- src/app/todo-list/todo-list.html -->
 
-<todo-item bind.item="newItem" bind.is-new="true" on.add="add()"></todo-item>
+<todo-item bind.item="newItem" bind.is-new="true"
+           on.add="add()"></todo-item>
 
-<todo-item for.item.of="items" bind.item="item" on.remove="remove(item)"></todo-item>
-</pre>
-</div>
+<todo-item for.item.of="items" bind.item="item"
+           on.remove="remove(item)"></todo-item>
+```
+<!--: </div> :-->
 
-<div>
-  <sf-collapse class="info">
-    <input id="quickstart-es5" type="checkbox">
-    <label for="quickstart-es5" class="pad">
-      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-      Click for ES5 version.
-    </label>
-<pre highlight.javascript>
+<!--: <sf-collapse class="info">
+  <input id="quickstart-es5" type="checkbox">
+  <label for="quickstart-es5" class="pad">
+    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+    Click for ES5 version.
+  </label> :-->
+```javascript
 var Component = require('atril').Component;
 
 Component({tagName: 'todo-list'})(function() {
@@ -175,17 +176,16 @@ Component({tagName: 'todo-list'})(function() {
 
   return VM;
 }());
-</pre>
-  </sf-collapse>
-</div>
+```
+<!--: </sf-collapse> :-->
 
 This will display nothing, because we don't have a custom `todo-item` element
 yet. Let's create it.
 
 Make `src/app/todo-item/` with the following:
 
-<div class="code-pair">
-<pre highlight.typescript>
+<!--: <div class="code-pair"> :-->
+```typescript
 // src/app/todo-item/todo-item.ts
 
 import {Component, assign, bindable} from 'atril';
@@ -209,8 +209,9 @@ class VM {
 
   static viewUrl = 'app/todo-item/todo-item.html';
 }
-</pre>
-<pre highlight.html>
+```
+
+```html
 <!-- src/app/todo-item/todo-item.html -->
 
 <div class.success="item.completed" class.strikethrough="item.completed"
@@ -224,17 +225,16 @@ class VM {
   </form>
   <button on.click="remove()" if.="!isNew" svg-icon.="times"></button>
 </div>
-</pre>
-</div>
+```
+<!--: </div> :-->
 
-<div>
-  <sf-collapse class="info">
-    <input id="quickstart-es5-todo-item" type="checkbox">
-    <label for="quickstart-es5-todo-item" class="pad">
-      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-      Click for ES5 version.
-    </label>
-<pre highlight.javascript>
+<!--: <sf-collapse class="info">
+  <input id="quickstart-es5-todo-item" type="checkbox">
+  <label for="quickstart-es5-todo-item" class="pad">
+    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+    Click for ES5 version.
+  </label> :-->
+```javascript
 var Component = require('atril').Component;
 
 Component({tagName: 'todo-item'})(function() {
@@ -259,9 +259,8 @@ Component({tagName: 'todo-item'})(function() {
 
   return VM;
 }());
-</pre>
-  </sf-collapse>
-</div>
+```
+<!--: </sf-collapse> :-->
 
 <div>
   <sf-collapse class="info pad-ch">
@@ -299,7 +298,7 @@ atril.bootstrap();
 If the document isn't yet available, the framework will defer bootstrapping
 until it's loaded.
 
-Now open the page and see the component in action.
+Now open the page and see the component in action: [demo](todo/).
 
 ## Data Flow
 

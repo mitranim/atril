@@ -1,9 +1,10 @@
 ## Component
 
 <div class="info pad decorate-links">
-  <p>Quicklinks:</p>
+  <p>Quicklinks</p>
   <ul>
     <li><a href="component/#basics">Basics</a></li>
+    <li><a href="component/#view">View</a></li>
     <li><a href="component/#contextual-dependencies">Contextual Dependencies</a></li>
     <li><a href="component/#lifecycle">Lifecycle</a></li>
   </ul>
@@ -13,9 +14,8 @@ Synonymous with _custom element_. Combines a _view model_ (a data layer) with a
 _view_ (an HTML template used for every such element).
 
 The viewmodel class describes how to create a viewmodel object (VM for short)
-for each new element of this type. The VM stores arbitrary data and has methods
-that may be called from the view. Its acts as its view's local scope — a feature
-missing from the native DOM API.
+for each of these elements. The VM's data and methods are available in the view.
+It acts as the view's local scope — a feature missing from the native DOM API.
 
 A custom element is registered under a new tag name, and activated during
 [bootstrapping](bootstrapping/). Afterwards, `atril` manages the element,
@@ -24,8 +24,9 @@ automatically updating the view whenever the data changes.
 ### Basics
 
 Example custom element:
-<div class="code-pair">
-<pre highlight.typescript>
+
+<!--: <div class="code-pair"> :-->
+```typescript
 // Viewmodel.
 
 import {Component} from 'atril';
@@ -37,9 +38,9 @@ class ViewModel {
   name = 'world';
   static viewUrl = 'app/hello-world/hello-world.html';
 }
-</pre>
+```
 
-<pre highlight.html>
+```html
 <!-- Template. -->
 
 <!-- Updates automatically -->
@@ -54,28 +55,28 @@ class ViewModel {
 <!-- One-way databinding with no feedback;
      on.input is needed to detect user activity -->
 <input bind.value="name" on.input>
-</pre>
-</div>
+```
+<!--: </div> :-->
 
-<pre highlight.html>
+```html
 <!-- Usage in HTML -->
 
 <hello-world></hello-world>
-</pre>
+```
 
 <template doc-demo.>
   <hello-world></hello-world>
 </template>
 
-<div>
+<!--: <div>
   <sf-collapse class="info">
     <input id="es5-example" type="checkbox">
     <label for="es5-example" class="pad">
       <sf-icon svg-icon.="question-circle" class="inline text-info"></sf-icon>
       Click to see example with EcmaScript 5 and CommonJS.
     </label>
-    <div class="code-pair">
-<pre highlight.javascript>
+    <div class="code-pair"> :-->
+```javascript
 var Component = require('atril').Component;
 
 Component({
@@ -87,9 +88,9 @@ function ViewModel() {
 }
 
 ViewModel.viewUrl = 'app/hello-world/hello-world.html';
-</pre>
+```
 
-<pre highlight.html>
+```html
 <!-- Updates automatically -->
 <h1>Hello, {{name}}!</h1>
 
@@ -102,10 +103,86 @@ ViewModel.viewUrl = 'app/hello-world/hello-world.html';
 <!-- One-way databinding with no feedback;
      on.input is needed to detect user activity -->
 <input bind.value="name" on.input>
-</pre>
-    </div>
+```
+<!--:     </div>
   </sf-collapse>
-</div>
+</div> :-->
+
+### View
+
+Each custom element has an optional _view_, an HTML template. Given a component
+class `X`, the view can be provided in the following ways:
+
+* `X.view => string`
+* `X.viewUrl => string`
+* `X.view => Promise => string`
+
+#### `X.view => string`
+
+```typescript
+@Component({tagName: 'my-element'})
+class X {
+  static view = `
+    <p>Hello {{name}}!</p>
+    <input twoway.value="name">
+  `;
+}
+```
+
+This works well when importing views through the SystemJS [text
+plugin](https://github.com/systemjs/plugin-text):
+
+```typescript
+import view from './my-element.html!text';
+
+@Component({tagName: 'my-element'})
+class X {
+  static view = view;
+}
+```
+
+#### `X.viewUrl => string`
+
+Primary method of view loading. The framework automatically loads the view by
+the given URL, then activates the component once the view is available.
+
+```typescript
+@Component({tagName: 'my-element'})
+class X {
+  static viewUrl = 'app/my-element/my-element.html';
+}
+```
+
+Loaded views are synchronously available through the `viewCache` utility exposed
+by the framework. It can also load a hitherto unavailable view, or set a view
+by the given URL without loading it over the network. For production, views
+should be converted to JS and precached in the `viewCache`. If you're building
+with `gulp`, use
+[`gulp-atril-html2js`](https://github.com/Mitranim/gulp-atril-html2js) to do
+this for you.
+
+The build system for this documentation site includes view preprocessing;
+you're welcome to use it as an example.
+([[1]](https://github.com/Mitranim/atril/blob/master/gulpfile.js))
+
+#### `X.view => Promise => string`
+
+You can return a promise that resolves to a view. Example using
+[fetch](https://github.com/github/fetch):
+
+```typescript
+let viewPromise = null;
+
+@Component({tagName: 'my-element'})
+class X {
+  static get view() {
+    return viewPromise || fetch('/my-secret-view-url')
+      .then(response => viewPromise = response.text());
+  }
+}
+```
+
+This lets you load views asynchronously through custom means.
 
 ### Contextual Dependencies
 
@@ -142,14 +219,14 @@ class VM {
 }
 ```
 
-<div>
+<!--: <div>
   <sf-collapse class="info">
     <input id="assign-es5" type="checkbox">
     <label for="assign-es5" class="pad">
       <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
       Click for ES5 version.
-    </label>
-<pre highlight.javascript>
+    </label> :-->
+```javascript
 var Component = require('atril').Component;
 
 Component({tagName: 'my-element'})(function() {
@@ -161,9 +238,9 @@ Component({tagName: 'my-element'})(function() {
 
   return VM;
 }());
-</pre>
-  </sf-collapse>
-</div>
+```
+<!--:   </sf-collapse>
+</div> :-->
 
 ### Lifecycle
 

@@ -1,8 +1,7 @@
-<template markdown.>
 ## Mold
 
 <div class="info pad decorate-links">
-  <p>Quicklinks:</p>
+  <p>Quicklinks</p>
   <ul>
     <li><a href="mold/#basics">Basics</a></li>
     <li><a href="mold/#mutation">Mutation</a></li>
@@ -17,10 +16,9 @@ between custom elements that can only _define_ the view, and custom attributes
 that can only modify _existing_ DOM nodes.
 
 In essense, a mold gives you "admin access" to the part of the virtual DOM
-enclosed by it. Example:
-</template>
+enclosed by it. Example of a mold in practice:
 
-<pre highlight.html>
+```html
 <label>
   <input twoway.checked="checked" type="checkbox">
   <span>Toggle</span>
@@ -30,7 +28,7 @@ enclosed by it. Example:
 <template if.="checked">
   <p>I'm included into the DOM conditionally.</p>
 </template>
-</pre>
+```
 
 <template doc-demo.>
 <div>
@@ -44,7 +42,6 @@ enclosed by it. Example:
 </template>
 </template>
 
-<template markdown.>
 The mold (in this case, the controller of the [`if.`](if/) attribute) decides
 what to with the content caught inside the template tag (in this case, the
 `<p>`). It could ignore the content, clone and multiply it, or replace it with
@@ -55,23 +52,40 @@ is met, and removes it when not.
 
 ### Basics
 
+First, let's understand the
+HTML5 [`template` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template).
+When HMTL is parsed into the virtual DOM, the contents of each `template` tag
+are put into the special property `content`. `atril` shims this behaviour in
+non-supporting browsers when compiling the DOM.
+
+The mold controller (the class decorated with `@Mold`) has access to its virtual
+`template` element. During its `constructor` call or in the lifecycle method
+`onPhase` it has a chance to take the mold's initial content, perform arbitrary
+transformations, and append the result to the template element itself. The
+mold's "output" is the resulting `childNodes` of the template element.
+
+When a mold is constructed, and every time it's phased, the framework checks the
+template's contents to see if they need to be recompiled. Any custom elements,
+custom attributes, or molds in the output are automatically activated. Then the
+contents are synced to the real DOM. The template element itself is not included
+into the DOM.
+
 Let's implement a mold that compiles and outputs markdown. Using the demo
 project from [Quickstart](quickstart/), create a file `src/app/molds/to-
 markdown.ts` with the following.
-</template>
 
-<sf-collapse class="info">
+<!--: <sf-collapse class="info">
   <input id="<%= uniqId() %>" type="checkbox">
   <label for="<%= lastUniqId() %>" class="pad">
     <sf-icon svg-icon.="question-circle" class="inline text-info"></sf-icon>
     Expand code.
-  </label>
-<pre highlight.typescript>
+  </label> :-->
+```typescript
 import {Mold, assign} from 'atril';
 import marked from 'marked';
 
 @Mold({
-  attributeName: 'to-markdown'
+  attributeName: 'markdown-live'
 })
 class Ctrl {
   @assign element: HTMLTemplateElement;
@@ -108,20 +122,20 @@ class Ctrl {
     this.lastValue = value;
   }
 }
-</pre>
-</sf-collapse>
+```
+<!--: </sf-collapse> :-->
 
 Then use it in your view like so:
 
-<pre highlight.html>
+```html
 <textarea twoway.value="myContent"></textarea>
-<template to-markdown.="myContent"></template>
-</pre>
+<template markdown-live.="myContent"></template>
+```
 
 <template doc-demo.>
   <div class="flex space-out-h">
 <textarea twoway.value="value" class="flex-1 text-monospace">
-## Mold
+<!--:## Mold
 
 Molds let you modulate the structure of the virtual DOM. They fill the role between custom elements that can only _define_ the view, and custom attributes that can only modify _existing_ DOM nodes.
 
@@ -131,15 +145,14 @@ In essense, a mold gives you "admin access" to the part of the virtual DOM enclo
 <template if.="true">
   <p>I'm included into the DOM conditionally.</p>
 </template>
-```
+```:-->
 </textarea>
     <sf-article class="flex-1">
-      <template to-markdown.="value"></template>
+      <template markdown-live.="value"></template>
     </sf-article>
   </div>
 </template>
 
-<template markdown.>
 Why go through all this fiddly DOM manipulation? Wouldn't it be easier to just
 keep one element in the DOM and replace its `innerHTML` with the compiled
 results?
@@ -150,25 +163,23 @@ For plain markdown, it would be. However, there's more to it:
 * The mold output is not inert HTML. It's automatically compiled and activated.
 
 Let's see what happens if our markdown contains `atril` markup.
-</template>
 
 <template doc-demo.>
   <div class="flex space-out-h">
 <textarea twoway.value="value" class="flex-1 text-monospace" rows="8">
-<label>
+<!--:<label>
   <input twoway.value="text"
          placeholder="write something...">
 </label>
 
-{{text}}
+{{text}}:-->
 </textarea>
     <sf-article class="flex-1">
-      <template to-markdown.="value"></template>
+      <template markdown-live.="value"></template>
     </sf-article>
   </div>
 </template>
 
-<template markdown.>
 The contents of the `template` tag were automatically compiled by the framework
 and activated just like a normal part of the view.
 
@@ -179,15 +190,14 @@ previous example, we used a separate input to generate the markdown. Now let's
 put it directly into the template.
 
 Here's the implementation:
-</template>
 
-<sf-collapse class="info">
+<!--: <sf-collapse class="info">
   <input id="<%= uniqId() %>" type="checkbox">
   <label for="<%= lastUniqId() %>" class="pad">
     <sf-icon svg-icon.="question-circle" class="inline text-info"></sf-icon>
     Expand code.
-  </label>
-<pre highlight.typescript>
+  </label> :-->
+```typescript
 import {Mold, assign} from 'atril';
 import marked from 'marked';
 
@@ -215,32 +225,31 @@ class Ctrl {
     }
   }
 }
-</pre>
-</sf-collapse>
+```
+<!--: </sf-collapse> :-->
 
-<p>Use it in HTML like so:</p>
+Use it in HTML like so:
 
-<pre highlight.html>
+```html
 <template markdown.>
 ## Header
 
 * list item
 * list item
 </template>
-</pre>
+```
 
-<p>The mold automatically converts its content into markdown, and here's the result:</p>
+The mold automatically converts its content into markdown, and here's the result:
 
 <template doc-demo.>
-<template markdown.>
+<!--: <template markdown.>
 ## Header
 
 * list item
 * list item
-</template>
+</template> :-->
 </template>
 
-<template markdown.>
 ### Optimisation
 
 By default, the framework automatically recompiles the mold's output (the
@@ -253,31 +262,20 @@ subtree. If your mold reuses some parts of its virtual DOM, leaving them
 unchanged between phases, you can "hint" the framework not to rescan them.
 
 Excerpt from the `if.` implementation:
-</template>
 
-<pre highlight.typescript>
-import {Mold, assign, Meta} from './atril';
-
+```typescript
 @Mold({attributeName: 'if'})
 class If {
-  @assign element: TemplateElement;
+  /* ... */
 
   constructor() {
-    let container = this.element.content;
-    while (container.hasChildNodes()) {
-      let child = container.removeChild(container.lastChild);
-      Meta.getOrAddMeta(child).isDomImmutable = true;  // ⟸
       /* ... */
-    }
-  }
-
-  onPhase(): void {
-    /* ... */
+      Meta.getOrAddMeta(child).isDomImmutable = true;
+      /* ... */
   }
 }
-</pre>
+```
 
-<template markdown.>
 The `Meta` object is a metadata container associated with each node in the
 virtual DOM tree. The framework adds them automatically when compiling nodes,
 but you can also add a meta to a newly created node.
@@ -289,9 +287,7 @@ updates like text interpolations.
 
 By hinting which mold children won't change, you conserve a considerable amount
 of performance.
-</template>
 
-<template markdown.>
 ### Contextual Dependencies
 
 The framework uses a variant of dependency injection — _dependency assignment_ —
@@ -310,10 +306,9 @@ A mold has the following contextual dependencies:
   if the mold is not inside a custom element's view).
 
 Example:
-</template>
 
-<div class="code-pair">
-<pre highlight.typescript>
+<!--: <div class="code-pair"> :-->
+```typescript
 import {Mold, assign} from 'atril';
 
 @Mold({attributeName: 'my-mold'})
@@ -337,21 +332,20 @@ class Ctrl {
     console.log(scope);
   }
 }
-</pre>
+```
 
-<pre highlight.html>
+```html
 <div my-mold.calc="2 + 2"></div>
-</pre>
-</div>
+```
+<!--: </div> :-->
 
-<div>
-  <sf-collapse class="info">
-    <input id="assign-es5" type="checkbox">
-    <label for="assign-es5" class="pad">
-      <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
-      Click for ES5 version.
-    </label>
-<pre highlight.javascript>
+<!--: <sf-collapse class="info">
+  <input id="assign-es5" type="checkbox">
+  <label for="assign-es5" class="pad">
+    <sf-icon svg-icon.="info-circle" class="inline text-info"></sf-icon>
+    Click for ES5 version.
+  </label> :-->
+```javascript
 var Mold = require('atril').Mold;
 
 Mold({attributeName: 'my-mold'})(function() {
@@ -368,11 +362,9 @@ Mold({attributeName: 'my-mold'})(function() {
 
   return Ctrl;
 }());
-</pre>
-  </sf-collapse>
-</div>
+```
+<!--: </sf-collapse> :-->
 
-<template markdown.>
 ### Lifecycle
 
 A mold's life begins with a `constructor` call. In addition, it can define two
@@ -382,7 +374,7 @@ lifecycle methods: `onPhase` and `onDestroy`.
 
 This is called whenever the framework reflows the tree of components and
 bindings in response to user activity. For an example, see the
-[`to-markdown.*`](mold/#basics) implementation above.
+[`markdown-live.*`](mold/#basics) implementation above.
 
 * `onDestroy`
 
@@ -401,4 +393,3 @@ class Ctrl {
   }
 }
 ```
-</template>

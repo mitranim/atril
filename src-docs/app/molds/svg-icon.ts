@@ -20,14 +20,14 @@ class Ctrl {
     let view = viewCache.get(path);
     if (typeof view === 'string') this.commit(view);
     else {
-      viewCache.load(path).then(view => this.commit(view));
+      viewCache.load(path).then(view => {this.commit(view)});
     }
   }
 
   commit(view: string): void {
     let child = <HTMLElement>this.content.firstChild;
     this.element.appendChild(this.content.removeChild(child));
-    if (child.tagName !== 'sf-icon') child.classList.add('sf-icon');
+    if (child.tagName !== 'SF-ICON') child.classList.add('sf-icon');
     child.innerHTML = view;
   }
 }

@@ -24,17 +24,19 @@
   </head>
 
   <body>
-    <doc-banner></doc-banner>
+    <%= $include('$index/banner', $) %>
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 space-out-v" style="padding: 0 1rem">
         <%= $content || $include('$index/index', $) %>
       </div>
 
-      <doc-sidenav class="flex-1" style="min-width: 8em"></doc-sidenav>
+      <div href-active.active class="doc-sidenav" class="flex-1" style="min-width: 8em">
+        <%= $include('$index/sidenav', $) %>
+      </div>
     </div>
 
-    <sf-footer></sf-footer>
+    <%= $include('$index/footer', $) %>
   </body>
 
   <noscript>

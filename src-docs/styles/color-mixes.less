@@ -32,8 +32,8 @@ p, .decorate-links {
   & when not (@color = @sf-base-text-color) {
     @c: hsl(hue(@color), saturation(@color), 75% - luma(contrast(@sf-base-text-color)) / 2);
     .sf-shift-color(fill, @c, @perc);
-    // Disable background for svg-icons.
-    &[svg-icon] {background: none}
+    // // Disable background for svg-icons.
+    // &[svg-icon] {background: none}
   }
 }
 

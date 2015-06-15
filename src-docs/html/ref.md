@@ -7,10 +7,10 @@ of things in the view.
 
 Assigns the element as `X`.
 
-<pre highlight.html>
+```html
 <p ref.="p">Reference me!</p>
 <p>{{p.outerHTML}}</p>
-</pre>
+```
 
 <template doc-demo.>
 <p ref.="p">Reference me!</p>
@@ -21,10 +21,10 @@ Assigns the element as `X`.
 
 Assigns the element's viewmodel as `X`.
 
-<pre highlight.html>
+```html
 <hello-world ref.vm="viewmodel" style="display: none"></hello-world>
 <p>{{viewmodel.name}}</p>
-</pre>
+```
 
 <template doc-demo.>
 <hello-world ref.vm="viewmodel" style="display: none"></hello-world>

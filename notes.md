@@ -1,7 +1,3 @@
-For molds, demo how to make a live markdown component, and how to optimise it
-for speed through the isDomImmutable convention (unlike `if.`, this property
-will need to be set on the state of the template itself).
-
 # Possible performance optimisations
 
 `for.*` keeps references to unused virtual nodes for fast reuse. This is a

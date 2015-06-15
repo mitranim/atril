@@ -8,16 +8,17 @@ listen to any events, not just the standard ones.
 
 Example:
 
-<div class="code-pair">
-<pre highlight.html>
+<!--: <div class="code-pair"> :-->
+```html
 <!-- Outer component -->
 <inner-component on.my-event="console.log($event.detail)"></inner-component>
-</pre>
-<pre highlight.html>
+```
+
+```html
 <!-- Inner component -->
 <button on.click="this.dispatchEvent(new CustomEvent('my-event', 'r-r-roar'))"></button>
-</pre>
-</div>
+```
+<!--: </div> :-->
 
 When clicked, the outer component will log `r-r-roar`.
 

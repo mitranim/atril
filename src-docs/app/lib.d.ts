@@ -20,12 +20,8 @@ declare module 'highlightjs' {
 }
 
 declare module 'marked' {
-  interface Marked {
-    (source: string): string;
-    setOptions(options: any): void;
-  }
-  var marked: Marked;
-  export default marked;
+  var x: any;
+  export default x;
 }
 
 interface Promise {

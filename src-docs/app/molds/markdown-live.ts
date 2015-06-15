@@ -2,7 +2,7 @@ import {Mold, assign} from 'atril';
 import marked from 'marked';
 
 @Mold({
-  attributeName: 'to-markdown'
+  attributeName: 'markdown-live'
 })
 class Ctrl {
   @assign element: HTMLTemplateElement;

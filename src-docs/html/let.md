@@ -11,21 +11,22 @@ that doesn't exist on the viewmodel, it throws an error.
 
 Example:
 
-<div class="code-pair">
-<pre highlight.typescript>
+<!--: <div class="code-pair"> :-->
+```typescript
 class VM {
   constructor() {
     console.log("I don't know what eidolon means");
   }
 }
-</pre>
-<pre highlight.html>
+```
+
+```html
 <div let.eidolon="''">
   <input on.input="eidolon = this.value">
   <p>{{eidolon}}</p>
 </div>
-</pre>
-</div>
+```
+<!--: </div> :-->
 
 Without `let` or an explicit property definition in the class, this would throw
 a missing reference error.
@@ -33,16 +34,16 @@ a missing reference error.
 `let` is implemented as a mold, so you can use it on a `template` tag (only the
 contents are included into the DOM).
 
-<pre highlight.html>
+```html
 <template let.eidolon="''">
   <input on.input="eidolon = this.value">
   <p>{{eidolon}}</p>
 </template>
-</pre>
+```
 
 <template doc-demo.>
   <template let.eidolon="''">
-    <input on.input="eidolon = this.value">
+    <input on.input="eidolon = this.value" placeholder="I don't throw an error!">
     <p>{{eidolon}}</p>
   </template>
 </template>
