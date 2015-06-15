@@ -1,6 +1,6 @@
 import {Mold, assign} from 'atril';
 
-@Mold({attributeName: 'href-active'})
+@Mold({attributeName: 'mark-href'})
 class Ctrl {
   @assign element: HTMLTemplateElement;
   @assign hint: string;

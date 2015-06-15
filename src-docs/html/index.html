@@ -27,11 +27,11 @@
     <%= $include('$index/banner', $) %>
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
-      <div class="flex-5 space-out-v" style="padding: 0 1rem">
+      <div class="flex-5 order-1 space-out-v" style="padding: 0 1rem">
         <%= $content || $include('$index/index', $) %>
       </div>
 
-      <div href-active.active class="doc-sidenav" class="flex-1" style="min-width: 8em">
+      <div mark-href.active class="doc-sidenav flex-1" style="min-width: 8em">
         <%= $include('$index/sidenav', $) %>
       </div>
     </div>

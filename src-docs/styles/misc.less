@@ -22,8 +22,6 @@ ul {
   list-style-type: circle;
 }
 
-.narrow-inverse {.narrow-inverse()}
-
 /**
  * Corrections to monospace styling.
  */
@@ -37,8 +35,6 @@ pre {padding: 0}
   background-color: @sf-base-text-color;
   color: @sf-base-background-color;
 }
-
-.block {display: block}
 
 /**
  * Shadow at the top.
@@ -55,23 +51,6 @@ body::before {
   right: 0;
   .sf-shadow-minor();
   z-index: @sf-z-index-navbar + 1;
-}
-
-.space-out-h {
-  > *:not(:last-child) {
-    margin-right: @sf-common-margin / 2;
-  }
-  > *:not(:first-child) {
-    margin-left: @sf-common-margin / 2;
-  }
-}
-.space-out-h-05 {
-  > *:not(:last-child) {
-    margin-right: @sf-common-margin / 4;
-  }
-  > *:not(:first-child) {
-    margin-left: @sf-common-margin / 4;
-  }
 }
 
 // Checkbox offset.

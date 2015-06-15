@@ -1,0 +1,31 @@
+/**
+ * Geometry rules.
+ */
+
+.narrow-inverse {.narrow-inverse()}
+
+.block {display: block}
+
+.space-out-h {
+  > *:not(:last-child) {
+    margin-right: @sf-common-margin / 2;
+  }
+  > *:not(:first-child) {
+    margin-left: @sf-common-margin / 2;
+  }
+}
+.space-out-h-05 {
+  > *:not(:last-child) {
+    margin-right: @sf-common-margin / 4;
+  }
+  > *:not(:first-child) {
+    margin-left: @sf-common-margin / 4;
+  }
+}
+
+.order-1 {order: 1}
+.order-2 {order: 2}
+.order-3 {order: 3}
+.order-4 {order: 4}
+.order-5 {order: 5}
+.order-6 {order: 6}

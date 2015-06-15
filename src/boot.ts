@@ -120,25 +120,16 @@ function createRootAt(element: Element, VM?: ComponentClass): Root {
   let root = new Root();
   root.real = element;
 
+  let virtual = <Element>utils.cloneDeep(element);
+  let meta = Meta.addRootMeta(virtual, element);
+
   if (VM) {
-    let virtual: Element = (<any>element).cloneNode(true);
-    let meta = Meta.addRootMeta(virtual, element);
     meta.VM = VM;
     meta.view = new View(VM);
     // view should take care of transclusion
     meta.view.tryToCompile(virtual);
-    root.virtual = virtual;
-  }
-  // If we're instantiating a non-component, move its real child nodes to the
-  // virtual DOM.
-  else {
-    let virtual = element.cloneNode();
-    while (element.hasChildNodes()) {
-      virtual.appendChild(element.removeChild(element.firstChild));
-    }
-    Meta.addRootMeta(virtual, element);
-    root.virtual = virtual;
   }
 
+  root.virtual = virtual;
   return root;
 }
