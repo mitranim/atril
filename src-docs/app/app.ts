@@ -2,6 +2,7 @@ import {bootstrap} from 'atril';
 
 import 'config';
 import 'views';
+import 'attributes/all';
 import 'molds/all';
 import 'hello-world/hello-world';
 // import 'inner-component/inner-component';

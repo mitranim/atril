@@ -67,6 +67,20 @@ label > input[type=checkbox] {
   }
 }
 
+// Heading anchor icon.
+.sf-h({
+  .heading-anchor {
+    margin-left: @sf-common-margin / 2;
+    visibility: hidden;
+    opacity: 0;
+    .sf-common-transitions(~'visibility, opacity');
+  }
+  &:hover .heading-anchor, .heading-anchor:hover {
+    visibility: visible;
+    opacity: inherit;
+  }
+});
+
 /**
  * Misc components.
  */

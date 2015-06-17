@@ -15,8 +15,13 @@ Molds let you modulate the structure of the virtual DOM. They fill the  role
 between custom elements that can only _define_ the view, and custom attributes
 that can only modify _existing_ DOM nodes.
 
-In essense, a mold gives you "admin access" to the part of the virtual DOM
-enclosed by it. Example of a mold in practice:
+A mold is a combination of a `template` tag with a custom attribute. It can be
+used as a `template` (enclosing some content). As a shortcut, you can also use
+it as an attribute on a normal element; in this case it's automatically expanded
+into a `template`.
+
+In essense, a mold has "admin access" to the part of the virtual DOM enclosed by
+it. Example of a mold in practice:
 
 ```html
 <label>

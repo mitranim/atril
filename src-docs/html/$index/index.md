@@ -36,9 +36,12 @@
   include some ES5 examples as well.
 </p>
 
-<h1 id="elements-and-attributes">
+<h1>
   <sf-icon svg-icon.="cubes" class="inline"></sf-icon>
   <span>Custom Elements and Attributes</span>
+  <a class="heading-anchor" autolink.="elements-and-attributes">
+    <sf-icon class="inline link"></sf-icon>
+  </a>
 </h1>
 
 The framework has three types of building blocks.
@@ -156,9 +159,12 @@ ViewModel.viewUrl = 'app/hello-world/hello-world.html';
   <!--: </div>
 </sf-collapse> :-->
 
-<h1 id="change-detection">
+<h1>
   <sf-icon svg-icon.="magic" class="inline"></sf-icon>
   <span>Automatic Change Detection</span>
+  <a class="heading-anchor" autolink.="change-detection">
+    <sf-icon class="inline link"></sf-icon>
+  </a>
 </h1>
 
 Much like Angular 2, `atril` uses <a href="https://github.com/angular/zone.js"
@@ -172,9 +178,12 @@ Forget about event subscriptions, manual re-renders (ReactJS), digest cycles
 As a side benefit, this architecture allows you to bind to _expressions_ rather
 than just properties. See databinding for details.
 
-<h1 id="databinding">
+<h1>
   <sf-icon svg-icon.="arrows-h" class="inline"></sf-icon>
   <span>Databinding</span>
+  <a class="heading-anchor" autolink.="databinding">
+    <sf-icon class="inline link"></sf-icon>
+  </a>
 </h1>
 
 The framework has one-way and two-way databinding. It lets you automatically
@@ -183,9 +192,12 @@ elements, and other custom elements in the view.
 
 See [Databinding](databinding/) for details.
 
-<h1 id="virtual-dom">
+<h1>
   <sf-icon svg-icon.="bolt" class="inline"></sf-icon>
   <span>Virtual DOM</span>
+  <a class="heading-anchor" autolink.="virtual-dom">
+    <sf-icon class="inline link"></sf-icon>
+  </a>
 </h1>
 
 `atril` maintains a virtual representation of each component's node tree.
@@ -196,9 +208,12 @@ This is primarily an implementation detail, and is done for internal
 consistency. However, this architecture should enable optimisations for high
 rendering performance, similar to ReactJS.
 
-<h1 id="mpa">
+<h1>
   <sf-icon svg-icon.="sitemap" class="inline"></sf-icon>
   <span>Multi-page Application Friendly</span>
+  <a class="heading-anchor" autolink.="mpa">
+    <sf-icon class="inline link"></sf-icon>
+  </a>
 </h1>
 
 This framework is targeting websites over web applications. It's aimed at
@@ -217,9 +232,12 @@ significant performance and mental overhead for an MPA.
 
 Make a comparison and pick the right tool for the given use case.
 
-<h1 id="light">
+<h1>
   <sf-icon svg-icon.="paper-plane-o" class="inline"></sf-icon>
   <span>Lightweight</span>
+  <a class="heading-anchor" autolink.="light">
+    <sf-icon class="inline link"></sf-icon>
+  </a>
 </h1>
 
 Despite its power, `atril` is simple at its core. The entire library is 47KB

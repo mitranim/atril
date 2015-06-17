@@ -4,7 +4,8 @@
     <input twoway.checked="item.completed" type="checkbox">
   </label>
   <form on.submit="add()" onsubmit="return false">
-    <input twoway.value="item.text" bind.disabled="item.completed" required>
+    <input twoway.value="item.text" bind.disabled="item.completed" required
+           placeholder="{{isNew ? 'Create a new task' : 'Edit the task'}}">
     <button if.="isNew" svg-icon.="plus"></button>
   </form>
   <button on.click="remove()" if.="!isNew" svg-icon.="times"></button>

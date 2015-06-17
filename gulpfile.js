@@ -74,6 +74,17 @@ var imports = {
  * marked rendering enhancements.
  */
 
+// Custom heading renderer func that adds an anchor.
+marked.Renderer.prototype.heading = function(text, level, raw) {
+  var id = this.options.headerPrefix + raw.toLowerCase().replace(/[^\w]+/g, '-');
+  return '<h' + level + '>'
+    + '<span>' + text + '</span>'
+    + '<a class="heading-anchor" autolink.="' + id + '">'
+    + '<sf-icon class="inline link"></sf-icon>'
+    + '</a>'
+    + '</h' + level + '>\n';
+};
+
 // Default link renderer func.
 var renderLink = marked.Renderer.prototype.link
 
