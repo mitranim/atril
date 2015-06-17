@@ -38,7 +38,7 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 order-1 space-out-v" style="padding: 0 1rem">
-        <h2 id="attribute">Attribute</h2>
+        <h2><span>Attribute</span><a class="heading-anchor" autolink.="attribute"><sf-icon class="inline link"></sf-icon></a></h2>
 <div class="info pad decorate-links">
   <p>Quicklinks</p>
   <ul>
@@ -55,7 +55,7 @@ entirely with attributes, with no special treatment from the core engine.</p>
 You can also add an optional <em>hint</em> after the dot to customise its behaviour,
 like <code>value</code> in <code>bind.value</code>. Most built-ins support various hints. This makes
 custom attributes very flexible and ensures no conflict with other attributes.</p>
-<h3 id="basics">Basics</h3>
+<h3><span>Basics</span><a class="heading-anchor" autolink.="basics"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>Here&#39;s an example attribute. This is the entire implementation of the built-in
 <code>class.*</code> binding.</p>
  <div class="code-pair"> 
@@ -98,7 +98,7 @@ custom attributes very flexible and ensures no conflict with other attributes.</
   </div>
 </template>
 
-<h3 id="contextual-dependencies">Contextual Dependencies</h3>
+<h3><span>Contextual Dependencies</span><a class="heading-anchor" autolink.="contextual-dependencies"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>The framework uses a variant of dependency injection — <em>dependency assignment</em> —
 to give you contextual dependencies for each attribute controller. To get hold
 of them, use the <code>@assign</code> decorator (ES7/TypeScript) or the static <code>assign</code>
@@ -173,7 +173,7 @@ Attribute({attributeName: <span class="hljs-string">'my-attr'</span>})(<span cla
 }());
 </code></pre>
  </sf-collapse> 
-<h3 id="lifecycle">Lifecycle</h3>
+<h3><span>Lifecycle</span><a class="heading-anchor" autolink.="lifecycle"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>An attribute&#39;s life begins with a <code>constructor</code> call. In addition, it can define
 two lifecycle methods: <code>onPhase</code> and <code>onDestroy</code>.</p>
 <ul>

@@ -38,7 +38,7 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 order-1 space-out-v" style="padding: 0 1rem">
-        <h2 id="component">Component</h2>
+        <h2><span>Component</span><a class="heading-anchor" autolink.="component"><sf-icon class="inline link"></sf-icon></a></h2>
 <div class="info pad decorate-links">
   <p>Quicklinks</p>
   <ul>
@@ -57,7 +57,7 @@ It acts as the view&#39;s local scope — a feature missing from the native DOM 
 <p>A custom element is registered under a new tag name, and activated during
 <a href="bootstrapping/">bootstrapping</a>. Afterwards, <code>atril</code> manages the element,
 automatically updating the view whenever the data changes.</p>
-<h3 id="basics">Basics</h3>
+<h3><span>Basics</span><a class="heading-anchor" autolink.="basics"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>Example custom element:</p>
  <div class="code-pair"> 
 <pre><code class="hljs lang-typescript"><span class="hljs-comment">// Viewmodel.</span>
@@ -132,7 +132,7 @@ ViewModel.viewUrl = <span class="hljs-string">'app/hello-world/hello-world.html'
      </div>
   </sf-collapse>
 </div> 
-<h3 id="view">View</h3>
+<h3><span>View</span><a class="heading-anchor" autolink.="view"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>Each custom element has an optional <em>view</em>, an HTML template. Given a component
 class <code>X</code>, the view can be provided in the following ways:</p>
 <ul>
@@ -140,7 +140,7 @@ class <code>X</code>, the view can be provided in the following ways:</p>
 <li><code>X.viewUrl =&gt; string</code></li>
 <li><code>X.view =&gt; Promise =&gt; string</code></li>
 </ul>
-<h4 id="-x-view-string-"><code>X.view =&gt; string</code></h4>
+<h4><span><code>X.view =&gt; string</code></span><a class="heading-anchor" autolink.="-x-view-string-"><sf-icon class="inline link"></sf-icon></a></h4>
 <pre><code class="hljs lang-typescript">@Component({tagName: <span class="hljs-string">'my-element'</span>})
 <span class="hljs-keyword">class</span> X {
   static view = `
@@ -158,7 +158,7 @@ plugin</a>:</p>
   static view = view;
 }
 </code></pre>
-<h4 id="-x-viewurl-string-"><code>X.viewUrl =&gt; string</code></h4>
+<h4><span><code>X.viewUrl =&gt; string</code></span><a class="heading-anchor" autolink.="-x-viewurl-string-"><sf-icon class="inline link"></sf-icon></a></h4>
 <p>Primary method of view loading. The framework automatically loads the view by
 the given URL, then activates the component once the view is available.</p>
 <pre><code class="hljs lang-typescript">@Component({tagName: <span class="hljs-string">'my-element'</span>})
@@ -176,7 +176,7 @@ this for you.</p>
 <p>The build system for this documentation site includes view preprocessing;
 you&#39;re welcome to use it as an example.
 (<a href="https://github.com/Mitranim/atril/blob/master/gulpfile.js" target="_blank">[1]</a>)</p>
-<h4 id="-x-view-promise-string-"><code>X.view =&gt; Promise =&gt; string</code></h4>
+<h4><span><code>X.view =&gt; Promise =&gt; string</code></span><a class="heading-anchor" autolink.="-x-view-promise-string-"><sf-icon class="inline link"></sf-icon></a></h4>
 <p>You can return a promise that resolves to a view. Example using
 <a href="https://github.com/github/fetch" target="_blank">fetch</a>:</p>
 <pre><code class="hljs lang-typescript"><span class="hljs-keyword">let</span> viewPromise = <span class="hljs-literal">null</span>;
@@ -190,7 +190,7 @@ you&#39;re welcome to use it as an example.
 }
 </code></pre>
 <p>This lets you load views asynchronously through custom means.</p>
-<h3 id="contextual-dependencies">Contextual Dependencies</h3>
+<h3><span>Contextual Dependencies</span><a class="heading-anchor" autolink.="contextual-dependencies"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>The framework uses a variant of dependency injection — <em>dependency assignment</em>
 — to give you contextual dependencies for each viewmodel. To get hold of them,
 use the <code>@assign</code> decorator (ES7/TypeScript) or the static <code>assign</code> property
@@ -238,7 +238,7 @@ Component({tagName: <span class="hljs-string">'my-element'</span>})(<span class=
 </code></pre>
    </sf-collapse>
 </div> 
-<h3 id="lifecycle">Lifecycle</h3>
+<h3><span>Lifecycle</span><a class="heading-anchor" autolink.="lifecycle"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>A component&#39;s life begins with a <code>constructor</code> call. In addition, it can define
 two lifecycle methods: <code>onPhase</code> and <code>onDestroy</code>.</p>
 <ul>

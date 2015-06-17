@@ -38,7 +38,7 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 order-1 space-out-v" style="padding: 0 1rem">
-        <h2 id="mold">Mold</h2>
+        <h2><span>Mold</span><a class="heading-anchor" autolink.="mold"><sf-icon class="inline link"></sf-icon></a></h2>
 <div class="info pad decorate-links">
   <p>Quicklinks</p>
   <ul>
@@ -53,8 +53,12 @@
 <p>Molds let you modulate the structure of the virtual DOM. They fill the  role
 between custom elements that can only <em>define</em> the view, and custom attributes
 that can only modify <em>existing</em> DOM nodes.</p>
-<p>In essense, a mold gives you &quot;admin access&quot; to the part of the virtual DOM
-enclosed by it. Example of a mold in practice:</p>
+<p>A mold is a combination of a <code>template</code> tag with a custom attribute. It can be
+used as a <code>template</code> (enclosing some content). As a shortcut, you can also use
+it as an attribute on a normal element; in this case it&#39;s automatically expanded
+into a <code>template</code>.</p>
+<p>In essense, a mold has &quot;admin access&quot; to the part of the virtual DOM enclosed by
+it. Example of a mold in practice:</p>
 <pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">label</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">twoway.checked</span>=<span class="hljs-value">"checked"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"checkbox"</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-title">span</span>&gt;</span>Toggle<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
@@ -83,7 +87,7 @@ what to with the content caught inside the template tag (in this case, the
 something else entirely.</p>
 <p>In this case, the <code>if.</code> attribute simply includes the content when the condition
 is met, and removes it when not.</p>
-<h3 id="basics">Basics</h3>
+<h3><span>Basics</span><a class="heading-anchor" autolink.="basics"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>First, let&#39;s understand the
 HTML5 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template" target="_blank"><code>template</code> element</a>.
 When HMTL is parsed into the virtual DOM, the contents of each <code>template</code> tag
@@ -204,7 +208,7 @@ automatically included into the correct place in the DOM.</li>
 
 <p>The contents of the <code>template</code> tag were automatically compiled by the framework
 and activated just like a normal part of the view.</p>
-<h3 id="mutation">Mutation</h3>
+<h3><span>Mutation</span><a class="heading-anchor" autolink.="mutation"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>More often you want to use a mold to modify <em>existing</em> virtual markup. In the
 previous example, we used a separate input to generate the markdown. Now let&#39;s
 put it directly into the template.</p>
@@ -262,7 +266,7 @@ put it directly into the template.</p>
 </template> 
 </template>
 
-<h3 id="optimisation">Optimisation</h3>
+<h3><span>Optimisation</span><a class="heading-anchor" autolink.="optimisation"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>By default, the framework automatically recompiles the mold&#39;s output (the
 contents of the <code>template</code> tag). If you create new parts of the virtual DOM
 that use <code>atril</code> features like custom elements, they will work automatically.</p>
@@ -291,7 +295,7 @@ to the inner DOM structure of that virtual element, and doesn&#39;t prevent DOM
 updates like text interpolations.</p>
 <p>By hinting which mold children won&#39;t change, you conserve a considerable amount
 of performance.</p>
-<h3 id="contextual-dependencies">Contextual Dependencies</h3>
+<h3><span>Contextual Dependencies</span><a class="heading-anchor" autolink.="contextual-dependencies"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>The framework uses a variant of dependency injection — <em>dependency assignment</em> —
 to give you contextual dependencies for each mold controller. To get hold of
 them, use the <code>@assign</code> decorator (ES7/TypeScript) or the static <code>assign</code>
@@ -360,7 +364,7 @@ Mold({attributeName: <span class="hljs-string">'my-mold'</span>})(<span class="h
 }());
 </code></pre>
  </sf-collapse> 
-<h3 id="lifecycle">Lifecycle</h3>
+<h3><span>Lifecycle</span><a class="heading-anchor" autolink.="lifecycle"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>A mold&#39;s life begins with a <code>constructor</code> call. In addition, it can define two
 lifecycle methods: <code>onPhase</code> and <code>onDestroy</code>.</p>
 <ul>

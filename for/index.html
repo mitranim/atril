@@ -38,7 +38,7 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 order-1 space-out-v" style="padding: 0 1rem">
-        <h2 id="-for-"><code>for.*</code></h2>
+        <h2><span><code>for.*</code></span><a class="heading-anchor" autolink.="-for-"><sf-icon class="inline link"></sf-icon></a></h2>
 <p>Clones an element over an iterable, making individual items available under the
 given key.</p>
 <pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">let.numbers</span>=<span class="hljs-value">"[1, 2, 3, 4, 5]"</span>&gt;</span>
@@ -81,7 +81,7 @@ given key.</p>
 iterable. Arrays and strings are iterated via <code>for (;;;)</code>, and hash tables are
 iterated via <code>for..in</code>. You can enforce one or the other via <code>for.X.of</code> and
 <code>for.X.in</code>.</p>
-<h3 id="-for-x-of-"><code>for.X.of</code></h3>
+<h3><span><code>for.X.of</code></span><a class="heading-anchor" autolink.="-for-x-of-"><sf-icon class="inline link"></sf-icon></a></h3>
 <pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">let.words</span>=<span class="hljs-value">"['one', 'two', 'three']"</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">for.word.of</span>=<span class="hljs-value">"words"</span>&gt;</span>{{<span>word</span>}}@{{<span>$index</span>}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
@@ -92,7 +92,7 @@ iterated via <code>for..in</code>. You can enforce one or the other via <code>fo
   </div>
 </template>
 
-<h3 id="-for-x-in-"><code>for.X.in</code></h3>
+<h3><span><code>for.X.in</code></span><a class="heading-anchor" autolink.="-for-x-in-"><sf-icon class="inline link"></sf-icon></a></h3>
 <pre><code class="hljs lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">let.words</span>=<span class="hljs-value">"{first: 'one', second: 'two', third: 'three'}"</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">for.word.in</span>=<span class="hljs-value">"words"</span>&gt;</span>{{<span>word</span>}}@{{<span>$index</span>}}<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>

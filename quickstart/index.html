@@ -38,7 +38,7 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 order-1 space-out-v" style="padding: 0 1rem">
-        <h2 id="quickstart">Quickstart</h2>
+        <h2><span>Quickstart</span><a class="heading-anchor" autolink.="quickstart"><sf-icon class="inline link"></sf-icon></a></h2>
 <p>The quickest way to get started is by using the source of <a href="https://github.com/Mitranim/atril" target="_blank">this very
 site</a> as your demo project.</p>
 <p>Clone and start it by running the following commands:</p>
@@ -51,13 +51,13 @@ npm start
 with <code>atril</code>. Ruffle through <code>src-docs/app</code> to see how to add custom components.</p>
 <p>The rest of this article assumes you have the app running, but we&#39;ll briefly
 overview some setup basics.</p>
-<h2 id="quicklinks">Quicklinks</h2>
+<h2><span>Quicklinks</span><a class="heading-anchor" autolink.="quicklinks"><sf-icon class="inline link"></sf-icon></a></h2>
 <ul>
 <li><a href="quickstart/#installation">Installation</a></li>
 <li><a href="quickstart/#build">Build</a></li>
 <li><a href="quickstart/#component">Component</a></li>
 </ul>
-<h2 id="installation">Installation</h2>
+<h2><span>Installation</span><a class="heading-anchor" autolink.="installation"><sf-icon class="inline link"></sf-icon></a></h2>
 <p>Get it with <code>npm</code> or <a href="http://jspm.io" target="_blank"><code>jspm</code></a>.</p>
 <pre><code class="hljs lang-sh">npm i --save atril
 <span class="hljs-comment"># or</span>
@@ -81,7 +81,7 @@ don&#39;t forget to star the project. :)</p>
 <span class="hljs-comment">// Import piecemeal</span>
 <span class="hljs-keyword">import</span> {Component} from <span class="hljs-string">'atril'</span>;
 </code></pre>
-<h2 id="build">Build</h2>
+<h2><span>Build</span><a class="heading-anchor" autolink.="build"><sf-icon class="inline link"></sf-icon></a></h2>
 <p>This is the typical folder structure for a project of this kind.</p>
 <pre><code class="hljs lang-sh">dist ─── ...
 src  ─┬─ app
@@ -101,7 +101,7 @@ into <code>dist</code>, and deploy that folder. <code>.html</code> views are con
 and included into the script bundle.</p>
 <p>The documentation repo includes tasks and scripts for production builds. See
 <code>package.json</code> and <code>gulpfile.js</code>.</p>
-<h2 id="component">Component</h2>
+<h2><span>Component</span><a class="heading-anchor" autolink.="component"><sf-icon class="inline link"></sf-icon></a></h2>
 <p>Let&#39;s make an obligatory todo demo — the &quot;hello world&quot; of custom elements.
 Assuming you have the site running, create <code>src/html/todo.html</code> with the
 following content:</p>
@@ -290,7 +290,7 @@ atril.bootstrap();
 <p>If the document isn&#39;t yet available, the framework will defer bootstrapping
 until it&#39;s loaded.</p>
 <p>Now open the page and see the component in action: <a href="todo/">demo</a>.</p>
-<h2 id="data-flow">Data Flow</h2>
+<h2><span>Data Flow</span><a class="heading-anchor" autolink.="data-flow"><sf-icon class="inline link"></sf-icon></a></h2>
 <p>A few notes on the data flow. Components generally interoperate in three ways.</p>
 <ol>
 <li>One-way binding from parent to child. Can use arbitrary expressions.</li>

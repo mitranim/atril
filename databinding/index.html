@@ -38,10 +38,10 @@
 
     <div class="flex" style="width: 100%; margin-top: 2rem">
       <div class="flex-5 order-1 space-out-v" style="padding: 0 1rem">
-        <h2 id="databinding">Databinding</h2>
+        <h2><span>Databinding</span><a class="heading-anchor" autolink.="databinding"><sf-icon class="inline link"></sf-icon></a></h2>
 <p>The framework has one-way and two-way databinding. They&#39;re implemented as custom
 attributes, and you can add your own binding types.</p>
-<h3 id="-bind-"><code>bind.*</code></h3>
+<h3><span><code>bind.*</code></span><a class="heading-anchor" autolink.="-bind-"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>One-way binding. Generally more efficient than <a href="databinding/#-twoway-">two-way</a>
 binding and is therefore recommended for the majority of data bingings outside
 inputs.</p>
@@ -63,7 +63,7 @@ in the other direction, use an event handler with the built-in <code>on.*</code>
   <input bind.value="color" on.input="color = this.value" placeholder="try `orange`">
 </template>
 
-<h3 id="-twoway-"><code>twoway.*</code></h3>
+<h3><span><code>twoway.*</code></span><a class="heading-anchor" autolink.="-twoway-"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>Two-way binding. For known input types, this is equally as efficient as one-way
 binding. Recommended for form inputs.</p>
 <p>Binds a property of the target element, such as <code>hidden</code> or
@@ -80,7 +80,7 @@ properties between each other.</p>
   <input twoway.value="name" placeholder="type name here...">
 </template>
 
-<h3 id="-bindable-"><code>@bindable</code></h3>
+<h3><span><code>@bindable</code></span><a class="heading-anchor" autolink.="-bindable-"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>Declares a viewmodel property as bindable, so it can be set from the outside
 via <code>bind.*</code> or <code>twoway.*</code>.</p>
 <pre><code class="hljs lang-typescript"><span class="hljs-keyword">import</span> {Component, bindable} from <span class="hljs-string">'atril'</span>;
