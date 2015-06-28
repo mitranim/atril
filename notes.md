@@ -83,3 +83,6 @@ compiled. It could be an instance lifecycle method, something like `onCompile`.
 When interpolating attributes, must sanitise `href`, wiping any `"javascript:"`
 links. Consider if `src` must also be sanitised. Consider if the user can
 unwittingly let dangerous HTML into the view, and in which scenarios.
+
+Instead of always databinding the element's property, only bind it if there's
+no `@bindable` property available.

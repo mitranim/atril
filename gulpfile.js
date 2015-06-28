@@ -66,7 +66,7 @@ var imports = {
   uniqId: function() {return 'static-id-' + ++imports.lastId},
   lastUniqId: function() {return 'static-id-' + imports.lastId},
   prod: prod
-}
+};
 
 /********************************** Config ***********************************/
 
@@ -256,7 +256,7 @@ gulp.task('docs:html:compile', function() {
     .pipe($.replace(/<!--\s*:((?:[^:]|:(?!\s*-->))*):\s*-->/g, '$1'))
     // Render all html.
     .pipe($.statil({
-      relativeDir: src.html,
+      stripPrefix: src.html,
       imports: imports
     }))
     // Change each `<filename>` into `<filename>/index.html`.

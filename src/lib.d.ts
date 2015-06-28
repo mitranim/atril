@@ -20,14 +20,14 @@ interface TemplateElement extends Element {
   content?: DocumentFragment;
 }
 
-interface Promise {
-  then: (callback: Function) => any;
-  catch: (callback: Function) => any;
-}
-
 interface Object {
   hasOwnProperty(key: symbol): boolean;
   hasOwnProperty(key: symbol|string): boolean;
+}
+
+interface Promise {
+  then: (callback: Function) => any;
+  catch: (callback: Function) => any;
 }
 
 declare var Promise: {

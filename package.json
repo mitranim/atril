@@ -51,7 +51,7 @@
     "gulp-replace": "^0.5.3",
     "gulp-rimraf": "^0.1.1",
     "gulp-sourcemaps": "^1.5.2",
-    "gulp-statil": "0.0.2",
+    "gulp-statil": "0.0.3",
     "gulp-typescript": "^2.7.5",
     "gulp-watch": "^4.2.4",
     "highlight.js": "^8.6.0",

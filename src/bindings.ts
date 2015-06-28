@@ -74,8 +74,8 @@ export function compileExpression(expression: string): Expression {
   let func = new Function(body);
 
   return function(scope: any, locals?: any): any {
-    // Prevent `with` from throwing an error when the scope or the locals are
-    // empty.
+    // Prevent `with` from throwing an error when `scope` and/or `locals` have
+    // no properties.
     if (scope == null) scope = Object.create(null);
     if (locals == null) locals = Object.create(null);
 
