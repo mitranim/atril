@@ -36,7 +36,7 @@ import {Component} from 'atril';
 })
 class ViewModel {
   name = 'world';
-  static viewUrl = 'app/hello-world/hello-world.html';
+  static viewUrl = 'hello-world/hello-world.html';
 }
 ```
 
@@ -87,7 +87,7 @@ function ViewModel() {
   this.name = 'world';
 }
 
-ViewModel.viewUrl = 'app/hello-world/hello-world.html';
+ViewModel.viewUrl = 'hello-world/hello-world.html';
 ```
 
 ```html
@@ -149,17 +149,16 @@ the given URL, then activates the component once the view is available.
 ```typescript
 @Component({tagName: 'my-element'})
 class X {
-  static viewUrl = 'app/my-element/my-element.html';
+  static viewUrl = 'my-element/my-element.html';
 }
 ```
 
 Loaded views are synchronously available through the `viewCache` utility exposed
-by the framework. It can also load a hitherto unavailable view, or set a view
-by the given URL without loading it over the network. For production, views
-should be converted to JS and precached in the `viewCache`. If you're building
-with `gulp`, use
-[`gulp-atril-html2js`](https://github.com/Mitranim/gulp-atril-html2js) to do
-this for you.
+by the framework. It can also load a hitherto unavailable view, or set a view by
+the given URL without loading it over the network. For production, views should
+be converted to JS and precached in the `viewCache`. If you're building with
+`gulp`, use [`gulp-html-to-js`](https://github.com/Mitranim/gulp-html-to-js) to
+do this for you.
 
 The build system for this documentation site includes view preprocessing;
 you're welcome to use it as an example.

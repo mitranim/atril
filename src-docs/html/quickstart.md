@@ -129,7 +129,7 @@ class VM {
     this.items.splice(this.items.indexOf(item), 1);
   }
 
-  static viewUrl = 'app/todo-list/todo-list.html';
+  static viewUrl = 'todo-list/todo-list.html';
 }
 ```
 
@@ -172,7 +172,7 @@ Component({tagName: 'todo-list'})(function() {
     this.items.splice(this.items.indexOf(item), 1);
   };
 
-  VM.viewUrl = 'app/todo-list/todo-list.html';
+  VM.viewUrl = 'todo-list/todo-list.html';
 
   return VM;
 }());
@@ -207,7 +207,7 @@ class VM {
     this.element.dispatchEvent(new CustomEvent('remove'));
   }
 
-  static viewUrl = 'app/todo-item/todo-item.html';
+  static viewUrl = 'todo-item/todo-item.html';
 }
 ```
 
@@ -255,7 +255,7 @@ Component({tagName: 'todo-item'})(function() {
 
   VM.bindable = ['item', 'isNew'];
 
-  VM.viewUrl = 'app/todo-item/todo-item.html';
+  VM.viewUrl = 'todo-item/todo-item.html';
 
   return VM;
 }());

@@ -1,3 +1,8 @@
+declare module 'views' {
+  var x: {[path: string]: string};
+  export default x;
+}
+
 declare module 'atril' {
   export function Component(config: {tagName: string}): any;
   export function Attribute(config: {attributeName: string}): any;

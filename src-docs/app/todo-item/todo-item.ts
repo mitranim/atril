@@ -17,5 +17,5 @@ class VM {
     this.element.dispatchEvent(new CustomEvent('remove'));
   }
 
-  static viewUrl = 'app/todo-item/todo-item.html';
+  static viewUrl = 'todo-item/todo-item.html';
 }

@@ -5,5 +5,5 @@ class VM {
   @bindable val = null;
   @bindable color = 'red';
 
-  static viewUrl = 'app/inner-component/inner-component.html';
+  static viewUrl = 'inner-component/inner-component.html';
 }

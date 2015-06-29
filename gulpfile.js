@@ -21,7 +21,7 @@ var src = {
   lib:        'src/**/*.ts',
   stylesCore: 'src-docs/styles/app.less',
   styles:     'src-docs/styles/**/*.less',
-  html:       'src-docs/html',
+  html:       'src-docs/html/**/*',
   scripts:    'src-docs/app/**/*.ts',
   views:      [
     'src-docs/app/**/*.html',
@@ -190,23 +190,13 @@ gulp.task('docs:views:clear', function() {
     .pipe($.rimraf());
 });
 
-gulp.task('docs:views:html2js', function() {
+gulp.task('docs:views:compile', function() {
   return gulp.src(src.views)
-    .pipe($.atrilHtml2js({
-      stripPrefix: 'src-docs',
-      concat: 'views.js'
-    }))
+    .pipe($.htmlToJs({concat: 'views.js'}))
     .pipe(gulp.dest(dest.app));
 });
 
-// Copy for the purpose of demoing template retrieval by templateUrl. Normally
-// you just use html2js instead.
-gulp.task('docs:views:copy', function() {
-  return gulp.src(src.views).pipe(gulp.dest(dest.app));
-});
-
-gulp.task('docs:views:build',
-  gulp.series('docs:views:clear', gulp.parallel('docs:views:html2js', 'docs:views:copy')));
+gulp.task('docs:views:build', gulp.series('docs:views:clear', 'docs:views:compile'));
 
 gulp.task('docs:views:watch', function() {
   $.watch(src.views, gulp.series('docs:views:build', reload));
@@ -227,7 +217,7 @@ gulp.task('docs:html:clear', function() {
 gulp.task('docs:html:compile', function() {
   var filterMd = $.filter('**/*.md')
 
-  return gulp.src(src.html + '/**/*')
+  return gulp.src(src.html)
     .pipe($.plumber())
     // Pre-process the markdown files.
     .pipe(filterMd)
@@ -255,10 +245,7 @@ gulp.task('docs:html:compile', function() {
     // Unpack commented HTML parts.
     .pipe($.replace(/<!--\s*:((?:[^:]|:(?!\s*-->))*):\s*-->/g, '$1'))
     // Render all html.
-    .pipe($.statil({
-      stripPrefix: src.html,
-      imports: imports
-    }))
+    .pipe($.statil({imports: imports}))
     // Change each `<filename>` into `<filename>/index.html`.
     .pipe($.rename(function(path) {
       switch (path.basename + path.extname) {
@@ -274,7 +261,7 @@ gulp.task('docs:html:compile', function() {
 gulp.task('docs:html:build', gulp.series('docs:html:clear', 'docs:html:compile'));
 
 gulp.task('docs:html:watch', function() {
-  $.watch(src.html + '/**/*', gulp.series('docs:html:build', reload));
+  $.watch(src.html, gulp.series('docs:html:build', reload));
 });
 
 /*--------------------------------- Styles ----------------------------------*/

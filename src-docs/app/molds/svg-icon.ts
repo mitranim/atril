@@ -15,7 +15,7 @@ class Ctrl {
 
   constructor() {
     this.content = this.element.content;
-    let path = 'app/svg/' + this.attribute.value + '.svg';
+    let path = 'svg/' + this.attribute.value + '.svg';
 
     let view = viewCache.get(path);
     if (typeof view === 'string') this.commit(view);

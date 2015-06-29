@@ -1,7 +1,9 @@
-import {bootstrap} from 'atril';
+import {bootstrap, viewCache} from 'atril';
+
+import views from 'views';
+for (let path in views) viewCache.set(path, views[path]);
 
 import 'config';
-import 'views';
 import 'attributes/all';
 import 'molds/all';
 import 'hello-world/hello-world';

@@ -24,5 +24,5 @@ class VM {
 
   randomString() {return randomString()}
 
-  static viewUrl = 'app/mock-component/mock-component.html';
+  static viewUrl = 'mock-component/mock-component.html';
 }

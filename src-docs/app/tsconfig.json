@@ -3,7 +3,8 @@
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
-        "noImplicitAny": false
+        "noImplicitAny": false,
+        "experimentalDecorators": true
     },
     "compileOnSave": false
 }

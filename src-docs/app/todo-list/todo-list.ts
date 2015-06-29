@@ -21,5 +21,5 @@ class VM {
     if (~index) this.items.splice(index, 1);
   }
 
-  static viewUrl = 'app/todo-list/todo-list.html';
+  static viewUrl = 'todo-list/todo-list.html';
 }

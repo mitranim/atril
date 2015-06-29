@@ -18,12 +18,12 @@ const localZone = zone.fork({
     // also hides all exceptions after the first during these retries. For us,
     // if a binding or component consistently throws during a phase, it causes
     // continuous reflows. To avoid that, we have to capture the exception.
-    try {
+    // try {
       reflowStackDepth = 0;
       reflow();
       flushQueue();
-    }
-    catch (err) {utils.error(err)}
+    // }
+    // catch (err) {utils.error(err)}
   }
 });
 
