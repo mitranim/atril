@@ -3,8 +3,9 @@
   <head>
     <title>atril</title>
     <meta name="author" content="Mitranim">
-    <meta name="description" content="Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
+    <meta name="description" content="Experimental JS rendering library. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
     <meta charset="utf-8">
+    <link rel="icon" href="data:;base64,=">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <base href="/atril/">
@@ -20,7 +21,7 @@
     <div class="doc-banner">
   <h1 class="text-monospace size-initial">atril</h1>
 
-  <h3>Experimental web UI framework</h3>
+  <h3>Experimental JS rendering library</h3>
 
   <p style="font-size: 1rem">Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple</p>
 
@@ -84,7 +85,7 @@
   </a>
 </h1>
 
-<p>The framework has three types of building blocks.</p>
+<p>The library has three types of building blocks.</p>
 <ul>
 <li><a href="component/"><code>Component</code></a>: provides a viewmodel and a view.</li>
 </ul>
@@ -120,7 +121,7 @@ automatically updates it whenever the data changes.</p>
 })
 <span class="hljs-keyword">class</span> ViewModel {
   name = <span class="hljs-string">'world'</span>;
-  static viewUrl = <span class="hljs-string">'app/hello-world/hello-world.html'</span>;
+  static viewUrl = <span class="hljs-string">'hello-world/hello-world.html'</span>;
 }
 </code></pre>
 <pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- Template. --&gt;</span>
@@ -164,7 +165,7 @@ Component({
   <span class="hljs-keyword">this</span>.name = <span class="hljs-string">'world'</span>;
 }
 
-ViewModel.viewUrl = <span class="hljs-string">'app/hello-world/hello-world.html'</span>;
+ViewModel.viewUrl = <span class="hljs-string">'hello-world/hello-world.html'</span>;
 </code></pre>
 <pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- Updates automatically --&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-title">h1</span>&gt;</span>Hello, {{<span>name</span>}}!<span class="hljs-tag">&lt;/<span class="hljs-title">h1</span>&gt;</span>
@@ -191,7 +192,7 @@ ViewModel.viewUrl = <span class="hljs-string">'app/hello-world/hello-world.html'
 
 <p>Much like Angular 2, <code>atril</code> uses <a href="https://github.com/angular/zone.js"
 target="_blank"><code>zone.js</code></a> to automatically detect relevant
-events. When something happens, the framework reflows the virtual DOM, updating
+events. When something happens, the library reflows the virtual DOM, updating
 it with the new data, and carefully updates the view.</p>
 <p>Forget about event subscriptions, manual re-renders (ReactJS), digest cycles
 (Angular) or observables (Polymer, Aurelia). In <code>atril</code>, it just works.</p>
@@ -205,7 +206,7 @@ than just properties. See databinding for details.</p>
   </a>
 </h1>
 
-<p>The framework has one-way and two-way databinding. It lets you automatically
+<p>The library has one-way and two-way databinding. It lets you automatically
 sync values to the view and vice versa. This includes properties of native DOM
 elements, and other custom elements in the view.</p>
 <p>See <a href="databinding/">Databinding</a> for details.</p>
@@ -218,7 +219,7 @@ elements, and other custom elements in the view.</p>
 </h1>
 
 <p><code>atril</code> maintains a virtual representation of each component&#39;s node tree.
-Updates to the viewmodel cause changes in the virtual tree. The framework diffs
+Updates to the viewmodel cause changes in the virtual tree. The library diffs
 them with the live DOM and carefully updates the view.</p>
 <p>This is primarily an implementation detail, and is done for internal
 consistency. However, this architecture should enable optimisations for high
@@ -231,7 +232,7 @@ rendering performance, similar to ReactJS.</p>
   </a>
 </h1>
 
-<p>This framework is targeting websites over web applications. It&#39;s aimed at
+<p>This library is targeting websites over web applications. It&#39;s aimed at
 multi-page, document-oriented sites with server-side routing and large amounts
 of static content — in other words, the majority of the web.</p>
 <p>It&#39;s designed to be as light, fast, and non-intrusive as possible. The library
@@ -253,7 +254,7 @@ significant performance and mental overhead for an MPA.</p>
 
 <p>Despite its power, <code>atril</code> is simple at its core. The entire library is 47KB
 minified with dependencies. This includes 14KB of <code>zone.js</code>, which comes with
-a <code>Promise</code> polyfill. The framework has no other ES6 dependencies.</p>
+a <code>Promise</code> polyfill. The library has no other ES6 dependencies.</p>
 <p>Browser support: standards-compliant browsers; IE10 and above.</p>
 
       </div>
@@ -308,7 +309,7 @@ a <code>Promise</code> polyfill. The framework has no other ES6 dependencies.</p
     <doc-noscript>
   <doc-noscript-content class="narrow-inverse">
     <h2>Hello! :)</h2>
-    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a web UI framework. For demo purposes, it's mostly rendered with JavaScript.</p>
+    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a JS rendering library. For demo purposes, it's mostly rendered with JavaScript.</p>
     <p>Please enable JavaScript in your browser. Thank you!</p>
   </doc-noscript-content>
 </doc-noscript>

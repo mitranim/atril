@@ -3,8 +3,9 @@
   <head>
     <title>atril</title>
     <meta name="author" content="Mitranim">
-    <meta name="description" content="Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
+    <meta name="description" content="Experimental JS rendering library. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
     <meta charset="utf-8">
+    <link rel="icon" href="data:;base64,=">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <base href="/atril/">
@@ -20,7 +21,7 @@
     <div class="doc-banner">
   <h1 class="text-monospace size-initial">atril</h1>
 
-  <h3>Experimental web UI framework</h3>
+  <h3>Experimental JS rendering library</h3>
 
   <p style="font-size: 1rem">Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple</p>
 
@@ -136,7 +137,7 @@ following content:</p>
     <span class="hljs-keyword">this</span>.items.splice(<span class="hljs-keyword">this</span>.items.indexOf(item), <span class="hljs-number">1</span>);
   }
 
-  static viewUrl = <span class="hljs-string">'app/todo-list/todo-list.html'</span>;
+  static viewUrl = <span class="hljs-string">'todo-list/todo-list.html'</span>;
 }
 </code></pre>
 <pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- src/app/<span class="hljs-doctag"><span class="hljs-keyword">todo</span></span>-list/<span class="hljs-doctag"><span class="hljs-keyword">todo</span></span>-list.html --&gt;</span>
@@ -175,7 +176,7 @@ Component({tagName: <span class="hljs-string">'todo-list'</span>})(<span class="
     <span class="hljs-keyword">this</span>.items.splice(<span class="hljs-keyword">this</span>.items.indexOf(item), <span class="hljs-number">1</span>);
   };
 
-  VM.viewUrl = <span class="hljs-string">'app/todo-list/todo-list.html'</span>;
+  VM.viewUrl = <span class="hljs-string">'todo-list/todo-list.html'</span>;
 
   <span class="hljs-keyword">return</span> VM;
 }());
@@ -206,7 +207,7 @@ yet. Let&#39;s create it.</p>
     <span class="hljs-keyword">this</span>.element.dispatchEvent(<span class="hljs-keyword">new</span> CustomEvent(<span class="hljs-string">'remove'</span>));
   }
 
-  static viewUrl = <span class="hljs-string">'app/todo-item/todo-item.html'</span>;
+  static viewUrl = <span class="hljs-string">'todo-item/todo-item.html'</span>;
 }
 </code></pre>
 <pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- src/app/<span class="hljs-doctag"><span class="hljs-keyword">todo</span></span>-item/<span class="hljs-doctag"><span class="hljs-keyword">todo</span></span>-item.html --&gt;</span>
@@ -250,7 +251,7 @@ Component({tagName: <span class="hljs-string">'todo-item'</span>})(<span class="
 
   VM.bindable = [<span class="hljs-string">'item'</span>, <span class="hljs-string">'isNew'</span>];
 
-  VM.viewUrl = <span class="hljs-string">'app/todo-item/todo-item.html'</span>;
+  VM.viewUrl = <span class="hljs-string">'todo-item/todo-item.html'</span>;
 
   <span class="hljs-keyword">return</span> VM;
 }());
@@ -278,7 +279,7 @@ Component({tagName: <span class="hljs-string">'todo-item'</span>})(<span class="
 <ol>
 <li>Import the components in your source.</li>
 <li>Call <code>atril.bootstrap()</code>. This is done once for the entire application. You
-can optionally pass a DOM element as an argument, and the framework will
+can optionally pass a DOM element as an argument, and the library will
 start search for <code>atril</code> features from that element, ignoring the rest.</li>
 </ol>
 <p>Your core <code>app.ts</code> file would look something like this:</p>
@@ -287,7 +288,7 @@ start search for <code>atril</code> features from that element, ignoring the res
 <span class="hljs-keyword">import</span> <span class="hljs-string">'todo-list/todo-list'</span>;
 atril.bootstrap();
 </code></pre>
-<p>If the document isn&#39;t yet available, the framework will defer bootstrapping
+<p>If the document isn&#39;t yet available, the library will defer bootstrapping
 until it&#39;s loaded.</p>
 <p>Now open the page and see the component in action: <a href="todo/">demo</a>.</p>
 <h2><span>Data Flow</span><a class="heading-anchor" autolink.="data-flow"><sf-icon class="inline link"></sf-icon></a></h2>
@@ -374,7 +375,7 @@ source for more examples. If you have any questions, hop into the
     <doc-noscript>
   <doc-noscript-content class="narrow-inverse">
     <h2>Hello! :)</h2>
-    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a web UI framework. For demo purposes, it's mostly rendered with JavaScript.</p>
+    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a JS rendering library. For demo purposes, it's mostly rendered with JavaScript.</p>
     <p>Please enable JavaScript in your browser. Thank you!</p>
   </doc-noscript-content>
 </doc-noscript>

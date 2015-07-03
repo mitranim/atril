@@ -3,8 +3,9 @@
   <head>
     <title>atril</title>
     <meta name="author" content="Mitranim">
-    <meta name="description" content="Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
+    <meta name="description" content="Experimental JS rendering library. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
     <meta charset="utf-8">
+    <link rel="icon" href="data:;base64,=">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <base href="/atril/">
@@ -20,7 +21,7 @@
     <div class="doc-banner">
   <h1 class="text-monospace size-initial">atril</h1>
 
-  <h3>Experimental web UI framework</h3>
+  <h3>Experimental JS rendering library</h3>
 
   <p style="font-size: 1rem">Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple</p>
 
@@ -69,7 +70,7 @@ automatically updating the view whenever the data changes.</p>
 })
 <span class="hljs-keyword">class</span> ViewModel {
   name = <span class="hljs-string">'world'</span>;
-  static viewUrl = <span class="hljs-string">'app/hello-world/hello-world.html'</span>;
+  static viewUrl = <span class="hljs-string">'hello-world/hello-world.html'</span>;
 }
 </code></pre>
 <pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- Template. --&gt;</span>
@@ -114,7 +115,7 @@ Component({
   <span class="hljs-keyword">this</span>.name = <span class="hljs-string">'world'</span>;
 }
 
-ViewModel.viewUrl = <span class="hljs-string">'app/hello-world/hello-world.html'</span>;
+ViewModel.viewUrl = <span class="hljs-string">'hello-world/hello-world.html'</span>;
 </code></pre>
 <pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- Updates automatically --&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-title">h1</span>&gt;</span>Hello, {{<span>name</span>}}!<span class="hljs-tag">&lt;/<span class="hljs-title">h1</span>&gt;</span>
@@ -159,20 +160,19 @@ plugin</a>:</p>
 }
 </code></pre>
 <h4><span><code>X.viewUrl =&gt; string</code></span><a class="heading-anchor" autolink.="-x-viewurl-string-"><sf-icon class="inline link"></sf-icon></a></h4>
-<p>Primary method of view loading. The framework automatically loads the view by
+<p>Primary method of view loading. The library automatically loads the view by
 the given URL, then activates the component once the view is available.</p>
 <pre><code class="hljs lang-typescript">@Component({tagName: <span class="hljs-string">'my-element'</span>})
 <span class="hljs-keyword">class</span> X {
-  static viewUrl = <span class="hljs-string">'app/my-element/my-element.html'</span>;
+  static viewUrl = <span class="hljs-string">'my-element/my-element.html'</span>;
 }
 </code></pre>
 <p>Loaded views are synchronously available through the <code>viewCache</code> utility exposed
-by the framework. It can also load a hitherto unavailable view, or set a view
-by the given URL without loading it over the network. For production, views
-should be converted to JS and precached in the <code>viewCache</code>. If you&#39;re building
-with <code>gulp</code>, use
-<a href="https://github.com/Mitranim/gulp-atril-html2js" target="_blank"><code>gulp-atril-html2js</code></a> to do
-this for you.</p>
+by the library. It can also load a hitherto unavailable view, or set a view by
+the given URL without loading it over the network. For production, views should
+be converted to JS and precached in the <code>viewCache</code>. If you&#39;re building with
+<code>gulp</code>, use <a href="https://github.com/Mitranim/gulp-html-to-js" target="_blank"><code>gulp-html-to-js</code></a> to
+do this for you.</p>
 <p>The build system for this documentation site includes view preprocessing;
 you&#39;re welcome to use it as an example.
 (<a href="https://github.com/Mitranim/atril/blob/master/gulpfile.js" target="_blank">[1]</a>)</p>
@@ -191,7 +191,7 @@ you&#39;re welcome to use it as an example.
 </code></pre>
 <p>This lets you load views asynchronously through custom means.</p>
 <h3><span>Contextual Dependencies</span><a class="heading-anchor" autolink.="contextual-dependencies"><sf-icon class="inline link"></sf-icon></a></h3>
-<p>The framework uses a variant of dependency injection — <em>dependency assignment</em>
+<p>The library uses a variant of dependency injection — <em>dependency assignment</em>
 — to give you contextual dependencies for each viewmodel. To get hold of them,
 use the <code>@assign</code> decorator (ES7/TypeScript) or the static <code>assign</code> property
 on the constructor function (ES5).</p>
@@ -244,7 +244,7 @@ two lifecycle methods: <code>onPhase</code> and <code>onDestroy</code>.</p>
 <ul>
 <li><code>onPhase</code></li>
 </ul>
-<p>This is called whenever the framework reflows the tree of components and
+<p>This is called whenever the library reflows the tree of components and
 bindings in response to user activity. Example usage:</p>
 <pre><code class="hljs lang-typescript"><span class="hljs-keyword">class</span> VM {
   @assign element: Element;
@@ -328,7 +328,7 @@ chance to free memory or perform other cleanup tasks. Example:</p>
     <doc-noscript>
   <doc-noscript-content class="narrow-inverse">
     <h2>Hello! :)</h2>
-    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a web UI framework. For demo purposes, it's mostly rendered with JavaScript.</p>
+    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a JS rendering library. For demo purposes, it's mostly rendered with JavaScript.</p>
     <p>Please enable JavaScript in your browser. Thank you!</p>
   </doc-noscript-content>
 </doc-noscript>

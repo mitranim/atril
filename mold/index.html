@@ -3,8 +3,9 @@
   <head>
     <title>atril</title>
     <meta name="author" content="Mitranim">
-    <meta name="description" content="Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
+    <meta name="description" content="Experimental JS rendering library. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
     <meta charset="utf-8">
+    <link rel="icon" href="data:;base64,=">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <base href="/atril/">
@@ -20,7 +21,7 @@
     <div class="doc-banner">
   <h1 class="text-monospace size-initial">atril</h1>
 
-  <h3>Experimental web UI framework</h3>
+  <h3>Experimental JS rendering library</h3>
 
   <p style="font-size: 1rem">Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple</p>
 
@@ -98,7 +99,7 @@ non-supporting browsers when compiling the DOM.</p>
 <code>onPhase</code> it has a chance to take the mold&#39;s initial content, perform arbitrary
 transformations, and append the result to the template element itself. The
 mold&#39;s &quot;output&quot; is the resulting <code>childNodes</code> of the template element.</p>
-<p>When a mold is constructed, and every time it&#39;s phased, the framework checks the
+<p>When a mold is constructed, and every time it&#39;s phased, the library checks the
 template&#39;s contents to see if they need to be recompiled. Any custom elements,
 custom attributes, or molds in the output are automatically activated. Then the
 contents are synced to the real DOM. The template element itself is not included
@@ -206,7 +207,7 @@ automatically included into the correct place in the DOM.</li>
   </div>
 </template>
 
-<p>The contents of the <code>template</code> tag were automatically compiled by the framework
+<p>The contents of the <code>template</code> tag were automatically compiled by the library
 and activated just like a normal part of the view.</p>
 <h3><span>Mutation</span><a class="heading-anchor" autolink.="mutation"><sf-icon class="inline link"></sf-icon></a></h3>
 <p>More often you want to use a mold to modify <em>existing</em> virtual markup. In the
@@ -267,13 +268,13 @@ put it directly into the template.</p>
 </template>
 
 <h3><span>Optimisation</span><a class="heading-anchor" autolink.="optimisation"><sf-icon class="inline link"></sf-icon></a></h3>
-<p>By default, the framework automatically recompiles the mold&#39;s output (the
+<p>By default, the library automatically recompiles the mold&#39;s output (the
 contents of the <code>template</code> tag). If you create new parts of the virtual DOM
 that use <code>atril</code> features like custom elements, they will work automatically.</p>
-<p>However, this has a performance cost. Because the framework doesn&#39;t know which
+<p>However, this has a performance cost. Because the library doesn&#39;t know which
 parts of the virtual DOM you could have modified, it has to scan the entire
 subtree. If your mold reuses some parts of its virtual DOM, leaving them
-unchanged between phases, you can &quot;hint&quot; the framework not to rescan them.</p>
+unchanged between phases, you can &quot;hint&quot; the library not to rescan them.</p>
 <p>Excerpt from the <code>if.</code> implementation:</p>
 <pre><code class="hljs lang-typescript">@Mold({attributeName: <span class="hljs-string">'if'</span>})
 <span class="hljs-keyword">class</span> If {
@@ -287,16 +288,16 @@ unchanged between phases, you can &quot;hint&quot; the framework not to rescan t
 }
 </code></pre>
 <p>The <code>Meta</code> object is a metadata container associated with each node in the
-virtual DOM tree. The framework adds them automatically when compiling nodes,
+virtual DOM tree. The library adds them automatically when compiling nodes,
 but you can also add a meta to a newly created node.</p>
-<p>If a node is marked as <code>isDomImmutable</code> in its metadata, the framework will
+<p>If a node is marked as <code>isDomImmutable</code> in its metadata, the library will
 only compile it once, and skip on subsequent reflows. &quot;Immutability&quot; refers
 to the inner DOM structure of that virtual element, and doesn&#39;t prevent DOM
 updates like text interpolations.</p>
 <p>By hinting which mold children won&#39;t change, you conserve a considerable amount
 of performance.</p>
 <h3><span>Contextual Dependencies</span><a class="heading-anchor" autolink.="contextual-dependencies"><sf-icon class="inline link"></sf-icon></a></h3>
-<p>The framework uses a variant of dependency injection — <em>dependency assignment</em> —
+<p>The library uses a variant of dependency injection — <em>dependency assignment</em> —
 to give you contextual dependencies for each mold controller. To get hold of
 them, use the <code>@assign</code> decorator (ES7/TypeScript) or the static <code>assign</code>
 property on the constructor function (ES5).</p>
@@ -370,7 +371,7 @@ lifecycle methods: <code>onPhase</code> and <code>onDestroy</code>.</p>
 <ul>
 <li><code>onPhase</code></li>
 </ul>
-<p>This is called whenever the framework reflows the tree of components and
+<p>This is called whenever the library reflows the tree of components and
 bindings in response to user activity. For an example, see the
 <a href="mold/#basics"><code>markdown-live.*</code></a> implementation above.</p>
 <ul>
@@ -442,7 +443,7 @@ can use this as a chance to free memory or perform other cleanup tasks. Example:
     <doc-noscript>
   <doc-noscript-content class="narrow-inverse">
     <h2>Hello! :)</h2>
-    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a web UI framework. For demo purposes, it's mostly rendered with JavaScript.</p>
+    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a JS rendering library. For demo purposes, it's mostly rendered with JavaScript.</p>
     <p>Please enable JavaScript in your browser. Thank you!</p>
   </doc-noscript-content>
 </doc-noscript>

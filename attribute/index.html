@@ -3,8 +3,9 @@
   <head>
     <title>atril</title>
     <meta name="author" content="Mitranim">
-    <meta name="description" content="Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
+    <meta name="description" content="Experimental JS rendering library. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.">
     <meta charset="utf-8">
+    <link rel="icon" href="data:;base64,=">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <base href="/atril/">
@@ -20,7 +21,7 @@
     <div class="doc-banner">
   <h1 class="text-monospace size-initial">atril</h1>
 
-  <h3>Experimental web UI framework</h3>
+  <h3>Experimental JS rendering library</h3>
 
   <p style="font-size: 1rem">Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple</p>
 
@@ -63,7 +64,7 @@ custom attributes very flexible and ensures no conflict with other attributes.</
 
 @Attribute({attributeName: <span class="hljs-string">'class'</span>})
 <span class="hljs-keyword">class</span> Ctrl {
-  <span class="hljs-comment">// Autoassigned by the framework.</span>
+  <span class="hljs-comment">// Autoassigned by the library.</span>
   @assign element: Element;
   @assign hint: <span class="hljs-built_in">string</span>;
   @assign expression: <span class="hljs-built_in">Function</span>;
@@ -99,7 +100,7 @@ custom attributes very flexible and ensures no conflict with other attributes.</
 </template>
 
 <h3><span>Contextual Dependencies</span><a class="heading-anchor" autolink.="contextual-dependencies"><sf-icon class="inline link"></sf-icon></a></h3>
-<p>The framework uses a variant of dependency injection — <em>dependency assignment</em> —
+<p>The library uses a variant of dependency injection — <em>dependency assignment</em> —
 to give you contextual dependencies for each attribute controller. To get hold
 of them, use the <code>@assign</code> decorator (ES7/TypeScript) or the static <code>assign</code>
 property on the constructor function (ES5).</p>
@@ -179,7 +180,7 @@ two lifecycle methods: <code>onPhase</code> and <code>onDestroy</code>.</p>
 <ul>
 <li><code>onPhase</code></li>
 </ul>
-<p>This is called whenever the framework reflows the tree of components and
+<p>This is called whenever the library reflows the tree of components and
 bindings in response to user activity. For an example, see the
 <a href="attribute/#basics"><code>class.*</code></a> implementation above.</p>
 <ul>
@@ -251,7 +252,7 @@ can use this as a chance to free memory or perform other cleanup tasks. Example:
     <doc-noscript>
   <doc-noscript-content class="narrow-inverse">
     <h2>Hello! :)</h2>
-    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a web UI framework. For demo purposes, it's mostly rendered with JavaScript.</p>
+    <p>This site is a live demo for <a href="https://github.com/Mitranim/atril" target="_blank"><code>atril</code></a>, a JS rendering library. For demo purposes, it's mostly rendered with JavaScript.</p>
     <p>Please enable JavaScript in your browser. Thank you!</p>
   </doc-noscript-content>
 </doc-noscript>
