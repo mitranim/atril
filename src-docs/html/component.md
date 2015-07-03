@@ -143,7 +143,7 @@ class X {
 
 #### `X.viewUrl => string`
 
-Primary method of view loading. The framework automatically loads the view by
+Primary method of view loading. The library automatically loads the view by
 the given URL, then activates the component once the view is available.
 
 ```typescript
@@ -154,7 +154,7 @@ class X {
 ```
 
 Loaded views are synchronously available through the `viewCache` utility exposed
-by the framework. It can also load a hitherto unavailable view, or set a view by
+by the library. It can also load a hitherto unavailable view, or set a view by
 the given URL without loading it over the network. For production, views should
 be converted to JS and precached in the `viewCache`. If you're building with
 `gulp`, use [`gulp-html-to-js`](https://github.com/Mitranim/gulp-html-to-js) to
@@ -185,7 +185,7 @@ This lets you load views asynchronously through custom means.
 
 ### Contextual Dependencies
 
-The framework uses a variant of dependency injection — _dependency assignment_
+The library uses a variant of dependency injection — _dependency assignment_
 — to give you contextual dependencies for each viewmodel. To get hold of them,
 use the `@assign` decorator (ES7/TypeScript) or the static `assign` property
 on the constructor function (ES5).
@@ -248,7 +248,7 @@ two lifecycle methods: `onPhase` and `onDestroy`.
 
 * `onPhase`
 
-This is called whenever the framework reflows the tree of components and
+This is called whenever the library reflows the tree of components and
 bindings in response to user activity. Example usage:
 
 ```typescript

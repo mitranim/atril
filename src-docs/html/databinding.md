@@ -1,6 +1,6 @@
 ## Databinding
 
-The framework has one-way and two-way databinding. They're implemented as custom
+The library has one-way and two-way databinding. They're implemented as custom
 attributes, and you can add your own binding types.
 
 ### `bind.*`

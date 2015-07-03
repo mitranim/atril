@@ -30,7 +30,7 @@ import {Attribute, assign} from 'atril';
 
 @Attribute({attributeName: 'class'})
 class Ctrl {
-  // Autoassigned by the framework.
+  // Autoassigned by the library.
   @assign element: Element;
   @assign hint: string;
   @assign expression: Function;
@@ -70,7 +70,7 @@ class Ctrl {
 
 ### Contextual Dependencies
 
-The framework uses a variant of dependency injection — _dependency assignment_ —
+The library uses a variant of dependency injection — _dependency assignment_ —
 to give you contextual dependencies for each attribute controller. To get hold
 of them, use the `@assign` decorator (ES7/TypeScript) or the static `assign`
 property on the constructor function (ES5).
@@ -158,7 +158,7 @@ two lifecycle methods: `onPhase` and `onDestroy`.
 
 * `onPhase`
 
-This is called whenever the framework reflows the tree of components and
+This is called whenever the library reflows the tree of components and
 bindings in response to user activity. For an example, see the
 [`class.*`](attribute/#basics) implementation above.
 

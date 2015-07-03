@@ -69,7 +69,7 @@ The mold controller (the class decorated with `@Mold`) has access to its virtual
 transformations, and append the result to the template element itself. The
 mold's "output" is the resulting `childNodes` of the template element.
 
-When a mold is constructed, and every time it's phased, the framework checks the
+When a mold is constructed, and every time it's phased, the library checks the
 template's contents to see if they need to be recompiled. Any custom elements,
 custom attributes, or molds in the output are automatically activated. Then the
 contents are synced to the real DOM. The template element itself is not included
@@ -185,7 +185,7 @@ Let's see what happens if our markdown contains `atril` markup.
   </div>
 </template>
 
-The contents of the `template` tag were automatically compiled by the framework
+The contents of the `template` tag were automatically compiled by the library
 and activated just like a normal part of the view.
 
 ### Mutation
@@ -257,14 +257,14 @@ The mold automatically converts its content into markdown, and here's the result
 
 ### Optimisation
 
-By default, the framework automatically recompiles the mold's output (the
+By default, the library automatically recompiles the mold's output (the
 contents of the `template` tag). If you create new parts of the virtual DOM
 that use `atril` features like custom elements, they will work automatically.
 
-However, this has a performance cost. Because the framework doesn't know which
+However, this has a performance cost. Because the library doesn't know which
 parts of the virtual DOM you could have modified, it has to scan the entire
 subtree. If your mold reuses some parts of its virtual DOM, leaving them
-unchanged between phases, you can "hint" the framework not to rescan them.
+unchanged between phases, you can "hint" the library not to rescan them.
 
 Excerpt from the `if.` implementation:
 
@@ -282,10 +282,10 @@ class If {
 ```
 
 The `Meta` object is a metadata container associated with each node in the
-virtual DOM tree. The framework adds them automatically when compiling nodes,
+virtual DOM tree. The library adds them automatically when compiling nodes,
 but you can also add a meta to a newly created node.
 
-If a node is marked as `isDomImmutable` in its metadata, the framework will
+If a node is marked as `isDomImmutable` in its metadata, the library will
 only compile it once, and skip on subsequent reflows. "Immutability" refers
 to the inner DOM structure of that virtual element, and doesn't prevent DOM
 updates like text interpolations.
@@ -295,7 +295,7 @@ of performance.
 
 ### Contextual Dependencies
 
-The framework uses a variant of dependency injection — _dependency assignment_ —
+The library uses a variant of dependency injection — _dependency assignment_ —
 to give you contextual dependencies for each mold controller. To get hold of
 them, use the `@assign` decorator (ES7/TypeScript) or the static `assign`
 property on the constructor function (ES5).
@@ -377,7 +377,7 @@ lifecycle methods: `onPhase` and `onDestroy`.
 
 * `onPhase`
 
-This is called whenever the framework reflows the tree of components and
+This is called whenever the library reflows the tree of components and
 bindings in response to user activity. For an example, see the
 [`markdown-live.*`](mold/#basics) implementation above.
 

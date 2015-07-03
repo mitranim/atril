@@ -44,7 +44,7 @@
   </a>
 </h1>
 
-The framework has three types of building blocks.
+The library has three types of building blocks.
 
 * [`Component`](component/): provides a viewmodel and a view.
 
@@ -169,7 +169,7 @@ ViewModel.viewUrl = 'hello-world/hello-world.html';
 
 Much like Angular 2, `atril` uses <a href="https://github.com/angular/zone.js"
 target="_blank"><code>zone.js</code></a> to automatically detect relevant
-events. When something happens, the framework reflows the virtual DOM, updating
+events. When something happens, the library reflows the virtual DOM, updating
 it with the new data, and carefully updates the view.
 
 Forget about event subscriptions, manual re-renders (ReactJS), digest cycles
@@ -186,7 +186,7 @@ than just properties. See databinding for details.
   </a>
 </h1>
 
-The framework has one-way and two-way databinding. It lets you automatically
+The library has one-way and two-way databinding. It lets you automatically
 sync values to the view and vice versa. This includes properties of native DOM
 elements, and other custom elements in the view.
 
@@ -201,7 +201,7 @@ See [Databinding](databinding/) for details.
 </h1>
 
 `atril` maintains a virtual representation of each component's node tree.
-Updates to the viewmodel cause changes in the virtual tree. The framework diffs
+Updates to the viewmodel cause changes in the virtual tree. The library diffs
 them with the live DOM and carefully updates the view.
 
 This is primarily an implementation detail, and is done for internal
@@ -216,7 +216,7 @@ rendering performance, similar to ReactJS.
   </a>
 </h1>
 
-This framework is targeting websites over web applications. It's aimed at
+This library is targeting websites over web applications. It's aimed at
 multi-page, document-oriented sites with server-side routing and large amounts
 of static content — in other words, the majority of the web.
 
@@ -242,6 +242,6 @@ Make a comparison and pick the right tool for the given use case.
 
 Despite its power, `atril` is simple at its core. The entire library is 47KB
 minified with dependencies. This includes 14KB of `zone.js`, which comes with
-a `Promise` polyfill. The framework has no other ES6 dependencies.
+a `Promise` polyfill. The library has no other ES6 dependencies.
 
 Browser support: standards-compliant browsers; IE10 and above.

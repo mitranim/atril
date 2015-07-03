@@ -1,7 +1,7 @@
 {
   "name": "atril",
   "version": "0.0.11",
-  "description": "Experimental web UI framework. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.",
+  "description": "Experimental JS rendering library. Ideas from ReactJS, Polymer, Angular 2, Aurelia, made simple.",
   "main": "lib/index",
   "author": "Mitranim",
   "license": "MIT",
@@ -10,13 +10,8 @@
     "url": "git://github.com/Mitranim/atril.git"
   },
   "keywords": [
-    "framework",
-    "ui",
-    "component",
-    "angular",
-    "polymer",
-    "react",
-    "aurelia"
+    "rendering",
+    "components"
   ],
   "scripts": {
     "jspm": "jspm",

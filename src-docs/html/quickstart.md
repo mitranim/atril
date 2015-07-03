@@ -283,7 +283,7 @@ Component({tagName: 'todo-item'})(function() {
 To activate these elements on the page, you need to:
 1. Import the components in your source.
 2. Call `atril.bootstrap()`. This is done once for the entire application. You
-   can optionally pass a DOM element as an argument, and the framework will
+   can optionally pass a DOM element as an argument, and the library will
    start search for `atril` features from that element, ignoring the rest.
 
 Your core `app.ts` file would look something like this:
@@ -295,7 +295,7 @@ import 'todo-list/todo-list';
 atril.bootstrap();
 ```
 
-If the document isn't yet available, the framework will defer bootstrapping
+If the document isn't yet available, the library will defer bootstrapping
 until it's loaded.
 
 Now open the page and see the component in action: [demo](todo/).
